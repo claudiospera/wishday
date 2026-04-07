@@ -1,65 +1,164 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { cn, eventTypeEmoji } from '@/lib/utils'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col min-h-screen">
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-purple-100">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-2xl">🎉</span>
+            <span className="font-bold text-xl text-purple-700">Wishday</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+            <Link href="#come-funziona" className="hover:text-purple-700 transition-colors">
+              Come funziona
+            </Link>
+            <Link href="/pricing" className="hover:text-purple-700 transition-colors">
+              Prezzi
+            </Link>
+          </nav>
+          <div className="flex items-center gap-2">
+            <Link href="/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+              Accedi
+            </Link>
+            <Link href="/register" className={cn(buttonVariants({ size: 'sm' }), 'bg-purple-700 hover:bg-purple-800 text-white')}>
+              Inizia gratis
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="bg-gradient-to-br from-purple-50 via-white to-amber-50 py-20 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">
+              ✨ Lista desideri per ogni occasione speciale
+            </Badge>
+            <h1
+              className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
+              style={{ fontFamily: 'var(--font-playfair)' }}
+            >
+              Il tuo giorno speciale,{' '}
+              <span className="text-purple-700">i tuoi desideri</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Crea la tua pagina personalizzata, condividila con gli invitati e ricevi esattamente
+              i regali che vuoi — o contributi collettivi per quello speciale.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/register" className={cn(buttonVariants({ size: 'lg' }), 'bg-purple-700 hover:bg-purple-800 text-white text-lg px-8')}>
+                Crea la tua lista gratis
+              </Link>
+              <Link href="#come-funziona" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'text-lg px-8')}>
+                Scopri come funziona
+              </Link>
+            </div>
+            {/* Tipi evento */}
+            <div className="flex flex-wrap gap-2 justify-center mt-10">
+              {Object.entries(eventTypeEmoji).map(([key, emoji]) => (
+                <span
+                  key={key}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-purple-100 text-sm text-gray-600 shadow-sm"
+                >
+                  {emoji}{' '}
+                  {key === 'birthday' ? 'Compleanno' :
+                   key === 'wedding' ? 'Matrimonio' :
+                   key === 'graduation' ? 'Laurea' :
+                   key === 'baptism' ? 'Battesimo' : 'Altro'}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Come funziona */}
+        <section id="come-funziona" className="py-20 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Come funziona
+            </h2>
+            <p className="text-center text-gray-500 mb-12">Tre semplici passi per ricevere i regali che ami</p>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { step: '1', icon: '🎨', title: 'Crea il tuo evento', desc: 'Registrati, crea il tuo evento e personalizza la pagina con foto e descrizione.' },
+                { step: '2', icon: '🎁', title: 'Aggiungi i desideri', desc: 'Inserisci i regali — singoli o collettivi. Aggiungi link al negozio, foto e prezzo.' },
+                { step: '3', icon: '📤', title: 'Condividi con gli invitati', desc: 'Invia il link via WhatsApp o email. Gli invitati prenotano o contribuiscono.' },
+              ].map((item) => (
+                <Card key={item.step} className="border-purple-100 shadow-sm">
+                  <CardContent className="pt-6 text-center">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4 text-xl">
+                      {item.icon}
+                    </div>
+                    <div className="text-xs font-bold text-purple-500 mb-2">PASSO {item.step}</div>
+                    <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                    <p className="text-gray-500 text-sm">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Feature highlights */}
+        <section className="py-20 px-4 bg-gradient-to-br from-purple-50 to-amber-50">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Tutto quello che ti serve
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { icon: '💝', title: 'Regali collettivi', desc: 'Barra di avanzamento in tempo reale. Tutti contribuiscono, tu ricevi il regalo che ami.' },
+                { icon: '🏦', title: 'Bonifico diretto', desc: 'Inserisci il tuo IBAN e genera un QR code. Nessuna commissione.' },
+                { icon: '📱', title: 'PWA installabile', desc: "Aggiungi Wishday alla home del tuo telefono come una vera app." },
+                { icon: '🔒', title: 'Pagamenti sicuri', desc: 'Stripe gestisce tutti i pagamenti. I tuoi fondi sono al sicuro.' },
+                { icon: '📊', title: 'Dashboard completa', desc: 'Monitora prenotazioni, contributi e preleva i fondi quando vuoi.' },
+                { icon: '🎊', title: 'Condivisione facile', desc: 'WhatsApp, Telegram, email — condividi il tuo link con un click.' },
+              ].map((f) => (
+                <div key={f.title} className="bg-white rounded-xl p-5 border border-purple-100 shadow-sm">
+                  <div className="text-3xl mb-3">{f.icon}</div>
+                  <h3 className="font-semibold mb-1">{f.title}</h3>
+                  <p className="text-sm text-gray-500">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA finale */}
+        <section className="py-20 px-4 bg-purple-700 text-white text-center">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Pronto a creare la tua lista?
+            </h2>
+            <p className="text-purple-200 mb-8 text-lg">
+              Gratis, senza carta di credito. In 2 minuti sei operativo.
+            </p>
+            <Link href="/register" className={cn(buttonVariants({ size: 'lg' }), 'bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-lg px-10')}>
+              Inizia gratis ora →
+            </Link>
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-10 px-4">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎉</span>
+            <span className="font-bold text-white">Wishday</span>
+          </div>
+          <p className="text-sm">© {new Date().getFullYear()} Wishday. Fatto con ❤️ in Italia.</p>
+          <div className="flex gap-4 text-sm">
+            <Link href="/pricing" className="hover:text-white transition-colors">Prezzi</Link>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }

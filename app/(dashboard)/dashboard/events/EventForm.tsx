@@ -1,0 +1,304 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Card, CardContent } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
+import { generateSlug } from '@/lib/utils'
+import { toast } from 'sonner'
+import type { Event, EventType } from '@/lib/types'
+
+interface Props {
+  userId: string
+  event?: Event // Se passato, siamo in modalità modifica
+}
+
+export default function EventForm({ userId, event }: Props) {
+  const router = useRouter()
+  const isEdit = !!event
+
+  const [title, setTitle] = useState(event?.title ?? '')
+  const [type, setType] = useState<EventType>(event?.type ?? 'birthday')
+  const [date, setDate] = useState(event?.date?.split('T')[0] ?? '')
+  const [description, setDescription] = useState(event?.description ?? '')
+  const [slug, setSlug] = useState(event?.slug ?? '')
+  const [isPublic, setIsPublic] = useState(event?.is_public ?? true)
+  const [iban, setIban] = useState(event?.iban ?? '')
+  const [bankOwnerName, setBankOwnerName] = useState(event?.bank_owner_name ?? '')
+  const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
+  const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+
+  const supabase = createClient()
+
+  // Genera slug automatico dal titolo
+  function handleTitleChange(value: string) {
+    setTitle(value)
+    if (!isEdit) {
+      setSlug(generateSlug(value))
+    }
+  }
+
+  // Upload immagine copertina su Supabase Storage
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Immagine troppo grande (max 5MB)')
+      return
+    }
+    setUploadingImage(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `covers/${userId}/${Date.now()}.${ext}`
+      const { error } = await supabase.storage
+        .from('wishday')
+        .upload(path, file, { upsert: true })
+      if (error) throw error
+      const { data: { publicUrl } } = supabase.storage.from('wishday').getPublicUrl(path)
+      setCoverImageUrl(publicUrl)
+      toast.success('Immagine caricata!')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Errore upload immagine'
+      toast.error(message)
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!title || !date || !slug) {
+      toast.error('Compila tutti i campi obbligatori')
+      return
+    }
+    setLoading(true)
+    try {
+      if (isEdit && event) {
+        // Aggiorna evento esistente
+        const { error } = await supabase
+          .from('events')
+          .update({
+            title, type, date, description, slug,
+            is_public: isPublic, iban: iban || null,
+            bank_owner_name: bankOwnerName || null,
+            cover_image_url: coverImageUrl || null,
+          })
+          .eq('id', event.id)
+        if (error) throw error
+        toast.success('Evento aggiornato!')
+        router.refresh()
+      } else {
+        // Crea nuovo evento
+        const { data, error } = await supabase
+          .from('events')
+          .insert({
+            user_id: userId, title, type, date, description, slug,
+            is_public: isPublic, iban: iban || null,
+            bank_owner_name: bankOwnerName || null,
+            cover_image_url: coverImageUrl || null,
+          })
+          .select()
+          .single()
+        if (error) throw error
+        toast.success('Evento creato!')
+        router.push(`/dashboard/events/${data.id}`)
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Errore durante il salvataggio'
+      if (message.includes('duplicate') || message.includes('unique')) {
+        toast.error('Questo slug è già in uso. Scegli un nome diverso.')
+      } else {
+        toast.error(message)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <h2 className="font-semibold text-gray-700">Dettagli evento</h2>
+
+          <div className="space-y-2">
+            <Label htmlFor="title">Nome evento *</Label>
+            <Input
+              id="title"
+              placeholder="Es. Il mio 40° compleanno!"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Tipo evento *</Label>
+              <Select value={type} onValueChange={(v) => setType(v as EventType)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="birthday">🎂 Compleanno</SelectItem>
+                  <SelectItem value="wedding">💍 Matrimonio</SelectItem>
+                  <SelectItem value="graduation">🎓 Laurea</SelectItem>
+                  <SelectItem value="baptism">🕊️ Battesimo</SelectItem>
+                  <SelectItem value="other">🎉 Altro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date">Data evento *</Label>
+              <Input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Messaggio di benvenuto</Label>
+            <Textarea
+              id="description"
+              placeholder="Scrivi un messaggio per i tuoi invitati..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <h2 className="font-semibold text-gray-700">URL e visibilità</h2>
+
+          <div className="space-y-2">
+            <Label htmlFor="slug">Slug URL *</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400 whitespace-nowrap">wishday.it/event/</span>
+              <Input
+                id="slug"
+                placeholder="mario-40-compleanno"
+                value={slug}
+                onChange={(e) => setSlug(generateSlug(e.target.value))}
+                required
+              />
+            </div>
+            <p className="text-xs text-gray-400">Solo lettere, numeri e trattini. Deve essere univoco.</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              id="isPublic"
+              checked={isPublic}
+              onCheckedChange={setIsPublic}
+            />
+            <div>
+              <Label htmlFor="isPublic" className="cursor-pointer">Pagina pubblica</Label>
+              <p className="text-xs text-gray-400">
+                {isPublic ? 'Chiunque con il link può vedere la tua pagina' : 'La pagina è nascosta'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <h2 className="font-semibold text-gray-700">Foto copertina</h2>
+
+          {coverImageUrl && (
+            <div className="relative h-40 rounded-lg overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverImageUrl} alt="Copertina" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setCoverImageUrl('')}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="imageUpload">Carica immagine (max 5MB)</Label>
+            <Input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploadingImage}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="imageUrl">Oppure inserisci URL immagine</Label>
+            <Input
+              id="imageUrl"
+              type="url"
+              placeholder="https://..."
+              value={coverImageUrl}
+              onChange={(e) => setCoverImageUrl(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <h2 className="font-semibold text-gray-700">Bonifico diretto (opzionale)</h2>
+          <p className="text-sm text-gray-400">
+            Permetti agli invitati di fare un bonifico diretto senza commissioni
+          </p>
+
+          <div className="space-y-2">
+            <Label htmlFor="iban">IBAN</Label>
+            <Input
+              id="iban"
+              placeholder="IT60 X054 2811 1010 0000 0123 456"
+              value={iban}
+              onChange={(e) => setIban(e.target.value.replace(/\s/g, '').toUpperCase())}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bankOwnerName">Intestatario del conto</Label>
+            <Input
+              id="bankOwnerName"
+              placeholder="Mario Rossi"
+              value={bankOwnerName}
+              onChange={(e) => setBankOwnerName(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex gap-3 justify-end">
+        <Button type="button" variant="outline" onClick={() => router.back()}>
+          Annulla
+        </Button>
+        <Button
+          type="submit"
+          className="bg-purple-700 hover:bg-purple-800 text-white"
+          disabled={loading || uploadingImage}
+        >
+          {loading ? 'Salvataggio...' : isEdit ? 'Salva modifiche' : 'Crea evento'}
+        </Button>
+      </div>
+    </form>
+  )
+}
