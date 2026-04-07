@@ -13,9 +13,10 @@ import type { WishItem } from '@/lib/types'
 interface Props {
   item: WishItem
   hostPlan: string
+  isExpired?: boolean
 }
 
-export default function WishItemCard({ item, hostPlan }: Props) {
+export default function WishItemCard({ item, hostPlan, isExpired = false }: Props) {
   const [showContribute, setShowContribute] = useState(false)
   const [showReserve, setShowReserve] = useState(false)
   const [currentItem, setCurrentItem] = useState(item)
@@ -100,7 +101,7 @@ export default function WishItemCard({ item, hostPlan }: Props) {
 
               {/* Azioni */}
               <div className="flex items-center gap-2 mt-3">
-                {currentItem.type === 'single' && !isReserved && (
+                {currentItem.type === 'single' && !isReserved && !isExpired && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -110,7 +111,7 @@ export default function WishItemCard({ item, hostPlan }: Props) {
                     Prenota questo regalo
                   </Button>
                 )}
-                {currentItem.type === 'collective' && !isFullyFunded && (
+                {currentItem.type === 'collective' && !isFullyFunded && !isExpired && (
                   <Button
                     size="sm"
                     className="bg-purple-700 hover:bg-purple-800 text-white text-xs"

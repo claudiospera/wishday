@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,8 +34,23 @@ export default function EventForm({ userId, event }: Props) {
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
+  const slugDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const supabase = createClient()
+
+  // Controlla disponibilità slug (debounced)
+  useEffect(() => {
+    if (!slug || slug === event?.slug) { setSlugAvailable(null); return }
+    setSlugAvailable(null)
+    if (slugDebounce.current) clearTimeout(slugDebounce.current)
+    slugDebounce.current = setTimeout(async () => {
+      const { data } = await supabase.from('events').select('id').eq('slug', slug).maybeSingle()
+      setSlugAvailable(!data)
+    }, 500)
+    return () => { if (slugDebounce.current) clearTimeout(slugDebounce.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug])
 
   // Genera slug automatico dal titolo
   function handleTitleChange(value: string) {
@@ -76,6 +91,10 @@ export default function EventForm({ userId, event }: Props) {
     e.preventDefault()
     if (!title || !date || !slug) {
       toast.error('Compila tutti i campi obbligatori')
+      return
+    }
+    if (slugAvailable === false) {
+      toast.error('Lo slug non è disponibile')
       return
     }
     setLoading(true)
@@ -189,15 +208,21 @@ export default function EventForm({ userId, event }: Props) {
             <Label htmlFor="slug">Slug URL *</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-400 whitespace-nowrap">wishday.it/event/</span>
-              <Input
-                id="slug"
-                placeholder="mario-40-compleanno"
-                value={slug}
-                onChange={(e) => setSlug(generateSlug(e.target.value))}
-                required
-              />
+              <div className="relative flex-1">
+                <Input
+                  id="slug"
+                  placeholder="mario-40-compleanno"
+                  value={slug}
+                  onChange={(e) => setSlug(generateSlug(e.target.value))}
+                  required
+                  className={slugAvailable === false ? 'border-red-400 focus-visible:ring-red-400' : slugAvailable === true ? 'border-green-400 focus-visible:ring-green-400' : ''}
+                />
+                {slugAvailable === true && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-sm">✓</span>}
+                {slugAvailable === false && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 text-sm">✗</span>}
+              </div>
             </div>
-            <p className="text-xs text-gray-400">Solo lettere, numeri e trattini. Deve essere univoco.</p>
+            {slugAvailable === false && <p className="text-xs text-red-500">Slug già in uso, scegline un altro.</p>}
+            {slugAvailable !== false && <p className="text-xs text-gray-400">Solo lettere, numeri e trattini. Deve essere univoco.</p>}
           </div>
 
           <div className="flex items-center gap-3">

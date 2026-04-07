@@ -25,15 +25,17 @@ export default function ReserveModal({ item, onClose, onSuccess }: Props) {
     if (!name) { toast.error('Inserisci il tuo nome'); return }
     setLoading(true)
     try {
+      const res = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wishItemId: item.id, guestName: name, guestEmail: email }),
+      })
+      if (!res.ok) throw new Error('Errore prenotazione')
+      // Ricarica il wish item aggiornato
       const { data, error } = await supabase
         .from('wish_items')
-        .update({
-          status: 'reserved',
-          reserved_by_name: name,
-          reserved_by_email: email || null,
-        })
+        .select('*')
         .eq('id', item.id)
-        .select()
         .single()
       if (error) throw error
       toast.success('Regalo prenotato! 🎁')

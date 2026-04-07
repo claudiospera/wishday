@@ -17,12 +17,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createClient()
   const { data: event } = await supabase.from('events').select('title, description, cover_image_url').eq('slug', slug).single()
   if (!event) return { title: 'Evento non trovato' }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://wishday.it'
+  const description = event.description ?? `Scopri la wish list per ${event.title}`
+  const images = event.cover_image_url ? [{ url: event.cover_image_url, width: 1200, height: 630 }] : []
   return {
-    title: event.title,
-    description: event.description ?? `Scopri la wish list per ${event.title}`,
+    title: `${event.title} — Wishday`,
+    description,
     openGraph: {
       title: event.title,
-      description: event.description ?? '',
+      description,
+      url: `${appUrl}/event/${slug}`,
+      type: 'website',
+      siteName: 'Wishday',
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description,
       images: event.cover_image_url ? [event.cover_image_url] : [],
     },
   }
@@ -57,6 +69,7 @@ export default async function EventPublicPage({ params }: Props) {
 
   const hostPlan = (event.users as { full_name: string; plan: string })?.plan ?? 'free'
   const showBranding = hostPlan === 'free'
+  const isExpired = event.date ? new Date(event.date) < new Date() : false
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -95,8 +108,19 @@ export default async function EventPublicPage({ params }: Props) {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+        {/* Banner evento concluso */}
+        {isExpired && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 flex items-center gap-3">
+            <span className="text-2xl">🎊</span>
+            <div>
+              <p className="font-semibold text-amber-800">Evento concluso</p>
+              <p className="text-sm text-amber-700">L&apos;evento si è già svolto. La lista è visibile ma non sono accettati nuovi contributi o prenotazioni.</p>
+            </div>
+          </div>
+        )}
+
         {/* Conto alla rovescia */}
-        <CountdownTimer eventDate={event.date} />
+        {!isExpired && <CountdownTimer eventDate={event.date} />}
 
         {/* Messaggio di benvenuto */}
         {event.description && (
@@ -113,7 +137,7 @@ export default async function EventPublicPage({ params }: Props) {
             </h2>
             <div className="grid gap-4">
               {wishItems.map((item) => (
-                <WishItemCard key={item.id} item={item} hostPlan={hostPlan} />
+                <WishItemCard key={item.id} item={item} hostPlan={hostPlan} isExpired={isExpired} />
               ))}
             </div>
           </section>
@@ -125,12 +149,14 @@ export default async function EventPublicPage({ params }: Props) {
         )}
 
         {/* Form auguri */}
-        <section>
-          <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
-            💬 Lascia un augurio
-          </h2>
-          <WishForm eventId={event.id} />
-        </section>
+        {!isExpired && (
+          <section>
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+              💬 Lascia un augurio
+            </h2>
+            <WishForm eventId={event.id} />
+          </section>
+        )}
 
         {/* Auguri pubblici */}
         {messages && messages.length > 0 && (

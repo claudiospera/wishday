@@ -96,7 +96,38 @@ export async function sendGoalReachedNotification({
         <p>Il regalo collettivo <strong>"${wishItemTitle}"</strong> ha raggiunto il suo obiettivo!</p>
         <p>Totale raccolto: <strong>€${totalCollected.toFixed(2)}</strong></p>
         <p>Puoi richiedere il payout dalla tua dashboard.</p>
-        <p style="color: #6B7280; font-size: 14px;">CelebApp — La piattaforma per i tuoi regali</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
+      </div>
+    `,
+  })
+}
+
+// Notifica al festeggiato quando un regalo viene prenotato
+export async function sendReservationNotification({
+  to,
+  hostName,
+  guestName,
+  wishItemTitle,
+  eventTitle,
+}: {
+  to: string
+  hostName: string
+  guestName: string
+  wishItemTitle: string
+  eventTitle: string
+}) {
+  return getResend().emails.send({
+    from: FROM(),
+    to,
+    subject: `🎁 "${wishItemTitle}" è stato prenotato!`,
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h1 style="color: #7C3AED;">🎁 Regalo prenotato!</h1>
+        <p>Ciao ${hostName}!</p>
+        <p><strong>${guestName}</strong> ha prenotato il regalo <strong>"${wishItemTitle}"</strong>
+        per il tuo evento <strong>"${eventTitle}"</strong>.</p>
+        <p>Lo acquisterà in autonomia — non aspettarti un pagamento online.</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
       </div>
     `,
   })
