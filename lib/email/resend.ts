@@ -1,9 +1,15 @@
 // Servizio email tramite Resend
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | undefined
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  return _resend
+}
 
-const FROM = `${process.env.RESEND_FROM_NAME ?? 'Wishday'} <${process.env.RESEND_FROM_EMAIL ?? 'noreply@wishday.it'}>`
+function FROM() {
+  return `${process.env.RESEND_FROM_NAME ?? 'Wishday'} <${process.env.RESEND_FROM_EMAIL ?? 'noreply@wishday.it'}>`
+}
 
 // Email di conferma contributo all'invitato
 export async function sendContributionConfirmation({
@@ -19,8 +25,8 @@ export async function sendContributionConfirmation({
   wishItemTitle: string
   amount: number
 }) {
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `Grazie per il tuo contributo a "${eventTitle}"!`,
     html: `
@@ -50,8 +56,8 @@ export async function sendNewContributionNotification({
   amount: number
   message?: string | null
 }) {
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `Nuovo contributo per "${wishItemTitle}"!`,
     html: `
@@ -79,8 +85,8 @@ export async function sendGoalReachedNotification({
   wishItemTitle: string
   totalCollected: number
 }) {
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `🎉 Obiettivo raggiunto per "${wishItemTitle}"!`,
     html: `

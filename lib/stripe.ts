@@ -1,10 +1,20 @@
 // Configurazione e helpers Stripe
 import Stripe from 'stripe'
 
-// Istanza Stripe server-side
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia',
-  typescript: true,
+// Istanza Stripe server-side (lazy: inizializzata al primo utilizzo, non al build)
+let _stripe: Stripe | undefined
+
+export const stripe = new Proxy({} as Stripe, {
+  get(_, prop: string | symbol) {
+    if (!_stripe) {
+      _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-01-27.acacia',
+        typescript: true,
+      })
+    }
+    const value = (_stripe as unknown as Record<string | symbol, unknown>)[prop]
+    return typeof value === 'function' ? (value as Function).bind(_stripe) : value
+  },
 })
 
 // Calcola la commissione della piattaforma in base al piano
