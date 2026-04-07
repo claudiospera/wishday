@@ -13,6 +13,21 @@ import { createClient } from '@/lib/supabase/client'
 import { formatEuro, calculateProgress, wishItemStatusLabels } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Plus, Trash2, ExternalLink, GripVertical } from 'lucide-react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import type { Event, WishItem, WishItemType, WishItemStatus } from '@/lib/types'
 
 interface Props {
@@ -28,6 +43,108 @@ const STATUS_COLORS: Record<WishItemStatus, string> = {
   reserved: 'bg-red-100 text-red-700',
 }
 
+interface SortableItemProps {
+  item: WishItem
+  onEdit: (item: WishItem) => void
+  onDelete: (id: string) => void
+  onStatusChange: (item: WishItem, status: WishItemStatus) => void
+}
+
+function SortableItem({ item, onEdit, onDelete, onStatusChange }: SortableItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id })
+  const progress = item.type === 'collective' ? calculateProgress(item.collected_amount, item.price) : 0
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={isDragging ? 'opacity-50' : ''}
+    >
+      <Card className="hover:shadow-sm transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <button
+              {...attributes}
+              {...listeners}
+              className="mt-1 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+              aria-label="Trascina per riordinare"
+            >
+              <GripVertical className="w-4 h-4 text-gray-300 hover:text-gray-500" />
+            </button>
+            {item.image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={item.image_url} alt={item.title} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="font-medium text-sm">{item.title}</h3>
+                  <p className="text-xs text-gray-400">
+                    {formatEuro(item.price)}
+                    {item.shop_name && ` • ${item.shop_name}`}
+                    {item.type === 'collective' && ' • 👥 Collettivo'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  {item.shop_url && (
+                    <a href={item.shop_url} target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
+                    </a>
+                  )}
+                  <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => onEdit(item)}>
+                    Modifica
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => onDelete(item.id)}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+
+              {item.type === 'collective' && (
+                <div className="mt-2">
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>{formatEuro(item.collected_amount)} raccolti</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5">
+                    <div
+                      className="bg-purple-500 h-1.5 rounded-full transition-all"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {item.contributors_count} contributor{item.contributors_count !== 1 ? 'i' : 'e'}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 mt-2">
+                <Badge className={`text-xs ${STATUS_COLORS[item.status]}`}>
+                  {wishItemStatusLabels[item.status]}
+                </Badge>
+                <Select value={item.status} onValueChange={(v) => onStatusChange(item, v as WishItemStatus)}>
+                  <SelectTrigger className="h-6 text-xs w-auto border-none bg-transparent p-0 focus:ring-0">
+                    <span className="text-xs text-gray-400 cursor-pointer hover:text-purple-600">cambia</span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Disponibile</SelectItem>
+                    <SelectItem value="partially_funded">Parzialmente finanziato</SelectItem>
+                    <SelectItem value="fully_funded">Obiettivo raggiunto</SelectItem>
+                    <SelectItem value="purchased">Acquistato</SelectItem>
+                    <SelectItem value="reserved">Prenotato</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 export default function WishListManager({ event, userId }: Props) {
   const [items, setItems] = useState<WishItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,7 +152,6 @@ export default function WishListManager({ event, userId }: Props) {
   const [saving, setSaving] = useState(false)
   const [editingItem, setEditingItem] = useState<WishItem | null>(null)
 
-  // Campi del form
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
@@ -47,9 +163,10 @@ export default function WishListManager({ event, userId }: Props) {
 
   const supabase = createClient()
 
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+
   useEffect(() => {
     loadItems()
-    // Aggiornamenti in tempo reale
     const channel = supabase
       .channel('wish_items')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wish_items', filter: `event_id=eq.${event.id}` }, loadItems)
@@ -66,6 +183,24 @@ export default function WishListManager({ event, userId }: Props) {
       .order('sort_order', { ascending: true })
     setItems(data ?? [])
     setLoading(false)
+  }
+
+  async function handleDragEnd(dndEvent: DragEndEvent) {
+    const { active, over } = dndEvent
+    if (!over || active.id === over.id) return
+
+    const oldIndex = items.findIndex((i) => i.id === active.id)
+    const newIndex = items.findIndex((i) => i.id === over.id)
+    const reordered = arrayMove(items, oldIndex, newIndex)
+
+    setItems(reordered)
+
+    // Salva i nuovi sort_order nel DB
+    await Promise.all(
+      reordered.map((item, index) =>
+        supabase.from('wish_items').update({ sort_order: index }).eq('id', item.id)
+      )
+    )
   }
 
   function openAddDialog() {
@@ -226,87 +361,21 @@ export default function WishListManager({ event, userId }: Props) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {items.map((item) => {
-            const progress = item.type === 'collective' ? calculateProgress(item.collected_amount, item.price) : 0
-            return (
-              <Card key={item.id} className="hover:shadow-sm transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <GripVertical className="w-4 h-4 text-gray-300 mt-1 flex-shrink-0 cursor-grab" />
-                    {item.image_url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.image_url} alt={item.title} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h3 className="font-medium text-sm">{item.title}</h3>
-                          <p className="text-xs text-gray-400">
-                            {formatEuro(item.price)}
-                            {item.shop_name && ` • ${item.shop_name}`}
-                            {item.type === 'collective' && ' • 👥 Collettivo'}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {item.shop_url && (
-                            <a href={item.shop_url} target="_blank" rel="noopener noreferrer">
-                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                                <ExternalLink className="w-3 h-3" />
-                              </Button>
-                            </a>
-                          )}
-                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => openEditDialog(item)}>
-                            Modifica
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {item.type === 'collective' && (
-                        <div className="mt-2">
-                          <div className="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>{formatEuro(item.collected_amount)} raccolti</span>
-                            <span>{progress}%</span>
-                          </div>
-                          <div className="w-full bg-gray-100 rounded-full h-1.5">
-                            <div
-                              className="bg-purple-500 h-1.5 rounded-full transition-all"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {item.contributors_count} contributor{item.contributors_count !== 1 ? 'i' : 'e'}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge className={`text-xs ${STATUS_COLORS[item.status]}`}>
-                          {wishItemStatusLabels[item.status]}
-                        </Badge>
-                        <Select value={item.status} onValueChange={(v) => handleStatusChange(item, v as WishItemStatus)}>
-                          <SelectTrigger className="h-6 text-xs w-auto border-none bg-transparent p-0 focus:ring-0">
-                            <span className="text-xs text-gray-400 cursor-pointer hover:text-purple-600">cambia</span>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="available">Disponibile</SelectItem>
-                            <SelectItem value="partially_funded">Parzialmente finanziato</SelectItem>
-                            <SelectItem value="fully_funded">Obiettivo raggiunto</SelectItem>
-                            <SelectItem value="purchased">Acquistato</SelectItem>
-                            <SelectItem value="reserved">Prenotato</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-3">
+              {items.map((item) => (
+                <SortableItem
+                  key={item.id}
+                  item={item}
+                  onEdit={openEditDialog}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )

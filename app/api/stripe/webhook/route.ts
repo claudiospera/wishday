@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       // Aggiorna collected_amount e contributors_count del wish item
       const { data: item } = await supabase
         .from('wish_items')
-        .select('collected_amount, contributors_count, price, event_id')
+        .select('title, collected_amount, contributors_count, price, event_id')
         .eq('id', meta.wishItemId)
         .single()
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
           to: meta.contributorEmail,
           contributorName: meta.contributorName,
           eventTitle: session.metadata?.eventTitle ?? 'Evento',
-          wishItemTitle: item.price.toString(), // uso come placeholder
+          wishItemTitle: item.title,
           amount,
         }).catch(console.error)
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
             to: hostEmail,
             hostName,
             contributorName: meta.contributorName,
-            wishItemTitle: meta.wishItemId,
+            wishItemTitle: item.title,
             amount,
             message: meta.message || null,
           }).catch(console.error)
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
             await sendGoalReachedNotification({
               to: hostEmail,
               hostName,
-              wishItemTitle: meta.wishItemId,
+              wishItemTitle: item.title,
               totalCollected: newCollected,
             }).catch(console.error)
           }
