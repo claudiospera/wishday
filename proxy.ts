@@ -8,8 +8,8 @@ export async function proxy(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-key',
     {
       cookies: {
         getAll() {
@@ -29,9 +29,13 @@ export async function proxy(request: NextRequest) {
   )
 
   // Recupera la sessione utente
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    // Se Supabase non è raggiungibile, tratta come non autenticato
+  }
 
   // Route protette: richiedono autenticazione
   const protectedPaths = ['/dashboard']
