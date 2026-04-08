@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -24,6 +24,14 @@ function LoginForm() {
   const [googleLoading, setGoogleLoading] = useState(false)
 
   const supabase = createClient()
+
+  // Mostra errore da URL (es. link scaduto)
+  const urlError = searchParams.get('error')
+  useEffect(() => {
+    if (urlError === 'link_expired') {
+      toast.error('Il link di conferma è scaduto. Registrati di nuovo.')
+    }
+  }, [urlError])
 
   // Login con email e password
   async function handleEmailLogin(e: React.FormEvent) {
