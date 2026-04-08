@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -11,7 +12,7 @@ export default function PricingPage() {
         {/* Intestazione */}
         <div className="text-center mb-12">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <span className="text-2xl">🎉</span>
+            <Image src="/logo.png" alt="Wishday" width={36} height={36} className="rounded" />
             <span className="font-bold text-xl text-purple-700">Wishday</span>
           </Link>
           <h1

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,7 +12,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-purple-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🎉</span>
+            <Image src="/logo.png" alt="Wishday" width={36} height={36} className="rounded" />
             <span className="font-bold text-xl text-purple-700">Wishday</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">

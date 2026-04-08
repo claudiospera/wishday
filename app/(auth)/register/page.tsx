@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -107,7 +108,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-3xl">🎉</span>
+            <Image src="/logo.png" alt="Wishday" width={44} height={44} className="rounded" />
             <span className="font-bold text-2xl text-purple-700">Wishday</span>
           </Link>
         </div>

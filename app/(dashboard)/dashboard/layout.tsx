@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -30,7 +31,7 @@ export default async function DashboardLayout({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl">🎉</span>
+            <Image src="/logo.png" alt="Wishday" width={32} height={32} className="rounded" />
             <span className="font-bold text-lg text-purple-700">Wishday</span>
           </Link>
           <DashboardNav user={user} profile={profile} />

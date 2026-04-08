@@ -1,16 +1,19 @@
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes } from '@/lib/utils'
+import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes, themeColorMap } from '@/lib/utils'
 import type { EventTheme } from '@/lib/types'
 import CountdownTimer from '@/components/CountdownTimer'
 import WishItemCard from '@/components/WishItem/WishItemCard'
 import IbanSection from './IbanSection'
 import WishForm from './WishForm'
 import MessagesDisplay from './MessagesDisplay'
+import GreetingCardTrigger from './GreetingCardTrigger'
 
 interface Props {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -41,8 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function EventPublicPage({ params }: Props) {
+export default async function EventPublicPage({ params, searchParams }: Props) {
   const { slug } = await params
+  const sp = await searchParams
   const supabase = await createClient()
 
   const { data: event } = await supabase
@@ -73,9 +77,16 @@ export default async function EventPublicPage({ params }: Props) {
   const isExpired = event.date ? new Date(event.date) < new Date() : false
   const themeKey = (hostPlan === 'premium' && event.theme) ? event.theme as EventTheme : 'purple'
   const heroGradient = eventThemes[themeKey]?.gradient ?? eventThemes.purple.gradient
+  const tc = themeColorMap[themeKey] ?? themeColorMap.purple
+
+  // Parametri post-Stripe per biglietto augurale
+  const contributionSuccess = sp.contribution === 'success'
+  const senderName = typeof sp.from === 'string' ? decodeURIComponent(sp.from) : ''
+  const giftName = typeof sp.gift === 'string' ? decodeURIComponent(sp.gift) : ''
+  const defaultMsg = typeof sp.msg === 'string' ? decodeURIComponent(sp.msg) : ''
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: tc.light }}>
       {/* Hero con copertina */}
       <div className="relative">
         <div
@@ -122,12 +133,29 @@ export default async function EventPublicPage({ params }: Props) {
           </div>
         )}
 
+        {/* Invito caricato dall'organizzatore */}
+        {event.invite_image_url && (
+          <section>
+            <h2 className="text-xl font-bold mb-3" style={{ fontFamily: 'var(--font-playfair)', color: tc.text }}>
+              📩 Invito
+            </h2>
+            <div className="rounded-2xl overflow-hidden shadow-md border" style={{ borderColor: tc.border }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={event.invite_image_url}
+                alt="Invito all'evento"
+                className="w-full object-contain max-h-[500px]"
+              />
+            </div>
+          </section>
+        )}
+
         {/* Conto alla rovescia */}
         {!isExpired && <CountdownTimer eventDate={event.date} />}
 
         {/* Messaggio di benvenuto */}
         {event.description && (
-          <div className="bg-white rounded-xl p-6 border border-purple-100 shadow-sm">
+          <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: tc.border }}>
             <p className="text-gray-700 leading-relaxed">{event.description}</p>
           </div>
         )}
@@ -135,12 +163,20 @@ export default async function EventPublicPage({ params }: Props) {
         {/* Wish list */}
         {wishItems && wishItems.length > 0 && (
           <section>
-            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', color: tc.text }}>
               🎁 Lista desideri
             </h2>
             <div className="grid gap-4">
               {wishItems.map((item) => (
-                <WishItemCard key={item.id} item={item} hostPlan={hostPlan} isExpired={isExpired} />
+                <WishItemCard
+                  key={item.id}
+                  item={item}
+                  hostPlan={hostPlan}
+                  isExpired={isExpired}
+                  eventType={event.type}
+                  eventTitle={event.title}
+                  themeKey={themeKey}
+                />
               ))}
             </div>
           </section>
@@ -154,7 +190,7 @@ export default async function EventPublicPage({ params }: Props) {
         {/* Form auguri */}
         {!isExpired && (
           <section>
-            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', color: tc.text }}>
               💬 Lascia un augurio
             </h2>
             <WishForm eventId={event.id} />
@@ -168,13 +204,26 @@ export default async function EventPublicPage({ params }: Props) {
 
         {/* Branding piano free */}
         {showBranding && (
-          <div className="text-center py-4 text-sm text-gray-400">
-            Creato con{' '}
-            <a href="/" className="text-purple-600 hover:underline font-medium">Wishday</a>
-            {' '}🎉
+          <div className="text-center py-4 flex items-center justify-center gap-2">
+            <span className="text-sm text-gray-400">Creato con</span>
+            <a href="/" className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+              <Image src="/logo.png" alt="Wishday" width={20} height={20} className="rounded" />
+              <span className="text-sm font-medium" style={{ color: tc.primary }}>Wishday</span>
+            </a>
           </div>
         )}
       </div>
+
+      {/* Biglietto augurale post-contributo Stripe */}
+      {contributionSuccess && (
+        <GreetingCardTrigger
+          eventType={event.type}
+          eventTitle={event.title}
+          senderName={senderName}
+          giftName={giftName}
+          defaultMessage={defaultMsg}
+        />
+      )}
     </div>
   )
 }
