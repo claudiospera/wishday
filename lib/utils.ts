@@ -69,6 +69,35 @@ export const eventTypeEmoji: Record<string, string> = {
   other: '🎉',
 }
 
+// Temi colore per le pagine evento (solo piano premium)
+export const eventThemes = {
+  purple: {
+    label: 'Viola',
+    gradient: 'from-purple-200 via-purple-100 to-amber-100',
+    previewClass: 'bg-gradient-to-br from-purple-400 to-amber-300',
+  },
+  rose: {
+    label: 'Rosa',
+    gradient: 'from-rose-200 via-pink-100 to-rose-50',
+    previewClass: 'bg-gradient-to-br from-rose-400 to-pink-300',
+  },
+  indigo: {
+    label: 'Blu',
+    gradient: 'from-indigo-200 via-blue-100 to-indigo-50',
+    previewClass: 'bg-gradient-to-br from-indigo-400 to-blue-300',
+  },
+  emerald: {
+    label: 'Verde',
+    gradient: 'from-emerald-200 via-teal-100 to-emerald-50',
+    previewClass: 'bg-gradient-to-br from-emerald-400 to-teal-300',
+  },
+  amber: {
+    label: 'Arancio',
+    gradient: 'from-amber-200 via-yellow-100 to-orange-50',
+    previewClass: 'bg-gradient-to-br from-amber-400 to-orange-300',
+  },
+} as const
+
 // Mappa stato wish item → etichetta italiana
 export const wishItemStatusLabels: Record<string, string> = {
   available: 'Disponibile',

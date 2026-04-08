@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS public.events (
   iban             TEXT,
   bank_owner_name  TEXT,
   is_public        BOOLEAN DEFAULT TRUE,
+  theme            TEXT CHECK (theme IN ('purple', 'rose', 'indigo', 'emerald', 'amber')),
   created_at       TIMESTAMPTZ DEFAULT NOW()
 );
 

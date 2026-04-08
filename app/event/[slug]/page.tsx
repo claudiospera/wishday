@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, eventTypeEmoji, eventTypeLabels } from '@/lib/utils'
+import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes } from '@/lib/utils'
+import type { EventTheme } from '@/lib/types'
 import CountdownTimer from '@/components/CountdownTimer'
 import WishItemCard from '@/components/WishItem/WishItemCard'
 import IbanSection from './IbanSection'
@@ -70,13 +71,15 @@ export default async function EventPublicPage({ params }: Props) {
   const hostPlan = (event.users as { full_name: string; plan: string })?.plan ?? 'free'
   const showBranding = hostPlan === 'free'
   const isExpired = event.date ? new Date(event.date) < new Date() : false
+  const themeKey = (hostPlan === 'premium' && event.theme) ? event.theme as EventTheme : 'purple'
+  const heroGradient = eventThemes[themeKey]?.gradient ?? eventThemes.purple.gradient
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero con copertina */}
       <div className="relative">
         <div
-          className="h-64 md:h-80 bg-gradient-to-br from-purple-200 via-purple-100 to-amber-100"
+          className={`h-64 md:h-80 bg-gradient-to-br ${heroGradient}`}
           style={event.cover_image_url ? {
             backgroundImage: `url(${event.cover_image_url})`,
             backgroundSize: 'cover',

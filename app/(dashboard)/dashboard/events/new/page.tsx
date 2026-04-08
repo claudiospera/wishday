@@ -21,7 +21,7 @@ export default async function NewEventPage() {
         <h1 className="text-2xl font-bold">Crea nuovo evento</h1>
         <p className="text-gray-500">Inserisci i dettagli del tuo evento speciale</p>
       </div>
-      <EventForm userId={user.id} />
+      <EventForm userId={user.id} userPlan={profile?.plan} />
     </div>
   )
 }

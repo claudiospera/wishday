@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
 
   const supabase = createClient()
 
@@ -39,8 +40,9 @@ export default function RegisterPage() {
         },
       })
       if (error) throw error
-      toast.success('Account creato! Controlla la tua email per confermare.')
-      router.push('/dashboard')
+      // Se Supabase ha la conferma email abilitata, mostra la schermata di conferma
+      // Se no, reindirizza direttamente alla dashboard
+      setEmailSent(true)
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Errore durante la registrazione'
       toast.error(message)
@@ -65,6 +67,39 @@ export default function RegisterPage() {
       toast.error(message)
       setGoogleLoading(false)
     }
+  }
+
+  if (emailSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-amber-50 px-4">
+        <div className="w-full max-w-md text-center space-y-6">
+          <div className="text-6xl">📬</div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Controlla la tua email</h1>
+            <p className="text-gray-500 mt-2">
+              Abbiamo inviato un link di conferma a <strong>{email}</strong>.
+              Clicca sul link per attivare il tuo account.
+            </p>
+          </div>
+          <p className="text-sm text-gray-400">
+            Non hai ricevuto nulla? Controlla la cartella spam o{' '}
+            <button
+              className="text-purple-700 underline"
+              onClick={() => { setEmailSent(false) }}
+            >
+              riprova
+            </button>
+            .
+          </p>
+          <p className="text-sm text-gray-500">
+            Hai già confermato?{' '}
+            <Link href="/login" className="text-purple-700 font-medium hover:underline">
+              Accedi
+            </Link>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -10,16 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { generateSlug } from '@/lib/utils'
+import { generateSlug, eventThemes } from '@/lib/utils'
 import { toast } from 'sonner'
-import type { Event, EventType } from '@/lib/types'
+import type { Event, EventType, EventTheme } from '@/lib/types'
 
 interface Props {
   userId: string
+  userPlan?: string
   event?: Event // Se passato, siamo in modalità modifica
 }
 
-export default function EventForm({ userId, event }: Props) {
+export default function EventForm({ userId, userPlan, event }: Props) {
   const router = useRouter()
   const isEdit = !!event
 
@@ -32,6 +33,7 @@ export default function EventForm({ userId, event }: Props) {
   const [iban, setIban] = useState(event?.iban ?? '')
   const [bankOwnerName, setBankOwnerName] = useState(event?.bank_owner_name ?? '')
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
+  const [theme, setTheme] = useState<EventTheme | null>(event?.theme ?? null)
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
@@ -108,6 +110,7 @@ export default function EventForm({ userId, event }: Props) {
             is_public: isPublic, iban: iban || null,
             bank_owner_name: bankOwnerName || null,
             cover_image_url: coverImageUrl || null,
+            theme: theme || null,
           })
           .eq('id', event.id)
         if (error) throw error
@@ -122,6 +125,7 @@ export default function EventForm({ userId, event }: Props) {
             is_public: isPublic, iban: iban || null,
             bank_owner_name: bankOwnerName || null,
             cover_image_url: coverImageUrl || null,
+            theme: theme || null,
           })
           .select()
           .single()
@@ -282,6 +286,46 @@ export default function EventForm({ userId, event }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Tema colore — solo premium */}
+      {userPlan === 'premium' ? (
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <div>
+              <h2 className="font-semibold text-gray-700">Tema colore</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Personalizza i colori della pagina pubblica del tuo evento</p>
+            </div>
+            <div className="flex gap-3 flex-wrap">
+              {(Object.entries(eventThemes) as [EventTheme, typeof eventThemes[EventTheme]][]).map(([key, t]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setTheme(key === theme ? null : key)}
+                  className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${
+                    theme === key ? 'border-purple-600' : 'border-transparent hover:border-gray-200'
+                  }`}
+                  title={t.label}
+                >
+                  <div className={`w-10 h-10 rounded-full ${t.previewClass}`} />
+                  <span className="text-xs text-gray-600">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="border-dashed border-amber-200 bg-amber-50/50">
+          <CardContent className="pt-6 pb-5">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🎨</span>
+              <div>
+                <p className="font-semibold text-amber-800 text-sm">Temi colore — Piano Premium</p>
+                <p className="text-xs text-amber-600">Passa al piano Premium per personalizzare i colori della tua pagina evento.</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="pt-6 space-y-4">

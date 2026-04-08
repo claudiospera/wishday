@@ -4,6 +4,7 @@
 
 export type UserPlan = 'free' | 'premium'
 export type EventType = 'birthday' | 'wedding' | 'graduation' | 'baptism' | 'other'
+export type EventTheme = 'purple' | 'rose' | 'indigo' | 'emerald' | 'amber'
 export type WishItemType = 'single' | 'collective'
 export type WishItemStatus = 'available' | 'partially_funded' | 'fully_funded' | 'purchased' | 'reserved'
 export type ContributionStatus = 'pending' | 'completed' | 'refunded'
@@ -33,6 +34,7 @@ export interface Event {
   iban: string | null
   bank_owner_name: string | null
   is_public: boolean
+  theme: EventTheme | null
   created_at: string
 }
 

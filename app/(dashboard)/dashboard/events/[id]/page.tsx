@@ -20,12 +20,10 @@ export default async function EventDetailPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: event } = await supabase
-    .from('events')
-    .select('*')
-    .eq('id', id)
-    .eq('user_id', user.id) // sicurezza: solo il proprietario
-    .single()
+  const [{ data: event }, { data: profile }] = await Promise.all([
+    supabase.from('events').select('*').eq('id', id).eq('user_id', user.id).single(),
+    supabase.from('users').select('plan').eq('id', user.id).single(),
+  ])
 
   if (!event) notFound()
 
@@ -72,7 +70,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         <TabsContent value="settings" className="mt-6">
           <div className="space-y-6">
-            <EventForm userId={user.id} event={event} />
+            <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
             <SharePanel event={event} />
           </div>
         </TabsContent>
