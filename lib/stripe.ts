@@ -20,8 +20,8 @@ export const stripe = new Proxy({} as Stripe, {
 // Calcola la commissione della piattaforma in base al piano
 export function getPlatformCommission(plan: 'free' | 'premium'): number {
   return plan === 'premium'
-    ? Number(process.env.STRIPE_PLATFORM_COMMISSION_PREMIUM ?? 1) / 100
-    : Number(process.env.STRIPE_PLATFORM_COMMISSION_FREE ?? 3) / 100
+    ? Number(process.env.STRIPE_PLATFORM_COMMISSION_PREMIUM ?? 3) / 100
+    : Number(process.env.STRIPE_PLATFORM_COMMISSION_FREE ?? 5) / 100
 }
 
 // Calcola l'importo netto dopo la commissione (in centesimi per Stripe)

@@ -58,8 +58,8 @@ export default function TerminiPage() {
           Wishday applica una commissione sulle raccolte fondi collettive elaborate tramite Stripe:
         </p>
         <ul className="list-disc pl-5 text-gray-700 space-y-1">
-          <li><strong>Piano Free:</strong> 3% sull&apos;importo raccolto + commissioni Stripe.</li>
-          <li><strong>Piano Premium:</strong> 1% sull&apos;importo raccolto + commissioni Stripe.</li>
+          <li><strong>Piano Free:</strong> 5% sull&apos;importo raccolto + commissioni Stripe.</li>
+          <li><strong>Piano Premium:</strong> 3% sull&apos;importo raccolto + commissioni Stripe.</li>
         </ul>
         <p className="text-gray-700 mt-2">
           I bonifici diretti (IBAN/QR code) non prevedono commissioni da parte di Wishday.

@@ -44,12 +44,12 @@ export default function PricingPage() {
                   { label: '1 evento attivo', ok: true },
                   { label: 'Fino a 10 prodotti per wish list', ok: true },
                   { label: 'Regali collettivi con Stripe', ok: true },
-                  { label: 'Commissione 3% sui contributi', ok: true, note: true },
+                  { label: 'Commissione 5% sui contributi', ok: true, note: true },
                   { label: 'Pagina pubblica condivisibile', ok: true },
                   { label: 'Bonifico diretto con QR code', ok: true },
                   { label: 'Branding Wishday nella pagina', ok: false },
                   { label: 'Wish list illimitata', ok: false },
-                  { label: 'Commissione ridotta all\'1%', ok: false },
+                  { label: 'Commissione ridotta al 3%', ok: false },
                   { label: 'Temi premium', ok: false },
                 ].map((f) => (
                   <li key={f.label} className="flex items-start gap-2 text-sm">
@@ -58,7 +58,7 @@ export default function PricingPage() {
                     </span>
                     <span className={f.ok ? 'text-gray-700' : 'text-gray-400'}>
                       {f.label}
-                      {f.note && <span className="text-xs text-amber-600 ml-1">(vs 1% Premium)</span>}
+                      {f.note && <span className="text-xs text-amber-600 ml-1">(vs 3% Premium)</span>}
                     </span>
                   </li>
                 ))}
@@ -98,7 +98,7 @@ export default function PricingPage() {
                   { label: 'Eventi illimitati', ok: true },
                   { label: 'Wish list illimitata', ok: true },
                   { label: 'Regali collettivi con Stripe', ok: true },
-                  { label: 'Commissione solo 1% sui contributi', ok: true },
+                  { label: 'Commissione solo 3% sui contributi', ok: true },
                   { label: 'Nessun branding Wishday', ok: true },
                   { label: 'Pagina pubblica condivisibile', ok: true },
                   { label: 'Bonifico diretto con QR code', ok: true },
@@ -132,7 +132,7 @@ export default function PricingPage() {
           {[
             {
               q: 'Come funziona la commissione sui contributi?',
-              a: 'Quando un invitato contribuisce a un regalo collettivo, la piattaforma trattiene automaticamente il 3% (Free) o l\'1% (Premium) prima di trasferire i fondi al festeggiato tramite Stripe Connect.',
+              a: 'Quando un invitato contribuisce a un regalo collettivo, la piattaforma trattiene automaticamente il 5% (Free) o il 3% (Premium) prima di trasferire i fondi al festeggiato.',
             },
             {
               q: 'Posso prelevare i fondi anche se l\'obiettivo non è raggiunto?',

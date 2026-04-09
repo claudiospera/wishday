@@ -30,7 +30,7 @@ export default function ContributeModal({
   const [loading, setLoading] = useState(false)
 
   const tc = themeColorMap[themeKey] ?? themeColorMap.purple
-  const commission = hostPlan === 'premium' ? 1 : 3
+  const commission = hostPlan === 'premium' ? 3 : 5
   const progress = calculateProgress(item.collected_amount, item.price)
   const remaining = Math.max(item.price - item.collected_amount, 0)
 
