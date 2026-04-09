@@ -60,6 +60,14 @@ export default function DashboardNav({ user, profile }: Props) {
         <DropdownMenuItem render={<Link href="/dashboard/billing" />}>
           Abbonamento
         </DropdownMenuItem>
+        {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem render={<Link href="/dashboard/admin" />}>
+              🛡️ Admin
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}
