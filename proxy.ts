@@ -5,8 +5,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Modalità manutenzione
-  if (process.env.NEXT_PUBLIC_MAINTENANCE === 'true') {
+  // Modalità manutenzione (MAINTENANCE_MODE è server-only, non viene caricata in locale)
+  if (process.env.MAINTENANCE_MODE === 'true') {
     if (pathname !== '/manutenzione') {
       return NextResponse.redirect(new URL('/manutenzione', request.url))
     }
