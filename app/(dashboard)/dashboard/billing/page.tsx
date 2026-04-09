@@ -117,7 +117,7 @@ export default function BillingPage() {
                 {[
                   '1 evento attivo',
                   'Max 10 prodotti',
-                  'Commissione 3% sui contributi',
+                  'Commissione 5% sui contributi',
                   'Branding Wishday',
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-gray-600">
@@ -151,7 +151,7 @@ export default function BillingPage() {
                 {[
                   'Eventi illimitati',
                   'Wish list illimitata',
-                  'Commissione 1% (invece del 3%)',
+                  'Commissione 3% (invece del 5%)',
                   'Nessun branding Wishday',
                   'Temi premium per la pagina',
                   'Supporto prioritario',
