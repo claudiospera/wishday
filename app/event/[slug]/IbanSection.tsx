@@ -35,7 +35,7 @@ export default function IbanSection({ iban, bankOwnerName }: Props) {
     QRCode.toCanvas(canvasRef.current, qrData, {
       width: 160,
       margin: 1,
-      color: { dark: '#0abab5', light: '#ffffff' },
+      color: { dark: '#9de7d7', light: '#ffffff' },
     })
   }, [iban, bankOwnerName])
 

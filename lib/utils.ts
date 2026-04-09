@@ -102,7 +102,7 @@ export const eventThemes = {
 export const themeColorMap: Record<string, {
   primary: string; hover: string; light: string; muted: string; border: string; text: string; progress: string
 }> = {
-  purple: { primary: '#0abab5', hover: '#077c79', light: '#edfafa', muted: '#d5f5f5', border: '#aae9e8', text: '#077c79', progress: '#3bc8c7' },
+  purple: { primary: '#9de7d7', hover: '#37877a', light: '#f4fdfc', muted: '#e8faf8', border: '#cdf4f0', text: '#37877a', progress: '#9de7d7' },
   rose:   { primary: '#E11D48', hover: '#BE123C', light: '#FFF1F2', muted: '#FFE4E6', border: '#FECDD3', text: '#BE123C', progress: '#FB7185' },
   indigo: { primary: '#4338CA', hover: '#3730A3', light: '#EEF2FF', muted: '#E0E7FF', border: '#C7D2FE', text: '#3730A3', progress: '#6366F1' },
   emerald:{ primary: '#059669', hover: '#047857', light: '#ECFDF5', muted: '#D1FAE5', border: '#A7F3D0', text: '#047857', progress: '#34D399' },

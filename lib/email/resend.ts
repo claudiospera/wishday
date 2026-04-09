@@ -31,7 +31,7 @@ export async function sendContributionConfirmation({
     subject: `Grazie per il tuo contributo a "${eventTitle}"!`,
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h1 style="color: #0abab5;">🎉 Grazie, ${contributorName}!</h1>
+        <h1 style="color: #9de7d7;">🎉 Grazie, ${contributorName}!</h1>
         <p>Il tuo contributo di <strong>€${amount.toFixed(2)}</strong> per <strong>"${wishItemTitle}"</strong>
         nell'evento <strong>"${eventTitle}"</strong> è stato ricevuto con successo.</p>
         <p style="color: #6B7280; font-size: 14px;">CelebApp — La piattaforma per i tuoi regali</p>
@@ -62,7 +62,7 @@ export async function sendNewContributionNotification({
     subject: `Nuovo contributo per "${wishItemTitle}"!`,
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h1 style="color: #0abab5;">🎁 Nuovo contributo ricevuto!</h1>
+        <h1 style="color: #9de7d7;">🎁 Nuovo contributo ricevuto!</h1>
         <p>Ciao ${hostName}!</p>
         <p><strong>${contributorName}</strong> ha contribuito <strong>€${amount.toFixed(2)}</strong>
         al regalo <strong>"${wishItemTitle}"</strong>.</p>
@@ -122,7 +122,7 @@ export async function sendReservationNotification({
     subject: `🎁 "${wishItemTitle}" è stato prenotato!`,
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h1 style="color: #0abab5;">🎁 Regalo prenotato!</h1>
+        <h1 style="color: #9de7d7;">🎁 Regalo prenotato!</h1>
         <p>Ciao ${hostName}!</p>
         <p><strong>${guestName}</strong> ha prenotato il regalo <strong>"${wishItemTitle}"</strong>
         per il tuo evento <strong>"${eventTitle}"</strong>.</p>

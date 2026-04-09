@@ -5,17 +5,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Tiffany blue palette */
-  --color-tiffany-50: #edfafa;
-  --color-tiffany-100: #d5f5f5;
-  --color-tiffany-200: #aae9e8;
-  --color-tiffany-300: #6ed8d7;
-  --color-tiffany-400: #3bc8c7;
-  --color-tiffany-500: #0abab5;
-  --color-tiffany-600: #089a96;
-  --color-tiffany-700: #077c79;
-  --color-tiffany-800: #065e5c;
-  --color-tiffany-900: #044140;
+  /* Green 0921 C palette centrata su #9DE7D7 */
+  --color-tiffany-50: #f0fdf9;
+  --color-tiffany-100: #d9f7f0;
+  --color-tiffany-200: #b3efe1;
+  --color-tiffany-300: #9de7d7;
+  --color-tiffany-400: #7dd5c3;
+  --color-tiffany-500: #5ec2ae;
+  --color-tiffany-600: #46a894;
+  --color-tiffany-700: #37877a;
+  --color-tiffany-800: #286659;
+  --color-tiffany-900: #1a4439;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -67,8 +67,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Tiffany blue principale #0ABAB5 */
-  --primary: oklch(0.72 0.14 182);
+  /* Green 0921 C principale #9DE7D7 */
+  --primary: oklch(0.88 0.08 170);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
