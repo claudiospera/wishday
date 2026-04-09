@@ -3,9 +3,22 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const { pathname } = request.nextUrl
+
+  // Modalità manutenzione
+  if (process.env.NEXT_PUBLIC_MAINTENANCE === 'true') {
+    if (pathname !== '/manutenzione') {
+      return NextResponse.redirect(new URL('/manutenzione', request.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Se manutenzione disattiva ma si visita /manutenzione, redirect alla home
+  if (pathname === '/manutenzione') {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
