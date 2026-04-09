@@ -32,7 +32,7 @@ export default function SharePanel({ event }: Props) {
         {/* Pulsanti social */}
         <div className="grid grid-cols-2 gap-2">
           <a
-            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
+            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"

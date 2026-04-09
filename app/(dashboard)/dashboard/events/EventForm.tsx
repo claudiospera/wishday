@@ -259,6 +259,9 @@ export default function EventForm({ userId, userPlan, event }: Props) {
               <p className="text-xs text-gray-400">
                 {isPublic ? 'Chiunque con il link può vedere la tua pagina' : 'La pagina è nascosta'}
               </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Tieni la pagina privata mentre prepari i regali, poi rendila pubblica per condividere il link con gli ospiti.
+              </p>
             </div>
           </div>
         </CardContent>
