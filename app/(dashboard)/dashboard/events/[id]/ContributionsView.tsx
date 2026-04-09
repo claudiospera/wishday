@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatEuro, formatDate, calculateProgress } from '@/lib/utils'
 import { toast } from 'sonner'
-import type { WishItem, Contribution, Payout } from '@/lib/types'
+import type { WishItem, Contribution, Payout, User } from '@/lib/types'
 
 interface Props {
   eventId: string
@@ -21,6 +21,7 @@ interface WishItemWithContributions extends WishItem {
 export default function ContributionsView({ eventId, userId }: Props) {
   const [collectiveItems, setCollectiveItems] = useState<WishItemWithContributions[]>([])
   const [payouts, setPayouts] = useState<Payout[]>([])
+  const [profile, setProfile] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [payingOut, setPayingOut] = useState<string | null>(null)
 
@@ -29,39 +30,49 @@ export default function ContributionsView({ eventId, userId }: Props) {
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
-    // Carica regali collettivi con i loro contributi
-    const { data: items } = await supabase
-      .from('wish_items')
-      .select('*, contributions(*)')
-      .eq('event_id', eventId)
-      .eq('type', 'collective')
-      .order('created_at', { ascending: false })
-
-    // Carica storico prelievi
-    const { data: payoutsData } = await supabase
-      .from('payouts')
-      .select('*')
-      .eq('event_id', eventId)
-      .order('created_at', { ascending: false })
+    const [{ data: items }, { data: payoutsData }, { data: profileData }] = await Promise.all([
+      supabase.from('wish_items').select('*, contributions(*)').eq('event_id', eventId).eq('type', 'collective').order('created_at', { ascending: false }),
+      supabase.from('payouts').select('*').eq('event_id', eventId).order('created_at', { ascending: false }),
+      supabase.from('users').select('payout_method, payout_iban, stripe_account_id, stripe_account_verified').eq('id', userId).single(),
+    ])
 
     setCollectiveItems(items ?? [])
     setPayouts(payoutsData ?? [])
+    setProfile(profileData as User | null)
     setLoading(false)
   }
 
-  // Richiedi payout per un regalo collettivo
   async function handlePayout(item: WishItemWithContributions) {
     if (item.collected_amount <= 0) { toast.error('Nessun importo da prelevare'); return }
+
+    const method = profile?.payout_method ?? 'iban'
+
+    if (method === 'iban') {
+      if (!profile?.payout_iban) {
+        toast.error('Inserisci il tuo IBAN nelle Impostazioni prima di richiedere il payout')
+        return
+      }
+    } else {
+      if (!profile?.stripe_account_id || !profile?.stripe_account_verified) {
+        toast.error('Completa la configurazione Stripe Connect nelle Impostazioni')
+        return
+      }
+    }
+
     setPayingOut(item.id)
     try {
-      const res = await fetch('/api/stripe/payout', {
+      const endpoint = method === 'iban' ? '/api/stripe/payout-iban' : '/api/stripe/payout'
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ wishItemId: item.id, eventId, userId }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Errore payout')
-      toast.success(`Payout di ${formatEuro(item.collected_amount)} richiesto!`)
+      const msg = method === 'iban'
+        ? `Richiesta inviata! Riceverai un bonifico di ${formatEuro(data.netAmount)} entro 2-3 giorni.`
+        : `Payout di ${formatEuro(item.collected_amount)} richiesto!`
+      toast.success(msg)
       await loadData()
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Errore durante il payout')

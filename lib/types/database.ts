@@ -11,6 +11,8 @@ export type ContributionStatus = 'pending' | 'completed' | 'refunded'
 export type PayoutStatus = 'pending' | 'completed' | 'failed'
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due'
 
+export type PayoutMethod = 'stripe' | 'iban'
+
 export interface User {
   id: string
   full_name: string | null
@@ -19,6 +21,9 @@ export interface User {
   stripe_account_id: string | null
   stripe_account_verified: boolean
   plan: UserPlan
+  payout_method: PayoutMethod
+  payout_iban: string | null
+  payout_bank_owner: string | null
   created_at: string
 }
 

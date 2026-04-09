@@ -102,6 +102,80 @@ export async function sendGoalReachedNotification({
   })
 }
 
+// Notifica admin per richiesta payout via IBAN
+export async function sendPayoutRequestToAdmin({
+  adminEmail,
+  hostName,
+  hostEmail,
+  wishItemTitle,
+  grossAmount,
+  commissionAmount,
+  netAmount,
+  iban,
+  bankOwner,
+}: {
+  adminEmail: string
+  hostName: string
+  hostEmail: string
+  wishItemTitle: string
+  grossAmount: number
+  commissionAmount: number
+  netAmount: number
+  iban: string
+  bankOwner: string
+}) {
+  return getResend().emails.send({
+    from: FROM(),
+    to: adminEmail,
+    subject: `💰 Richiesta payout: ${hostName} — €${netAmount.toFixed(2)}`,
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h1 style="color: #0abab5;">💰 Nuova richiesta payout via IBAN</h1>
+        <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+          <tr><td style="padding: 8px; color: #6B7280;">Utente</td><td style="padding: 8px; font-weight: 600;">${hostName} (${hostEmail})</td></tr>
+          <tr style="background: #f9fafb;"><td style="padding: 8px; color: #6B7280;">Regalo</td><td style="padding: 8px; font-weight: 600;">${wishItemTitle}</td></tr>
+          <tr><td style="padding: 8px; color: #6B7280;">Totale raccolto</td><td style="padding: 8px;">€${grossAmount.toFixed(2)}</td></tr>
+          <tr style="background: #f9fafb;"><td style="padding: 8px; color: #6B7280;">Commissione (${((commissionAmount / grossAmount) * 100).toFixed(0)}%)</td><td style="padding: 8px; color: #ef4444;">− €${commissionAmount.toFixed(2)}</td></tr>
+          <tr><td style="padding: 8px; color: #6B7280; font-weight: 700;">Da bonificare</td><td style="padding: 8px; font-weight: 700; color: #16a34a; font-size: 18px;">€${netAmount.toFixed(2)}</td></tr>
+        </table>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 16px;">
+          <p style="margin: 0 0 4px; font-weight: 700;">IBAN destinatario:</p>
+          <p style="margin: 0; font-family: monospace; font-size: 16px; letter-spacing: 1px;">${iban}</p>
+          <p style="margin: 8px 0 0; color: #6B7280;">Intestatario: ${bankOwner}</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
+// Conferma payout ricevuto all'utente
+export async function sendPayoutConfirmationToUser({
+  to,
+  hostName,
+  wishItemTitle,
+  netAmount,
+}: {
+  to: string
+  hostName: string
+  wishItemTitle: string
+  netAmount: number
+}) {
+  return getResend().emails.send({
+    from: FROM(),
+    to,
+    subject: `Richiesta payout ricevuta — €${netAmount.toFixed(2)}`,
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h1 style="color: #0abab5;">✅ Richiesta ricevuta!</h1>
+        <p>Ciao ${hostName},</p>
+        <p>Abbiamo ricevuto la tua richiesta di payout di <strong>€${netAmount.toFixed(2)}</strong> per il regalo <strong>"${wishItemTitle}"</strong>.</p>
+        <p>Effettueremo il bonifico entro 2-3 giorni lavorativi.</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
+      </div>
+    `,
+  })
+}
+
 // Notifica al festeggiato quando un regalo viene prenotato
 export async function sendReservationNotification({
   to,
