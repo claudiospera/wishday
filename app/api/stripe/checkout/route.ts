@@ -64,6 +64,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url })
   } catch (err: unknown) {
+    const stripeErr = err as Record<string, unknown>
+    console.error('Errore checkout tipo:', stripeErr?.type)
+    console.error('Errore checkout code:', stripeErr?.code)
+    console.error('Errore checkout statusCode:', stripeErr?.statusCode)
+    console.error('Errore checkout raw:', stripeErr?.raw)
     console.error('Errore checkout:', err)
     const message = err instanceof Error ? err.message : 'Errore interno'
     return NextResponse.json({ error: message }, { status: 500 })

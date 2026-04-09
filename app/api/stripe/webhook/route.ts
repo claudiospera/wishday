@@ -9,9 +9,6 @@ import {
 } from '@/lib/email/resend'
 import type Stripe from 'stripe'
 
-// Disabilita body parsing di Next.js per ricevere il raw body (necessario per verifica firma)
-export const config = { api: { bodyParser: false } }
-
 export async function POST(request: NextRequest) {
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
