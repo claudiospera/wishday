@@ -193,7 +193,7 @@ export default function RegisterPage() {
             </form>
 
             <p className="text-center text-xs text-gray-400">
-              Registrandoti accetti i nostri Termini di Servizio e la Privacy Policy.
+              Registrandoti accetti i nostri <Link href="/termini" className="underline hover:text-tiffany-700">Termini di Servizio</Link> e la <Link href="/privacy" className="underline hover:text-tiffany-700">Privacy Policy</Link>.
             </p>
 
             <p className="text-center text-sm text-gray-500">

@@ -149,15 +149,26 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-10 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🎉</span>
-            <span className="font-bold text-white">Wishday</span>
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Image src="/logo.png" alt="Wishday" width={28} height={28} className="rounded opacity-80" />
+              <span className="font-bold text-white">Wishday</span>
+            </div>
+            <p className="text-sm">Fatto con ❤️ in Italia.</p>
+            <a href="mailto:info@wishday.it" className="text-sm hover:text-white transition-colors mt-1 block">
+              info@wishday.it
+            </a>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} Wishday. Fatto con ❤️ in Italia.</p>
-          <div className="flex gap-4 text-sm">
+          <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
             <Link href="/pricing" className="hover:text-white transition-colors">Prezzi</Link>
+            <Link href="/termini" className="hover:text-white transition-colors">Termini di Servizio</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/cookie" className="hover:text-white transition-colors">Cookie Policy</Link>
           </div>
+        </div>
+        <div className="max-w-5xl mx-auto mt-6 pt-6 border-t border-gray-800 text-xs text-gray-600">
+          © {new Date().getFullYear()} Wishday. Tutti i diritti riservati.
         </div>
       </footer>
     </div>
