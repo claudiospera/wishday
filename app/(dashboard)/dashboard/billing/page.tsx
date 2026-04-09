@@ -130,9 +130,9 @@ export default function BillingPage() {
           </Card>
 
           {/* Piano Premium */}
-          <Card className="border-purple-400 ring-2 ring-purple-400 relative">
+          <Card className="border-tiffany-400 ring-2 ring-tiffany-400 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <Badge className="bg-purple-700 text-white">Più popolare</Badge>
+              <Badge className="bg-tiffany-700 text-white">Più popolare</Badge>
             </div>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export default function BillingPage() {
               </CardTitle>
               <CardDescription>Per chi festeggia spesso</CardDescription>
               <div className="mt-2 space-y-1">
-                <div className="text-3xl font-bold text-purple-700">
+                <div className="text-3xl font-bold text-tiffany-700">
                   €9,90<span className="text-lg font-normal text-gray-400">/mese</span>
                 </div>
                 <p className="text-sm text-gray-400">oppure €79/anno (risparmi 2 mesi)</p>
@@ -157,13 +157,13 @@ export default function BillingPage() {
                   'Supporto prioritario',
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-gray-700">
-                    <span className="text-purple-500">✓</span> {f}
+                    <span className="text-tiffany-500">✓</span> {f}
                   </li>
                 ))}
               </ul>
               <div className="space-y-2">
                 <Button
-                  className="w-full bg-purple-700 hover:bg-purple-800 text-white"
+                  className="w-full bg-tiffany-700 hover:bg-tiffany-800 text-white"
                   onClick={() => handleCheckout('monthly')}
                   disabled={!!checkoutLoading}
                 >
@@ -171,7 +171,7 @@ export default function BillingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full border-purple-300 text-purple-700"
+                  className="w-full border-tiffany-300 text-tiffany-700"
                   onClick={() => handleCheckout('yearly')}
                   disabled={!!checkoutLoading}
                 >

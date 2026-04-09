@@ -73,7 +73,7 @@ export default function RegisterPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-amber-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tiffany-50 to-amber-50 px-4">
         <div className="w-full max-w-md text-center space-y-6">
           <div className="text-6xl">📬</div>
           <div>
@@ -86,7 +86,7 @@ export default function RegisterPage() {
           <p className="text-sm text-gray-400">
             Non hai ricevuto nulla? Controlla la cartella spam o{' '}
             <button
-              className="text-purple-700 underline"
+              className="text-tiffany-700 underline"
               onClick={() => { setEmailSent(false) }}
             >
               riprova
@@ -95,7 +95,7 @@ export default function RegisterPage() {
           </p>
           <p className="text-sm text-gray-500">
             Hai già confermato?{' '}
-            <Link href="/login" className="text-purple-700 font-medium hover:underline">
+            <Link href="/login" className="text-tiffany-700 font-medium hover:underline">
               Accedi
             </Link>
           </p>
@@ -105,16 +105,16 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-amber-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tiffany-50 to-amber-50 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image src="/logo.png" alt="Wishday" width={44} height={44} className="rounded" />
-            <span className="font-bold text-2xl text-purple-700">Wishday</span>
+            <span className="font-bold text-2xl text-tiffany-700">Wishday</span>
           </Link>
         </div>
 
-        <Card className="shadow-lg border-purple-100">
+        <Card className="shadow-lg border-tiffany-100">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Crea il tuo account</CardTitle>
             <CardDescription>Inizia gratis, senza carta di credito</CardDescription>
@@ -185,7 +185,7 @@ export default function RegisterPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-purple-700 hover:bg-purple-800 text-white"
+                className="w-full bg-tiffany-700 hover:bg-tiffany-800 text-white"
                 disabled={loading}
               >
                 {loading ? 'Creazione account...' : 'Crea account gratis'}
@@ -198,7 +198,7 @@ export default function RegisterPage() {
 
             <p className="text-center text-sm text-gray-500">
               Hai già un account?{' '}
-              <Link href="/login" className="text-purple-700 font-medium hover:underline">
+              <Link href="/login" className="text-tiffany-700 font-medium hover:underline">
                 Accedi
               </Link>
             </p>

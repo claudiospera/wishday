@@ -102,12 +102,12 @@ export default function ContributionsView({ eventId, userId }: Props) {
                     {/* Barra progresso */}
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium text-purple-700">{formatEuro(item.collected_amount)}</span>
+                        <span className="font-medium text-tiffany-700">{formatEuro(item.collected_amount)}</span>
                         <span className="text-gray-400">di {formatEuro(item.price)}</span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-3">
                         <div
-                          className={`h-3 rounded-full transition-all ${isComplete ? 'bg-green-500' : 'bg-purple-500'}`}
+                          className={`h-3 rounded-full transition-all ${isComplete ? 'bg-green-500' : 'bg-tiffany-500'}`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>

@@ -30,6 +30,7 @@ export interface Event {
   date: string
   description: string | null
   cover_image_url: string | null
+  invite_image_url: string | null
   slug: string
   iban: string | null
   bank_owner_name: string | null

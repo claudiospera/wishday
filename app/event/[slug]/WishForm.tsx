@@ -46,10 +46,10 @@ export default function WishForm({ eventId }: Props) {
 
   if (sent) {
     return (
-      <Card className="border-purple-100 bg-purple-50">
+      <Card className="border-tiffany-100 bg-tiffany-50">
         <CardContent className="py-8 text-center">
           <div className="text-4xl mb-3">🎉</div>
-          <p className="font-semibold text-purple-700">Augurio inviato con successo!</p>
+          <p className="font-semibold text-tiffany-700">Augurio inviato con successo!</p>
           <p className="text-sm text-gray-500 mt-1">Grazie per il tuo messaggio!</p>
         </CardContent>
       </Card>
@@ -57,7 +57,7 @@ export default function WishForm({ eventId }: Props) {
   }
 
   return (
-    <Card className="border-purple-100 shadow-sm">
+    <Card className="border-tiffany-100 shadow-sm">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
@@ -103,7 +103,7 @@ export default function WishForm({ eventId }: Props) {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-purple-700 hover:bg-purple-800 text-white"
+              className="bg-tiffany-700 hover:bg-tiffany-800 text-white"
             >
               {loading ? 'Invio...' : '💌 Invia augurio'}
             </Button>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { formatEuro, calculateProgress } from '@/lib/utils'
+import { formatEuro, calculateProgress, themeColorMap } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { WishItem } from '@/lib/types'
 
@@ -15,15 +15,21 @@ interface Props {
   hostPlan: string
   onClose: () => void
   onSuccess: (updated: WishItem) => void
+  eventType?: string
+  eventTitle?: string
+  themeKey?: string
 }
 
-export default function ContributeModal({ item, hostPlan, onClose, onSuccess }: Props) {
+export default function ContributeModal({
+  item, hostPlan, onClose, onSuccess, themeKey = 'purple',
+}: Props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [amount, setAmount] = useState(item.suggested_contribution?.toString() ?? '')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const tc = themeColorMap[themeKey] ?? themeColorMap.purple
   const commission = hostPlan === 'premium' ? 1 : 3
   const progress = calculateProgress(item.collected_amount, item.price)
   const remaining = Math.max(item.price - item.collected_amount, 0)
@@ -64,15 +70,18 @@ export default function ContributeModal({ item, hostPlan, onClose, onSuccess }: 
         </DialogHeader>
         <div className="space-y-4">
           {/* Info regalo */}
-          <div className="bg-purple-50 rounded-lg p-4 space-y-2">
+          <div className="rounded-lg p-4 space-y-2" style={{ backgroundColor: tc.muted }}>
             <p className="font-semibold">{item.title}</p>
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-600">{formatEuro(item.collected_amount)} raccolti</span>
-                <span className="text-purple-700 font-medium">{progress}%</span>
+                <span className="font-medium" style={{ color: tc.text }}>{progress}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${progress}%` }} />
+                <div
+                  className="h-2 rounded-full"
+                  style={{ width: `${progress}%`, backgroundColor: tc.progress }}
+                />
               </div>
               <p className="text-xs text-gray-400 mt-1">
                 Obiettivo: {formatEuro(item.price)} • Mancano: {formatEuro(remaining)}
@@ -86,7 +95,7 @@ export default function ContributeModal({ item, hostPlan, onClose, onSuccess }: 
                 variant="outline"
                 size="sm"
                 onClick={() => setAmount(item.suggested_contribution!.toString())}
-                className="border-purple-300 text-purple-700"
+                style={{ borderColor: tc.border, color: tc.text }}
               >
                 Quota suggerita {formatEuro(item.suggested_contribution)}
               </Button>
@@ -129,11 +138,15 @@ export default function ContributeModal({ item, hostPlan, onClose, onSuccess }: 
           <p className="text-xs text-gray-400">
             Commissione piattaforma: {commission}% • Pagamento sicuro con Stripe
           </p>
+          <p className="text-xs text-gray-400">
+            Dopo il pagamento potrai creare un biglietto augurale da inviare al festeggiato 💌
+          </p>
 
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={onClose}>Annulla</Button>
             <Button
-              className="flex-1 bg-purple-700 hover:bg-purple-800 text-white"
+              className="flex-1 text-white"
+              style={{ backgroundColor: tc.primary }}
               onClick={handleCheckout}
               disabled={loading}
             >

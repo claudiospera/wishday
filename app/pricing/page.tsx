@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils'
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-tiffany-50 via-white to-amber-50">
       <div className="max-w-4xl mx-auto px-4 py-16">
         {/* Intestazione */}
         <div className="text-center mb-12">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <Image src="/logo.png" alt="Wishday" width={36} height={36} className="rounded" />
-            <span className="font-bold text-xl text-purple-700">Wishday</span>
+            <span className="font-bold text-xl text-tiffany-700">Wishday</span>
           </Link>
           <h1
             className="text-4xl font-bold mb-4"
@@ -70,9 +70,9 @@ export default function PricingPage() {
           </Card>
 
           {/* Premium */}
-          <Card className="border-purple-400 ring-2 ring-purple-400 relative">
+          <Card className="border-tiffany-400 ring-2 ring-tiffany-400 relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <Badge className="bg-purple-700 text-white text-sm px-4 py-1">
+              <Badge className="bg-tiffany-700 text-white text-sm px-4 py-1">
                 ⭐ Più popolare
               </Badge>
             </div>
@@ -82,7 +82,7 @@ export default function PricingPage() {
               </CardTitle>
               <CardDescription>Per chi celebra spesso</CardDescription>
               <div className="mt-3 space-y-1">
-                <div className="text-4xl font-bold text-purple-700">
+                <div className="text-4xl font-bold text-tiffany-700">
                   €9,90
                   <span className="text-lg font-normal text-gray-400">/mese</span>
                 </div>
@@ -107,16 +107,16 @@ export default function PricingPage() {
                   { label: 'Statistiche avanzate', ok: true },
                 ].map((f) => (
                   <li key={f.label} className="flex items-start gap-2 text-sm">
-                    <span className="text-purple-500">✓</span>
+                    <span className="text-tiffany-500">✓</span>
                     <span className="text-gray-700">{f.label}</span>
                   </li>
                 ))}
               </ul>
               <div className="space-y-2 pt-2">
-                <Link href="/register" className={cn(buttonVariants(), 'w-full bg-purple-700 hover:bg-purple-800 text-white')}>
+                <Link href="/register" className={cn(buttonVariants(), 'w-full bg-tiffany-700 hover:bg-tiffany-800 text-white')}>
                   Inizia con Premium — €9,90/mese
                 </Link>
-                <Link href="/register" className={cn(buttonVariants({ variant: 'outline' }), 'w-full border-purple-300 text-purple-700')}>
+                <Link href="/register" className={cn(buttonVariants({ variant: 'outline' }), 'w-full border-tiffany-300 text-tiffany-700')}>
                   Annuale — €79/anno
                 </Link>
               </div>
@@ -155,7 +155,7 @@ export default function PricingPage() {
         </div>
 
         <div className="text-center mt-10">
-          <Link href="/" className="text-purple-600 hover:underline text-sm">
+          <Link href="/" className="text-tiffany-600 hover:underline text-sm">
             ← Torna alla homepage
           </Link>
         </div>

@@ -35,7 +35,7 @@ export default function IbanSection({ iban, bankOwnerName }: Props) {
     QRCode.toCanvas(canvasRef.current, qrData, {
       width: 160,
       margin: 1,
-      color: { dark: '#7C3AED', light: '#ffffff' },
+      color: { dark: '#0abab5', light: '#ffffff' },
     })
   }, [iban, bankOwnerName])
 
@@ -52,7 +52,7 @@ export default function IbanSection({ iban, bankOwnerName }: Props) {
       <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
         🏦 Bonifico bancario
       </h2>
-      <Card className="border-purple-100 shadow-sm">
+      <Card className="border-tiffany-100 shadow-sm">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
             {/* QR Code */}

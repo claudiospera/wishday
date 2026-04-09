@@ -110,7 +110,7 @@ function SortableItem({ item, onEdit, onDelete, onStatusChange }: SortableItemPr
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-1.5">
                     <div
-                      className="bg-purple-500 h-1.5 rounded-full transition-all"
+                      className="bg-tiffany-500 h-1.5 rounded-full transition-all"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -126,7 +126,7 @@ function SortableItem({ item, onEdit, onDelete, onStatusChange }: SortableItemPr
                 </Badge>
                 <Select value={item.status} onValueChange={(v) => onStatusChange(item, v as WishItemStatus)}>
                   <SelectTrigger className="h-6 text-xs w-auto border-none bg-transparent p-0 focus:ring-0">
-                    <span className="text-xs text-gray-400 cursor-pointer hover:text-purple-600">cambia</span>
+                    <span className="text-xs text-gray-400 cursor-pointer hover:text-tiffany-600">cambia</span>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="available">Disponibile</SelectItem>
@@ -289,7 +289,7 @@ export default function WishListManager({ event, userId }: Props) {
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{items.length} prodott{items.length === 1 ? 'o' : 'i'} in lista</p>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger render={<Button onClick={openAddDialog} className="bg-purple-700 hover:bg-purple-800 text-white" size="sm" />}>
+          <DialogTrigger render={<Button onClick={openAddDialog} className="bg-tiffany-700 hover:bg-tiffany-800 text-white" size="sm" />}>
             <Plus className="w-4 h-4 mr-1" /> Aggiungi prodotto
           </DialogTrigger>
           <DialogContent className="max-w-lg">
@@ -344,7 +344,7 @@ export default function WishListManager({ event, userId }: Props) {
               </div>
               <div className="flex gap-2 pt-2">
                 <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>Annulla</Button>
-                <Button className="flex-1 bg-purple-700 hover:bg-purple-800 text-white" onClick={handleSave} disabled={saving}>
+                <Button className="flex-1 bg-tiffany-700 hover:bg-tiffany-800 text-white" onClick={handleSave} disabled={saving}>
                   {saving ? 'Salvataggio...' : 'Salva'}
                 </Button>
               </div>

@@ -12,10 +12,10 @@ export default function MessagesDisplay({ messages }: Props) {
       </h2>
       <div className="space-y-3">
         {messages.map((msg) => (
-          <Card key={msg.id} className="border-purple-50 bg-white shadow-sm">
+          <Card key={msg.id} className="border-tiffany-50 bg-white shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-200 to-amber-200 flex items-center justify-center text-sm font-bold text-purple-700 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-tiffany-200 to-amber-200 flex items-center justify-center text-sm font-bold text-tiffany-700 flex-shrink-0">
                   {msg.sender_name[0]?.toUpperCase()}
                 </div>
                 <div>

@@ -17,9 +17,9 @@ export default function CountdownTimer({ eventDate }: Props) {
 
   if (days === 0) {
     return (
-      <div className="bg-gradient-to-r from-purple-600 to-amber-500 text-white rounded-xl p-4 text-center shadow-md">
+      <div className="bg-gradient-to-r from-tiffany-600 to-amber-500 text-white rounded-xl p-4 text-center shadow-md">
         <p className="text-2xl font-bold">🎉 È oggi!</p>
-        <p className="text-purple-100 text-sm">Auguri!</p>
+        <p className="text-tiffany-100 text-sm">Auguri!</p>
       </div>
     )
   }
@@ -33,9 +33,9 @@ export default function CountdownTimer({ eventDate }: Props) {
   }
 
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 rounded-xl p-4 text-center">
+    <div className="bg-gradient-to-r from-tiffany-50 to-amber-50 border border-tiffany-100 rounded-xl p-4 text-center">
       <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Mancano</p>
-      <p className="text-4xl font-bold text-purple-700">{days}</p>
+      <p className="text-4xl font-bold text-tiffany-700">{days}</p>
       <p className="text-gray-500 text-sm">giorn{days === 1 ? 'o' : 'i'}</p>
     </div>
   )

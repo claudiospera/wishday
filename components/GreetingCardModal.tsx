@@ -143,7 +143,7 @@ export default function GreetingCardModal({
               Chiudi
             </Button>
             <Button
-              className="flex-1 bg-purple-700 hover:bg-purple-800 text-white"
+              className="flex-1 bg-tiffany-700 hover:bg-tiffany-800 text-white"
               onClick={handleShare}
             >
               {canShare ? '📤 Condividi' : '📋 Copia testo'}

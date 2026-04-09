@@ -33,7 +33,7 @@ export default async function EventDetailPage({ params }: Props) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
-            <Link href="/dashboard" className="hover:text-purple-600">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-tiffany-600">Dashboard</Link>
             <span>/</span>
             <span className="text-gray-700">{event.title}</span>
           </div>

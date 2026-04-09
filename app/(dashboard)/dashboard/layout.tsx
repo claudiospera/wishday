@@ -32,7 +32,7 @@ export default async function DashboardLayout({
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Image src="/logo.png" alt="Wishday" width={32} height={32} className="rounded" />
-            <span className="font-bold text-lg text-purple-700">Wishday</span>
+            <span className="font-bold text-lg text-tiffany-700">Wishday</span>
           </Link>
           <DashboardNav user={user} profile={profile} />
         </div>

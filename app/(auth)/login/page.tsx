@@ -70,17 +70,17 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-amber-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tiffany-50 to-amber-50 px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image src="/logo.png" alt="Wishday" width={44} height={44} className="rounded" />
-            <span className="font-bold text-2xl text-purple-700">Wishday</span>
+            <span className="font-bold text-2xl text-tiffany-700">Wishday</span>
           </Link>
         </div>
 
-        <Card className="shadow-lg border-purple-100">
+        <Card className="shadow-lg border-tiffany-100">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Bentornato!</CardTitle>
             <CardDescription>Accedi al tuo account Wishday</CardDescription>
@@ -141,7 +141,7 @@ function LoginForm() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-purple-700 hover:bg-purple-800 text-white"
+                className="w-full bg-tiffany-700 hover:bg-tiffany-800 text-white"
                 disabled={loading}
               >
                 {loading ? 'Accesso in corso...' : 'Accedi'}
@@ -150,7 +150,7 @@ function LoginForm() {
 
             <p className="text-center text-sm text-gray-500">
               Non hai un account?{' '}
-              <Link href="/register" className="text-purple-700 font-medium hover:underline">
+              <Link href="/register" className="text-tiffany-700 font-medium hover:underline">
                 Registrati gratis
               </Link>
             </p>

@@ -85,7 +85,7 @@ export default function SettingsPage() {
             <Input value={profile?.email ?? ''} disabled className="bg-gray-50" />
             <p className="text-xs text-gray-400">L&apos;email non può essere modificata</p>
           </div>
-          <Button onClick={handleSave} disabled={saving} className="bg-purple-700 hover:bg-purple-800 text-white">
+          <Button onClick={handleSave} disabled={saving} className="bg-tiffany-700 hover:bg-tiffany-800 text-white">
             {saving ? 'Salvataggio...' : 'Salva modifiche'}
           </Button>
         </CardContent>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
               <Button
                 onClick={handleStripeConnect}
                 disabled={connectLoading}
-                className="bg-purple-700 hover:bg-purple-800 text-white"
+                className="bg-tiffany-700 hover:bg-tiffany-800 text-white"
               >
                 {connectLoading ? 'Caricamento...' : '🏦 Collega il tuo conto bancario'}
               </Button>

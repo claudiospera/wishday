@@ -38,9 +38,9 @@ export default function DashboardNav({ user, profile }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
-        <Avatar className="cursor-pointer ring-2 ring-purple-200 hover:ring-purple-400 transition-all">
+        <Avatar className="cursor-pointer ring-2 ring-tiffany-200 hover:ring-tiffany-400 transition-all">
           <AvatarImage src={profile?.avatar_url ?? undefined} />
-          <AvatarFallback className="bg-purple-100 text-purple-700 font-semibold">
+          <AvatarFallback className="bg-tiffany-100 text-tiffany-700 font-semibold">
             {initials}
           </AvatarFallback>
         </Avatar>

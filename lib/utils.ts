@@ -72,9 +72,9 @@ export const eventTypeEmoji: Record<string, string> = {
 // Temi colore per le pagine evento (solo piano premium)
 export const eventThemes = {
   purple: {
-    label: 'Viola',
-    gradient: 'from-purple-200 via-purple-100 to-amber-100',
-    previewClass: 'bg-gradient-to-br from-purple-400 to-amber-300',
+    label: 'Tiffany',
+    gradient: 'from-tiffany-200 via-tiffany-100 to-amber-100',
+    previewClass: 'bg-gradient-to-br from-tiffany-400 to-amber-300',
   },
   rose: {
     label: 'Rosa',
@@ -97,6 +97,53 @@ export const eventThemes = {
     previewClass: 'bg-gradient-to-br from-amber-400 to-orange-300',
   },
 } as const
+
+// Palette colori per ogni tema (usata con inline styles per evitare problemi con Tailwind purge)
+export const themeColorMap: Record<string, {
+  primary: string; hover: string; light: string; muted: string; border: string; text: string; progress: string
+}> = {
+  purple: { primary: '#0abab5', hover: '#077c79', light: '#edfafa', muted: '#d5f5f5', border: '#aae9e8', text: '#077c79', progress: '#3bc8c7' },
+  rose:   { primary: '#E11D48', hover: '#BE123C', light: '#FFF1F2', muted: '#FFE4E6', border: '#FECDD3', text: '#BE123C', progress: '#FB7185' },
+  indigo: { primary: '#4338CA', hover: '#3730A3', light: '#EEF2FF', muted: '#E0E7FF', border: '#C7D2FE', text: '#3730A3', progress: '#6366F1' },
+  emerald:{ primary: '#059669', hover: '#047857', light: '#ECFDF5', muted: '#D1FAE5', border: '#A7F3D0', text: '#047857', progress: '#34D399' },
+  amber:  { primary: '#D97706', hover: '#B45309', light: '#FFFBEB', muted: '#FEF3C7', border: '#FDE68A', text: '#B45309', progress: '#FBBF24' },
+}
+
+// Configurazione biglietti augurali per tipo evento
+export const greetingCardConfig: Record<string, {
+  bg: string; title: string; decoration: string; emoji: string
+}> = {
+  birthday: {
+    bg: 'linear-gradient(135deg, #fff9c4 0%, #ffd6b0 50%, #ffb7c5 100%)',
+    title: 'Tanti Auguri!',
+    decoration: '🎈 🎂 🎈',
+    emoji: '🎉',
+  },
+  wedding: {
+    bg: 'linear-gradient(135deg, #fff8f0 0%, #fde8d8 50%, #ffd1e8 100%)',
+    title: 'Felicitazioni!',
+    decoration: '💐 💍 💐',
+    emoji: '🥂',
+  },
+  graduation: {
+    bg: 'linear-gradient(135deg, #e8eaf6 0%, #c5cae9 50%, #b3d4ef 100%)',
+    title: 'Congratulazioni!',
+    decoration: '🎓 ⭐ 🎓',
+    emoji: '🏆',
+  },
+  baptism: {
+    bg: 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #e8f5e9 100%)',
+    title: 'Auguri!',
+    decoration: '🕊️ ✨ 🕊️',
+    emoji: '🌟',
+  },
+  other: {
+    bg: 'linear-gradient(135deg, #f3e7e9 0%, #e3eeff 50%, #f0fff4 100%)',
+    title: 'Auguri!',
+    decoration: '✨ 🎊 ✨',
+    emoji: '💫',
+  },
+}
 
 // Mappa stato wish item → etichetta italiana
 export const wishItemStatusLabels: Record<string, string> = {

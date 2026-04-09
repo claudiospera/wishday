@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { formatEuro, calculateProgress } from '@/lib/utils'
+import { formatEuro, calculateProgress, themeColorMap } from '@/lib/utils'
 import { ExternalLink } from 'lucide-react'
 import ContributeModal from '@/components/ContributeModal'
 import ReserveModal from './ReserveModal'
@@ -14,13 +14,19 @@ interface Props {
   item: WishItem
   hostPlan: string
   isExpired?: boolean
+  eventType?: string
+  eventTitle?: string
+  themeKey?: string
 }
 
-export default function WishItemCard({ item, hostPlan, isExpired = false }: Props) {
+export default function WishItemCard({
+  item, hostPlan, isExpired = false, eventType = 'other', eventTitle = '', themeKey = 'purple',
+}: Props) {
   const [showContribute, setShowContribute] = useState(false)
   const [showReserve, setShowReserve] = useState(false)
   const [currentItem, setCurrentItem] = useState(item)
 
+  const tc = themeColorMap[themeKey] ?? themeColorMap.purple
   const progress = currentItem.type === 'collective'
     ? calculateProgress(currentItem.collected_amount, currentItem.price)
     : 0
@@ -29,7 +35,9 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
 
   return (
     <>
-      <Card className={`overflow-hidden border shadow-sm hover:shadow-md transition-shadow ${isReserved ? 'opacity-70' : ''}`}>
+      <Card className={`overflow-hidden border shadow-sm hover:shadow-md transition-shadow ${isReserved ? 'opacity-70' : ''}`}
+        style={{ borderColor: tc.border }}
+      >
         <CardContent className="p-0">
           <div className="flex gap-4 p-4">
             {/* Immagine prodotto */}
@@ -41,7 +49,10 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                 className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
               />
             ) : (
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-50 to-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div
+                className="w-24 h-24 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: tc.muted }}
+              >
                 <span className="text-3xl">🎁</span>
               </div>
             )}
@@ -55,7 +66,7 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                     <p className="text-sm text-gray-500 line-clamp-1">{currentItem.description}</p>
                   )}
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="font-bold text-purple-700">{formatEuro(currentItem.price)}</span>
+                    <span className="font-bold" style={{ color: tc.text }}>{formatEuro(currentItem.price)}</span>
                     {currentItem.shop_name && (
                       <span className="text-xs text-gray-400">{currentItem.shop_name}</span>
                     )}
@@ -74,7 +85,7 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                   </Badge>
                 )}
                 {currentItem.type === 'collective' && !isFullyFunded && (
-                  <Badge className="bg-purple-100 text-purple-600 text-xs flex-shrink-0">
+                  <Badge className="text-xs flex-shrink-0" style={{ backgroundColor: tc.muted, color: tc.text }}>
                     Collettivo
                   </Badge>
                 )}
@@ -89,8 +100,11 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all ${isFullyFunded ? 'bg-green-500' : 'bg-purple-500'}`}
-                      style={{ width: `${progress}%` }}
+                      className="h-2 rounded-full transition-all"
+                      style={{
+                        width: `${progress}%`,
+                        backgroundColor: isFullyFunded ? '#22C55E' : tc.progress,
+                      }}
                     />
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">
@@ -105,7 +119,8 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-purple-300 text-purple-700 hover:bg-purple-50 text-xs"
+                    className="text-xs"
+                    style={{ borderColor: tc.border, color: tc.text }}
                     onClick={() => setShowReserve(true)}
                   >
                     Prenota questo regalo
@@ -114,7 +129,8 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
                 {currentItem.type === 'collective' && !isFullyFunded && !isExpired && (
                   <Button
                     size="sm"
-                    className="bg-purple-700 hover:bg-purple-800 text-white text-xs"
+                    className="text-white text-xs"
+                    style={{ backgroundColor: tc.primary }}
                     onClick={() => setShowContribute(true)}
                   >
                     💝 Contribuisci
@@ -139,6 +155,9 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
         <ContributeModal
           item={currentItem}
           hostPlan={hostPlan}
+          eventType={eventType}
+          eventTitle={eventTitle}
+          themeKey={themeKey}
           onClose={() => setShowContribute(false)}
           onSuccess={(updatedItem) => {
             setCurrentItem(updatedItem)
@@ -151,6 +170,8 @@ export default function WishItemCard({ item, hostPlan, isExpired = false }: Prop
       {showReserve && (
         <ReserveModal
           item={currentItem}
+          eventType={eventType}
+          eventTitle={eventTitle}
           onClose={() => setShowReserve(false)}
           onSuccess={(updatedItem) => {
             setCurrentItem(updatedItem)

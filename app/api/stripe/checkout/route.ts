@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         eventId: event.id,
         hostUserId: event.user_id,
       },
-      success_url: `${APP_URL}/event/${event.slug}?contribution=success`,
+      success_url: `${APP_URL}/event/${event.slug}?contribution=success&from=${encodeURIComponent(contributorName)}&gift=${encodeURIComponent(item.title)}${message ? `&msg=${encodeURIComponent(message)}` : ''}`,
       cancel_url: `${APP_URL}/event/${event.slug}?contribution=cancelled`,
     })
 

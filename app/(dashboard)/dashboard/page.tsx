@@ -42,7 +42,7 @@ export default async function DashboardPage() {
           <p className="text-gray-500 mt-1">Gestisci i tuoi eventi e le wish list</p>
         </div>
         {canCreateEvent ? (
-          <Link href="/dashboard/events/new" className={cn(buttonVariants(), 'bg-purple-700 hover:bg-purple-800 text-white')}>
+          <Link href="/dashboard/events/new" className={cn(buttonVariants(), 'bg-tiffany-700 hover:bg-tiffany-800 text-white')}>
             <Plus className="w-4 h-4 mr-2" />
             Nuovo evento
           </Link>
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
             <Card key={event.id} className="hover:shadow-md transition-shadow border-gray-200">
               {/* Copertina evento */}
               <div
-                className="h-32 rounded-t-lg bg-gradient-to-br from-purple-100 to-amber-100 relative overflow-hidden"
+                className="h-32 rounded-t-lg bg-gradient-to-br from-tiffany-100 to-amber-100 relative overflow-hidden"
                 style={event.cover_image_url ? {
                   backgroundImage: `url(${event.cover_image_url})`,
                   backgroundSize: 'cover',
@@ -125,14 +125,14 @@ export default async function DashboardPage() {
         </div>
       ) : (
         /* Stato vuoto */
-        <Card className="border-dashed border-2 border-purple-200">
+        <Card className="border-dashed border-2 border-tiffany-200">
           <CardContent className="py-16 text-center">
             <div className="text-5xl mb-4">🎉</div>
             <h3 className="text-lg font-semibold mb-2">Crea il tuo primo evento</h3>
             <p className="text-gray-500 mb-6 max-w-sm mx-auto">
               Compleanno, matrimonio, laurea, battesimo — crea la tua pagina e condividi la wish list con gli invitati.
             </p>
-            <Link href="/dashboard/events/new" className={cn(buttonVariants(), 'bg-purple-700 hover:bg-purple-800 text-white')}>
+            <Link href="/dashboard/events/new" className={cn(buttonVariants(), 'bg-tiffany-700 hover:bg-tiffany-800 text-white')}>
               <Plus className="w-4 h-4 mr-2" />
               Crea il tuo primo evento
             </Link>

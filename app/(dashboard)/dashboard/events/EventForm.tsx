@@ -33,9 +33,11 @@ export default function EventForm({ userId, userPlan, event }: Props) {
   const [iban, setIban] = useState(event?.iban ?? '')
   const [bankOwnerName, setBankOwnerName] = useState(event?.bank_owner_name ?? '')
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
+  const [inviteImageUrl, setInviteImageUrl] = useState(event?.invite_image_url ?? '')
   const [theme, setTheme] = useState<EventTheme | null>(event?.theme ?? null)
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingInvite, setUploadingInvite] = useState(false)
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
   const slugDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -66,26 +68,41 @@ export default function EventForm({ userId, userPlan, event }: Props) {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Immagine troppo grande (max 5MB)')
-      return
-    }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Immagine troppo grande (max 5MB)'); return }
     setUploadingImage(true)
     try {
       const ext = file.name.split('.').pop()
       const path = `covers/${userId}/${Date.now()}.${ext}`
-      const { error } = await supabase.storage
-        .from('wishday')
-        .upload(path, file, { upsert: true })
+      const { error } = await supabase.storage.from('wishday').upload(path, file, { upsert: true })
       if (error) throw error
       const { data: { publicUrl } } = supabase.storage.from('wishday').getPublicUrl(path)
       setCoverImageUrl(publicUrl)
       toast.success('Immagine caricata!')
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Errore upload immagine'
-      toast.error(message)
+      toast.error(err instanceof Error ? err.message : 'Errore upload immagine')
     } finally {
       setUploadingImage(false)
+    }
+  }
+
+  // Upload invito da social/Canva su Supabase Storage
+  async function handleInviteUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) { toast.error('Immagine troppo grande (max 10MB)'); return }
+    setUploadingInvite(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `invites/${userId}/${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from('wishday').upload(path, file, { upsert: true })
+      if (error) throw error
+      const { data: { publicUrl } } = supabase.storage.from('wishday').getPublicUrl(path)
+      setInviteImageUrl(publicUrl)
+      toast.success('Invito caricato!')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Errore upload invito')
+    } finally {
+      setUploadingInvite(false)
     }
   }
 
@@ -110,6 +127,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             is_public: isPublic, iban: iban || null,
             bank_owner_name: bankOwnerName || null,
             cover_image_url: coverImageUrl || null,
+            invite_image_url: inviteImageUrl || null,
             theme: theme || null,
           })
           .eq('id', event.id)
@@ -125,6 +143,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             is_public: isPublic, iban: iban || null,
             bank_owner_name: bankOwnerName || null,
             cover_image_url: coverImageUrl || null,
+            invite_image_url: inviteImageUrl || null,
             theme: theme || null,
           })
           .select()
@@ -287,6 +306,55 @@ export default function EventForm({ userId, userPlan, event }: Props) {
         </CardContent>
       </Card>
 
+      {/* Invito evento */}
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <div>
+            <h2 className="font-semibold text-gray-700">Invito evento</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Carica qui un invito già creato su Canva, Instagram, WhatsApp o altro. Verrà mostrato agli ospiti nella pagina evento.
+            </p>
+          </div>
+
+          {inviteImageUrl && (
+            <div className="relative rounded-xl overflow-hidden border border-gray-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={inviteImageUrl} alt="Invito" className="w-full object-contain max-h-60" />
+              <button
+                type="button"
+                onClick={() => setInviteImageUrl('')}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="inviteUpload">Carica invito (max 10MB)</Label>
+            <Input
+              id="inviteUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleInviteUpload}
+              disabled={uploadingInvite}
+            />
+            {uploadingInvite && <p className="text-xs text-gray-400">Caricamento in corso...</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="inviteUrl">Oppure inserisci URL dell&apos;invito</Label>
+            <Input
+              id="inviteUrl"
+              type="url"
+              placeholder="https://..."
+              value={inviteImageUrl}
+              onChange={(e) => setInviteImageUrl(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Tema colore — solo premium */}
       {userPlan === 'premium' ? (
         <Card>
@@ -302,7 +370,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
                   type="button"
                   onClick={() => setTheme(key === theme ? null : key)}
                   className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${
-                    theme === key ? 'border-purple-600' : 'border-transparent hover:border-gray-200'
+                    theme === key ? 'border-tiffany-600' : 'border-transparent hover:border-gray-200'
                   }`}
                   title={t.label}
                 >
@@ -362,8 +430,8 @@ export default function EventForm({ userId, userPlan, event }: Props) {
         </Button>
         <Button
           type="submit"
-          className="bg-purple-700 hover:bg-purple-800 text-white"
-          disabled={loading || uploadingImage}
+          className="bg-tiffany-700 hover:bg-tiffany-800 text-white"
+          disabled={loading || uploadingImage || uploadingInvite}
         >
           {loading ? 'Salvataggio...' : isEdit ? 'Salva modifiche' : 'Crea evento'}
         </Button>

@@ -5,6 +5,18 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Tiffany blue palette */
+  --color-tiffany-50: #edfafa;
+  --color-tiffany-100: #d5f5f5;
+  --color-tiffany-200: #aae9e8;
+  --color-tiffany-300: #6ed8d7;
+  --color-tiffany-400: #3bc8c7;
+  --color-tiffany-500: #0abab5;
+  --color-tiffany-600: #089a96;
+  --color-tiffany-700: #077c79;
+  --color-tiffany-800: #065e5c;
+  --color-tiffany-900: #044140;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -55,8 +67,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Viola principale #7C3AED */
-  --primary: oklch(0.478 0.231 281.0);
+  /* Tiffany blue principale #0ABAB5 */
+  --primary: oklch(0.72 0.14 182);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
