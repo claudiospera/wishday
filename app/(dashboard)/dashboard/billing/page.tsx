@@ -207,7 +207,7 @@ export default function BillingPage() {
 
       {/* Confronto piani */}
       {!isPremium && (
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-4 pt-4">
           {/* Piano Free */}
           <Card className="border-gray-200">
             <CardHeader>
