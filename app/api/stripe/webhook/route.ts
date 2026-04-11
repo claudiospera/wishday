@@ -83,12 +83,19 @@ export async function POST(request: NextRequest) {
           .single()
 
         if (userData?.email) {
+          console.log(`Invio email benvenuto a ${userData.email}`)
           await sendSubscriptionWelcomeEmail({
             to: userData.email,
             userName: userData.full_name ?? 'Utente',
             interval: (meta.interval ?? 'monthly') as 'monthly' | 'yearly',
             currentPeriodEnd: currentPeriodEnd ?? new Date().toISOString(),
-          }).catch(console.error)
+          }).then(() => {
+            console.log(`Email benvenuto inviata a ${userData.email}`)
+          }).catch((err) => {
+            console.error('Errore invio email benvenuto:', err)
+          })
+        } else {
+          console.warn(`Utente ${meta.userId} senza email, email benvenuto non inviata`)
         }
 
         console.log(`Subscription ${subscriptionId} creata per utente ${meta.userId}`)
