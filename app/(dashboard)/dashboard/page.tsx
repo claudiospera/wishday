@@ -41,7 +41,7 @@ export default async function DashboardPage() {
   const isMonthly = isPremium && subscription?.interval === 'monthly'
   const maxEvents = isPremium ? Infinity : 1
   const canCreateEvent = (events?.length ?? 0) < maxEvents
-  const hasPayoutSetup = profile?.stripe_account_verified || !!profile?.payout_iban
+  const hasPayoutSetup = !!profile?.stripe_account_verified
 
   return (
     <div className="space-y-6">
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
             <div>
               <p className="font-semibold text-tiffany-900">Configura come ricevere i pagamenti</p>
               <p className="text-sm text-tiffany-700 mt-0.5">
-                Collega il tuo conto bancario o Stripe per ricevere i contributi degli invitati.
+                Collega il tuo conto bancario tramite Stripe Connect per ricevere i fondi automaticamente.
               </p>
             </div>
           </div>

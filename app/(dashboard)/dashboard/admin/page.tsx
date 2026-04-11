@@ -6,9 +6,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
+import AdminActions from './AdminActions'
+import Link from 'next/link'
 
 export default async function AdminPage() {
-  // Verifica che sia l'admin
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || user.email !== process.env.ADMIN_EMAIL) {
@@ -17,13 +18,17 @@ export default async function AdminPage() {
 
   const admin = createAdminClient()
 
-  // Fetch utenti
+  // Fetch utenti da tabella custom
   const { data: users } = await admin
     .from('users')
     .select('*, events(count)')
     .order('created_at', { ascending: false })
 
-  // Fetch statistiche
+  // Fetch utenti auth per stato conferma
+  const { data: { users: authUsers } } = await admin.auth.admin.listUsers({ perPage: 1000 })
+  const authMap = new Map(authUsers.map((u) => [u.id, u]))
+
+  // Statistiche
   const { count: totalUsers } = await admin.from('users').select('*', { count: 'exact', head: true })
   const { count: totalEvents } = await admin.from('events').select('*', { count: 'exact', head: true })
   const { count: premiumUsers } = await admin.from('users').select('*', { count: 'exact', head: true }).eq('plan', 'premium')
@@ -32,9 +37,14 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Pannello Admin</h1>
-        <p className="text-gray-500 text-sm mt-1">Visibile solo a te</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Pannello Admin</h1>
+          <p className="text-gray-500 text-sm mt-1">Visibile solo a te</p>
+        </div>
+        <Link href="/dashboard/admin/contabilita" className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-100 transition-colors">
+          💰 Contabilità
+        </Link>
       </div>
 
       {/* Statistiche */}
@@ -78,33 +88,49 @@ export default async function AdminPage() {
                   <th className="pb-3 pr-4 font-medium">Nome</th>
                   <th className="pb-3 pr-4 font-medium">Email</th>
                   <th className="pb-3 pr-4 font-medium">Piano</th>
+                  <th className="pb-3 pr-4 font-medium">Stato</th>
                   <th className="pb-3 pr-4 font-medium">Eventi</th>
-                  <th className="pb-3 font-medium">Registrato</th>
+                  <th className="pb-3 pr-4 font-medium">Registrato</th>
+                  <th className="pb-3 font-medium">Azioni</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {users?.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="py-3 pr-4 font-medium text-gray-900">
-                      {u.full_name ?? '—'}
-                    </td>
-                    <td className="py-3 pr-4 text-gray-600">{u.email}</td>
-                    <td className="py-3 pr-4">
-                      {u.plan === 'premium' ? (
-                        <Badge className="bg-tiffany-100 text-tiffany-700 border-tiffany-200">Premium</Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-gray-500">Free</Badge>
-                      )}
-                    </td>
-                    <td className="py-3 pr-4 text-gray-600">
-                      {(u.events as { count: number }[])?.[0]?.count ?? 0}
-                    </td>
-                    <td className="py-3 text-gray-500">{formatDate(u.created_at)}</td>
-                  </tr>
-                ))}
+                {users?.map((u) => {
+                  const authUser = authMap.get(u.id)
+                  const confirmed = !!authUser?.email_confirmed_at
+                  return (
+                    <tr key={u.id} className="hover:bg-gray-50">
+                      <td className="py-3 pr-4 font-medium text-gray-900">
+                        {u.full_name ?? '—'}
+                      </td>
+                      <td className="py-3 pr-4 text-gray-600">{u.email}</td>
+                      <td className="py-3 pr-4">
+                        {u.plan === 'premium' ? (
+                          <Badge className="bg-tiffany-100 text-tiffany-700 border-tiffany-200">Premium</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-gray-500">Free</Badge>
+                        )}
+                      </td>
+                      <td className="py-3 pr-4">
+                        {confirmed ? (
+                          <span className="text-green-600 text-xs font-medium">✓ Confermato</span>
+                        ) : (
+                          <span className="text-amber-500 text-xs font-medium">⏳ In attesa</span>
+                        )}
+                      </td>
+                      <td className="py-3 pr-4 text-gray-600">
+                        {(u.events as { count: number }[])?.[0]?.count ?? 0}
+                      </td>
+                      <td className="py-3 pr-4 text-gray-500">{formatDate(u.created_at)}</td>
+                      <td className="py-3">
+                        <AdminActions userId={u.id} email={u.email} confirmed={confirmed} />
+                      </td>
+                    </tr>
+                  )
+                })}
                 {(!users || users.length === 0) && (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-400">
+                    <td colSpan={7} className="py-8 text-center text-gray-400">
                       Nessun utente registrato
                     </td>
                   </tr>
