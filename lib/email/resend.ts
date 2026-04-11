@@ -10,19 +10,23 @@ function getSenderEmail() {
   return process.env.BREVO_FROM_EMAIL ?? 'info@wishday.it'
 }
 
-async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+const ADMIN_EMAIL = 'info@wishday.it'
+
+async function sendEmail({ to, subject, html, cc }: { to: string; subject: string; html: string; cc?: string[] }) {
+  const body: Record<string, unknown> = {
+    sender: { name: getSenderName(), email: getSenderEmail() },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+  }
+  if (cc?.length) body.cc = cc.map((email) => ({ email }))
   const res = await fetch(BREVO_API_URL, {
     method: 'POST',
     headers: {
       'api-key': process.env.BREVO_API_KEY!,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      sender: { name: getSenderName(), email: getSenderEmail() },
-      to: [{ email: to }],
-      subject,
-      htmlContent: html,
-    }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const err = await res.text()
@@ -209,6 +213,7 @@ export async function sendSubscriptionWelcomeEmail({
   })
   return sendEmail({
     to,
+    cc: to !== ADMIN_EMAIL ? [ADMIN_EMAIL] : undefined,
     subject: '⭐ Benvenuto in Wishday Premium!',
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
