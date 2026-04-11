@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { generateSlug, eventThemes, coverGradients, getCoverStyle } from '@/lib/utils'
 import { toast } from 'sonner'
+import { inviteTemplates, InviteTemplateCard } from '@/components/InviteTemplate'
 import type { Event, EventType, EventTheme } from '@/lib/types'
 
 interface Props {
@@ -353,10 +354,23 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             </p>
           </div>
 
+          {/* Anteprima invito */}
           {inviteImageUrl && (
             <div className="relative rounded-xl overflow-hidden border border-gray-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={inviteImageUrl} alt="Invito" className="w-full object-contain max-h-60" />
+              {inviteImageUrl.startsWith('template:') ? (
+                <div className="p-4 bg-gray-50">
+                  <InviteTemplateCard
+                    templateKey={inviteImageUrl.replace('template:', '')}
+                    title={title}
+                    date={date || new Date().toISOString()}
+                    eventType={type}
+                    mode="full"
+                  />
+                </div>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={inviteImageUrl} alt="Invito" className="w-full object-contain max-h-60" />
+              )}
               <button
                 type="button"
                 onClick={() => setInviteImageUrl('')}
@@ -364,6 +378,49 @@ export default function EventForm({ userId, userPlan, event }: Props) {
               >
                 ×
               </button>
+            </div>
+          )}
+
+          {/* Template predefiniti — solo premium */}
+          {userPlan === 'premium' ? (
+            <div className="space-y-2">
+              <Label>Template predefiniti</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {Object.entries(inviteTemplates).map(([key, t]) => {
+                  const selected = inviteImageUrl === `template:${key}`
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setInviteImageUrl(selected ? '' : `template:${key}`)}
+                      className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                        selected ? 'border-tiffany-600 ring-2 ring-tiffany-400' : 'border-transparent hover:border-gray-300'
+                      }`}
+                      title={t.label}
+                    >
+                      <InviteTemplateCard
+                        templateKey={key}
+                        title={title || 'Il tuo evento'}
+                        date={date || new Date().toISOString()}
+                        eventType={type}
+                        mode="thumb"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/30 py-0.5 px-1">
+                        <span className="text-white text-[9px] font-medium">{t.label}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              <p className="text-xs text-gray-400">Oppure carica la tua immagine qui sotto</p>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-amber-200 bg-amber-50/50 p-4 flex items-center gap-3">
+              <span className="text-2xl">🎨</span>
+              <div>
+                <p className="font-semibold text-amber-800 text-sm">Template invito — Piano Premium</p>
+                <p className="text-xs text-amber-600">Passa al Premium per usare i template grafici predefiniti.</p>
+              </div>
             </div>
           )}
 

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes, themeColorMap, getCoverStyle } from '@/lib/utils'
 import type { EventTheme } from '@/lib/types'
 import CountdownTimer from '@/components/CountdownTimer'
+import { InviteTemplateCard } from '@/components/InviteTemplate'
 import WishItemCard from '@/components/WishItem/WishItemCard'
 import IbanSection from './IbanSection'
 import WishForm from './WishForm'
@@ -136,12 +137,25 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
               📩 Invito
             </h2>
             <div className="rounded-2xl overflow-hidden shadow-md border" style={{ borderColor: tc.border }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={event.invite_image_url}
-                alt="Invito all'evento"
-                className="w-full object-contain max-h-[500px]"
-              />
+              {event.invite_image_url.startsWith('template:') ? (
+                <div className="p-6" style={{ background: tc.muted }}>
+                  <InviteTemplateCard
+                    templateKey={event.invite_image_url.replace('template:', '')}
+                    title={event.title}
+                    date={event.date}
+                    eventType={event.type}
+                    hostName={(event.users as { full_name: string })?.full_name}
+                    mode="full"
+                  />
+                </div>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={event.invite_image_url}
+                  alt="Invito all'evento"
+                  className="w-full object-contain max-h-[500px]"
+                />
+              )}
             </div>
           </section>
         )}
