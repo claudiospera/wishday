@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           </Link>
         ) : (
           <Link href="/dashboard/billing" className={cn(buttonVariants({ variant: 'outline' }), 'border-amber-400 text-amber-700')}>
-            ⭐ Passa a Premium
+            ⭐ Abbonati — €79/anno
           </Link>
         )}
       </div>
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Link href="/dashboard/billing" className={cn(buttonVariants({ size: 'sm' }), 'bg-amber-500 hover:bg-amber-600 text-white')}>
-            Passa a Premium — €9,90/mese
+            ⭐ Abbonati — €79/anno
           </Link>
         </div>
       )}
