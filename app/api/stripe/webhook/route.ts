@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
             plan: 'premium',
             status: subscription.status as 'active' | 'cancelled' | 'past_due',
             current_period_end: currentPeriodEnd,
+            interval: (meta.interval ?? 'monthly') as 'monthly' | 'yearly',
           }),
           supabase.from('users').update({
             plan: 'premium',

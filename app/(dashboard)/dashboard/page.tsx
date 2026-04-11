@@ -27,7 +27,18 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  // Recupera l'interval dell'abbonamento attivo
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('interval')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
   const isPremium = profile?.plan === 'premium'
+  const isMonthly = isPremium && subscription?.interval === 'monthly'
   const maxEvents = isPremium ? Infinity : 1
   const canCreateEvent = (events?.length ?? 0) < maxEvents
   const hasPayoutSetup = profile?.stripe_account_verified || !!profile?.payout_iban
@@ -60,11 +71,31 @@ export default async function DashboardPage() {
           <div>
             <p className="font-medium text-amber-800">Piano Free</p>
             <p className="text-sm text-amber-600">
-              1 evento attivo, max 10 prodotti, commissione 3% sui contributi
+              1 evento attivo, max 10 prodotti, commissione 5% sui contributi
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Link href="/dashboard/billing?interval=monthly" className={cn(buttonVariants({ size: 'sm', variant: 'outline' }), 'border-amber-400 text-amber-700 hover:bg-amber-50')}>
+              €9,90/mese
+            </Link>
+            <Link href="/dashboard/billing" className={cn(buttonVariants({ size: 'sm' }), 'bg-amber-500 hover:bg-amber-600 text-white')}>
+              ⭐ €79/anno
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Banner upgrade annuale per premium mensili */}
+      {isMonthly && (
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <p className="font-medium text-amber-800">Sei su Piano Premium mensile</p>
+            <p className="text-sm text-amber-600">
+              Passa al piano annuale e risparmi — €79/anno invece di €118,80
             </p>
           </div>
           <Link href="/dashboard/billing" className={cn(buttonVariants({ size: 'sm' }), 'bg-amber-500 hover:bg-amber-600 text-white')}>
-            ⭐ Abbonati — €79/anno
+            ⭐ Passa al piano annuale
           </Link>
         </div>
       )}
