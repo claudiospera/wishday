@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       mode: 'subscription',
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      billing_address_collection: 'required',
+      billing_address_collection: 'auto',
       tax_id_collection: { enabled: true },
       automatic_tax: { enabled: true },
       customer_update: { name: 'auto', address: 'auto' },
