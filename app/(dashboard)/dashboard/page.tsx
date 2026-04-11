@@ -20,16 +20,17 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  // Recupera profilo per controllare il piano
+  // Recupera profilo per controllare il piano e metodo di pagamento
   const { data: profile } = await supabase
     .from('users')
-    .select('plan, full_name')
+    .select('plan, full_name, stripe_account_verified, payout_iban, payout_method')
     .eq('id', user.id)
     .single()
 
   const isPremium = profile?.plan === 'premium'
   const maxEvents = isPremium ? Infinity : 1
   const canCreateEvent = (events?.length ?? 0) < maxEvents
+  const hasPayoutSetup = profile?.stripe_account_verified || !!profile?.payout_iban
 
   return (
     <div className="space-y-6">
@@ -64,6 +65,24 @@ export default async function DashboardPage() {
           </div>
           <Link href="/dashboard/billing" className={cn(buttonVariants({ size: 'sm' }), 'bg-amber-500 hover:bg-amber-600 text-white')}>
             ⭐ Abbonati — €79/anno
+          </Link>
+        </div>
+      )}
+
+      {/* Banner configurazione pagamenti */}
+      {!hasPayoutSetup && (
+        <div className="bg-gradient-to-r from-tiffany-50 to-emerald-50 border border-tiffany-200 rounded-xl p-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="text-3xl">💳</div>
+            <div>
+              <p className="font-semibold text-tiffany-900">Configura come ricevere i pagamenti</p>
+              <p className="text-sm text-tiffany-700 mt-0.5">
+                Collega il tuo conto bancario o Stripe per ricevere i contributi degli invitati.
+              </p>
+            </div>
+          </div>
+          <Link href="/dashboard/settings" className={cn(buttonVariants({ size: 'sm' }), 'bg-tiffany-700 hover:bg-tiffany-800 text-white whitespace-nowrap')}>
+            Configura ora →
           </Link>
         </div>
       )}
