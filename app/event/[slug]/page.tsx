@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
@@ -88,6 +89,16 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: tc.light }}>
+      {/* Barra navigazione pubblica */}
+      <div className="absolute top-0 left-0 right-0 z-10 px-4 py-3 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors rounded-full px-3 py-1.5">
+          <span className="text-white text-sm font-semibold tracking-wide">Wishday</span>
+        </Link>
+        <Link href="/login" className="text-white/80 hover:text-white text-xs transition-colors">
+          Accedi
+        </Link>
+      </div>
+
       {/* Hero con copertina */}
       <div className="relative">
         <div
