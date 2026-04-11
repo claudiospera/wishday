@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       billing_address_collection: 'required',
       tax_id_collection: { enabled: true },
       automatic_tax: { enabled: true },
+      customer_update: { name: 'auto', address: 'auto' },
       metadata: {
         userId: user.id,
         plan: 'premium',
