@@ -233,8 +233,8 @@ export default function BillingPage() {
           </Card>
 
           {/* Piano Premium */}
-          <Card className="border-tiffany-400 ring-2 ring-tiffany-400 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <Card className="border-tiffany-400 ring-2 ring-tiffany-400 relative mt-4">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
               <Badge className="bg-tiffany-700 text-white">Più popolare</Badge>
             </div>
             <CardHeader>
