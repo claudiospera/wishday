@@ -36,5 +36,8 @@ export function calculateCommission(grossAmountCents: number, plan: 'free' | 'pr
   return Math.ceil(grossAmountCents * commission)
 }
 
-// URL base applicazione
-export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+// URL base applicazione — usa APP_URL (server-side, letto a runtime) oppure fallback fisso
+export function getAppUrl(): string {
+  return process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://wishday.it'
+}
+export const APP_URL = getAppUrl()

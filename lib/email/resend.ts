@@ -176,6 +176,45 @@ export async function sendPayoutConfirmationToUser({
   })
 }
 
+// Email di benvenuto all'abbonamento Premium
+export async function sendSubscriptionWelcomeEmail({
+  to,
+  userName,
+  interval,
+  currentPeriodEnd,
+}: {
+  to: string
+  userName: string
+  interval: 'monthly' | 'yearly'
+  currentPeriodEnd: string
+}) {
+  const planLabel = interval === 'yearly' ? '€79/anno' : '€9,90/mese'
+  const renewDate = new Date(currentPeriodEnd).toLocaleDateString('it-IT', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  })
+  return getResend().emails.send({
+    from: FROM(),
+    to,
+    subject: '⭐ Benvenuto in Wishday Premium!',
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h1 style="color: #0abab5;">⭐ Sei ufficialmente Premium!</h1>
+        <p>Ciao ${userName},</p>
+        <p>Il tuo abbonamento <strong>Wishday Premium</strong> (${planLabel}) è attivo.</p>
+        <ul style="line-height: 1.8;">
+          <li>Eventi illimitati</li>
+          <li>Wish list illimitata</li>
+          <li>Commissione ridotta al 3%</li>
+          <li>Nessun branding Wishday sulle pagine</li>
+          <li>Temi premium e supporto prioritario</li>
+        </ul>
+        <p>Il prossimo rinnovo è previsto per il <strong>${renewDate}</strong>. Puoi gestire il tuo abbonamento dalla <a href="https://wishday.it/dashboard/billing">dashboard</a>.</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
+      </div>
+    `,
+  })
+}
+
 // Notifica al festeggiato quando un regalo viene prenotato
 export async function sendReservationNotification({
   to,

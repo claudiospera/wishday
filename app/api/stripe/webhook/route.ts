@@ -6,6 +6,7 @@ import {
   sendContributionConfirmation,
   sendNewContributionNotification,
   sendGoalReachedNotification,
+  sendSubscriptionWelcomeEmail,
 } from '@/lib/email/resend'
 import type Stripe from 'stripe'
 
@@ -73,6 +74,22 @@ export async function POST(request: NextRequest) {
             tax_id: taxId,
           }).eq('id', meta.userId),
         ])
+
+        // Email di benvenuto
+        const { data: userData } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('id', meta.userId)
+          .single()
+
+        if (userData?.email) {
+          await sendSubscriptionWelcomeEmail({
+            to: userData.email,
+            userName: userData.full_name ?? 'Utente',
+            interval: (meta.interval ?? 'monthly') as 'monthly' | 'yearly',
+            currentPeriodEnd: currentPeriodEnd ?? new Date().toISOString(),
+          }).catch(console.error)
+        }
 
         console.log(`Subscription ${subscriptionId} creata per utente ${meta.userId}`)
         break
