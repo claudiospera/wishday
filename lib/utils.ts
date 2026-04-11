@@ -109,6 +109,29 @@ export const themeColorMap: Record<string, {
   amber:  { primary: '#D97706', hover: '#B45309', light: '#FFFBEB', muted: '#FEF3C7', border: '#FDE68A', text: '#B45309', progress: '#FBBF24' },
 }
 
+// Sfondi predefiniti per copertina evento (solo piano premium)
+export const coverGradients: Record<string, { label: string; gradient: string; emoji: string }> = {
+  sunset:    { label: 'Tramonto',    gradient: 'linear-gradient(135deg, #f97316 0%, #ec4899 50%, #8b5cf6 100%)', emoji: '🌅' },
+  blossom:   { label: 'Fiori',       gradient: 'linear-gradient(135deg, #fda4af 0%, #f9a8d4 50%, #e879f9 100%)', emoji: '🌸' },
+  ocean:     { label: 'Oceano',      gradient: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 40%, #0d9488 100%)', emoji: '🌊' },
+  forest:    { label: 'Foresta',     gradient: 'linear-gradient(135deg, #4ade80 0%, #16a34a 50%, #065f46 100%)', emoji: '🌿' },
+  golden:    { label: 'Oro',         gradient: 'linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #b45309 100%)', emoji: '✨' },
+  lavender:  { label: 'Lavanda',     gradient: 'linear-gradient(135deg, #c4b5fd 0%, #a78bfa 40%, #7c3aed 100%)', emoji: '💜' },
+  rosegold:  { label: 'Rosa Gold',   gradient: 'linear-gradient(135deg, #fecdd3 0%, #fb7185 40%, #e11d48 100%)', emoji: '🌹' },
+  midnight:  { label: 'Notte',       gradient: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #4f46e5 100%)', emoji: '🌙' },
+}
+
+// Restituisce lo style inline per la copertina (supporta URL e preset gradient:*)
+export function getCoverStyle(coverImageUrl: string | null | undefined): Record<string, string> {
+  if (!coverImageUrl) return {}
+  if (coverImageUrl.startsWith('gradient:')) {
+    const key = coverImageUrl.replace('gradient:', '')
+    const preset = coverGradients[key]
+    if (preset) return { background: preset.gradient }
+  }
+  return { backgroundImage: `url(${coverImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+}
+
 // Configurazione biglietti augurali per tipo evento
 export const greetingCardConfig: Record<string, {
   bg: string; title: string; decoration: string; emoji: string

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { generateSlug, eventThemes } from '@/lib/utils'
+import { generateSlug, eventThemes, coverGradients, getCoverStyle } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Event, EventType, EventTheme } from '@/lib/types'
 
@@ -271,10 +271,15 @@ export default function EventForm({ userId, userPlan, event }: Props) {
         <CardContent className="pt-6 space-y-4">
           <h2 className="font-semibold text-gray-700">Foto copertina</h2>
 
+          {/* Anteprima copertina */}
           {coverImageUrl && (
             <div className="relative h-40 rounded-lg overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={coverImageUrl} alt="Copertina" className="w-full h-full object-cover" />
+              {coverImageUrl.startsWith('gradient:') ? (
+                <div className="w-full h-full" style={getCoverStyle(coverImageUrl)} />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={coverImageUrl} alt="Copertina" className="w-full h-full object-cover" />
+              )}
               <button
                 type="button"
                 onClick={() => setCoverImageUrl('')}
@@ -282,6 +287,35 @@ export default function EventForm({ userId, userPlan, event }: Props) {
               >
                 ×
               </button>
+            </div>
+          )}
+
+          {/* Sfondi predefiniti — solo premium */}
+          {userPlan === 'premium' && (
+            <div className="space-y-2">
+              <Label>Sfondi predefiniti</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {Object.entries(coverGradients).map(([key, preset]) => {
+                  const selected = coverImageUrl === `gradient:${key}`
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setCoverImageUrl(selected ? '' : `gradient:${key}`)}
+                      className={`relative h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                        selected ? 'border-tiffany-600 ring-2 ring-tiffany-400' : 'border-transparent hover:border-gray-300'
+                      }`}
+                      title={preset.label}
+                    >
+                      <div className="w-full h-full" style={{ background: preset.gradient }} />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-lg leading-none">{preset.emoji}</span>
+                        <span className="text-white text-[10px] font-medium mt-0.5 drop-shadow">{preset.label}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           )}
 

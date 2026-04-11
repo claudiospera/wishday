@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes, themeColorMap } from '@/lib/utils'
+import { formatDate, eventTypeEmoji, eventTypeLabels, eventThemes, themeColorMap, getCoverStyle } from '@/lib/utils'
 import type { EventTheme } from '@/lib/types'
 import CountdownTimer from '@/components/CountdownTimer'
 import WishItemCard from '@/components/WishItem/WishItemCard'
@@ -91,11 +91,7 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
       <div className="relative">
         <div
           className={`h-64 md:h-80 bg-gradient-to-br ${heroGradient}`}
-          style={event.cover_image_url ? {
-            backgroundImage: `url(${event.cover_image_url})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          } : {}}
+          style={getCoverStyle(event.cover_image_url)}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>

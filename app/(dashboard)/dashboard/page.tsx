@@ -5,7 +5,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, ExternalLink, Settings } from 'lucide-react'
-import { cn, formatDate, eventTypeEmoji, eventTypeLabels } from '@/lib/utils'
+import { cn, formatDate, eventTypeEmoji, eventTypeLabels, getCoverStyle } from '@/lib/utils'
 import type { Event } from '@/lib/types'
 
 export default async function DashboardPage() {
@@ -122,11 +122,7 @@ export default async function DashboardPage() {
               {/* Copertina evento */}
               <div
                 className="h-32 rounded-t-lg bg-gradient-to-br from-tiffany-100 to-amber-100 relative overflow-hidden"
-                style={event.cover_image_url ? {
-                  backgroundImage: `url(${event.cover_image_url})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                } : {}}
+                style={getCoverStyle(event.cover_image_url)}
               >
                 <div className="absolute inset-0 bg-black/20 flex items-end p-3">
                   <span className="text-2xl">
