@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { formatDate, eventTypeEmoji } from '@/lib/utils'
 
 // ─── Definizione template ────────────────────────────────────────────────────
@@ -195,7 +196,7 @@ const templateConfig: Record<string, {
   subtitleColor: string
   tagBg: string
   tagColor: string
-  SVGDecoration: () => JSX.Element
+  SVGDecoration: () => React.ReactElement
 }> = {
   'floreale-rosa': {
     bg: 'linear-gradient(160deg,#fff0f7 0%,#fce7f3 45%,#ffe4e6 100%)',
