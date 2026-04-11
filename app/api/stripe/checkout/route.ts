@@ -1,6 +1,6 @@
 // API per creare una sessione Stripe Checkout per un contributo collettivo
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, APP_URL } from '@/lib/stripe'
+import { stripe, APP_URL, calculateCommission } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Recupera il wish item e l'evento per ottenere il piano del host
     const { data: item } = await supabase
       .from('wish_items')
-      .select('*, events(id, slug, title, user_id, users(plan, stripe_account_id))')
+      .select('*, events(id, slug, title, user_id, users(plan, stripe_account_id, stripe_account_verified))')
       .eq('id', wishItemId)
       .eq('type', 'collective')
       .single()
@@ -28,8 +28,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Prodotto non trovato' }, { status: 404 })
     }
 
-    const event = item.events as { id: string; slug: string; title: string; user_id: string; users: { plan: string; stripe_account_id: string | null } }
+    const event = item.events as {
+      id: string; slug: string; title: string; user_id: string
+      users: { plan: string; stripe_account_id: string | null; stripe_account_verified: boolean }
+    }
     const amountCents = Math.round(amount * 100)
+
+    // Usa destination charge se il host ha un account Connect verificato:
+    // i soldi vanno direttamente al host e la commissione viene trattenuta automaticamente.
+    const { plan, stripe_account_id, stripe_account_verified } = event.users
+    const useDestination = !!stripe_account_id && !!stripe_account_verified
 
     // Crea la sessione Stripe Checkout
     const session = await stripe.checkout.sessions.create({
@@ -49,6 +57,12 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
+      ...(useDestination && {
+        payment_intent_data: {
+          application_fee_amount: calculateCommission(amountCents, plan as 'free' | 'premium'),
+          transfer_data: { destination: stripe_account_id! },
+        },
+      }),
       metadata: {
         wishItemId,
         contributorName,
@@ -57,6 +71,7 @@ export async function POST(request: NextRequest) {
         message: message ?? '',
         eventId: event.id,
         hostUserId: event.user_id,
+        paymentModel: useDestination ? 'destination' : 'platform',
       },
       success_url: `${APP_URL}/event/${event.slug}?contribution=success&from=${encodeURIComponent(contributorName)}&gift=${encodeURIComponent(item.title)}${message ? `&msg=${encodeURIComponent(message)}` : ''}`,
       cancel_url: `${APP_URL}/event/${event.slug}?contribution=cancelled`,

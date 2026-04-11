@@ -13,6 +13,15 @@ export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due'
 
 export type PayoutMethod = 'stripe' | 'iban'
 
+export interface BillingAddress {
+  line1: string | null
+  line2: string | null
+  city: string | null
+  postal_code: string | null
+  state: string | null
+  country: string | null
+}
+
 export interface User {
   id: string
   full_name: string | null
@@ -20,10 +29,14 @@ export interface User {
   avatar_url: string | null
   stripe_account_id: string | null
   stripe_account_verified: boolean
+  stripe_customer_id: string | null
   plan: UserPlan
   payout_method: PayoutMethod
   payout_iban: string | null
   payout_bank_owner: string | null
+  billing_name: string | null
+  billing_address: BillingAddress | null
+  tax_id: string | null
   created_at: string
 }
 

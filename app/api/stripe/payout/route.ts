@@ -51,33 +51,55 @@ export async function POST(request: NextRequest) {
     const grossAmountCents = Math.round(item.collected_amount * 100)
     const commissionCents = calculateCommission(grossAmountCents, profile.plan)
     const netAmountCents = grossAmountCents - commissionCents
+    const note = item.price != null && item.collected_amount < item.price
+      ? 'Obiettivo non raggiunto — payout parziale'
+      : 'Obiettivo raggiunto'
 
-    // Crea il trasferimento Stripe Connect verso il conto del festeggiato
-    const transfer = await stripe.transfers.create({
-      amount: netAmountCents,
-      currency: 'eur',
-      destination: profile.stripe_account_id,
-      description: `Payout regalo collettivo: ${item.title}`,
-      metadata: {
-        wishItemId,
-        eventId,
-        userId: user.id,
-        grossAmount: grossAmountCents.toString(),
-        commissionAmount: commissionCents.toString(),
-      },
-    })
+    let stripeId: string
+    let payoutAmount: number
+
+    if (profile.stripe_account_verified) {
+      // Modello destination charge: i contributi sono già stati trasferiti al host al momento
+      // del pagamento. Triggeriamo il payout manuale dal saldo del suo account Connect.
+      const payout = await stripe.payouts.create(
+        {
+          amount: netAmountCents,
+          currency: 'eur',
+          description: `Payout regalo collettivo: ${item.title}`,
+          metadata: { wishItemId, eventId, userId: user.id },
+        },
+        { stripeAccount: profile.stripe_account_id },
+      )
+      stripeId = payout.id
+      payoutAmount = netAmountCents
+    } else {
+      // Modello platform: i fondi sono sul nostro account, trasferiamo il netto al host.
+      const transfer = await stripe.transfers.create({
+        amount: netAmountCents,
+        currency: 'eur',
+        destination: profile.stripe_account_id,
+        description: `Payout regalo collettivo: ${item.title}`,
+        metadata: {
+          wishItemId,
+          eventId,
+          userId: user.id,
+          grossAmount: grossAmountCents.toString(),
+          commissionAmount: commissionCents.toString(),
+        },
+      })
+      stripeId = transfer.id
+      payoutAmount = netAmountCents
+    }
 
     // Registra il payout nel database
     await supabase.from('payouts').insert({
       user_id: user.id,
       event_id: eventId,
       wish_item_id: wishItemId,
-      amount: netAmountCents / 100,
-      stripe_payout_id: transfer.id,
+      amount: payoutAmount / 100,
+      stripe_payout_id: stripeId,
       status: 'completed',
-      note: item.price != null && item.collected_amount < item.price
-        ? 'Obiettivo non raggiunto — payout parziale'
-        : 'Obiettivo raggiunto',
+      note,
     })
 
     // Azzera il collected_amount del wish item
@@ -88,8 +110,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      transferId: transfer.id,
-      netAmount: netAmountCents / 100,
+      transferId: stripeId,
+      netAmount: payoutAmount / 100,
       commission: commissionCents / 100,
     })
   } catch (err: unknown) {

@@ -28,12 +28,58 @@ export async function POST(request: NextRequest) {
   const supabase = await createAdminClient()
 
   switch (event.type) {
-    // ===== Contributo completato =====
+    // ===== Checkout completato (contributo o abbonamento) =====
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
       const meta = session.metadata
 
-      if (!meta?.wishItemId) break // Non è un contributo
+      // ── Abbonamento ──────────────────────────────────────────
+      if (session.mode === 'subscription' && meta?.userId && session.subscription) {
+        const customerId = session.customer as string
+        const subscriptionId = session.subscription as string
+
+        // Recupera il Customer Stripe per estrarre i dati fiscali
+        const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+        const taxId = customer.tax_ids?.data?.[0]?.value ?? null
+
+        const billingAddress = customer.address ? {
+          line1: customer.address.line1 ?? null,
+          line2: customer.address.line2 ?? null,
+          city: customer.address.city ?? null,
+          postal_code: customer.address.postal_code ?? null,
+          state: customer.address.state ?? null,
+          country: customer.address.country ?? null,
+        } : null
+
+        // Recupera la subscription Stripe per le date
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const periodEnd = subscription.items.data[0]?.current_period_end
+        const currentPeriodEnd = periodEnd ? new Date(periodEnd * 1000).toISOString() : null
+
+        // Salva/aggiorna subscription e dati utente
+        await Promise.all([
+          supabase.from('subscriptions').upsert({
+            stripe_subscription_id: subscriptionId,
+            user_id: meta.userId,
+            plan: 'premium',
+            status: subscription.status as 'active' | 'cancelled' | 'past_due',
+            current_period_end: currentPeriodEnd,
+          }),
+          supabase.from('users').update({
+            plan: 'premium',
+            stripe_customer_id: customerId,
+            billing_name: customer.name ?? null,
+            billing_address: billingAddress,
+            tax_id: taxId,
+          }).eq('id', meta.userId),
+        ])
+
+        console.log(`Subscription ${subscriptionId} creata per utente ${meta.userId}`)
+        break
+      }
+
+      // ── Contributo ───────────────────────────────────────────
+      if (!meta?.wishItemId) break
 
       const amount = parseFloat(meta.amount)
 
@@ -119,13 +165,11 @@ export async function POST(request: NextRequest) {
       break
     }
 
-    // ===== Subscription attivata/aggiornata =====
-    case 'customer.subscription.created':
+    // ===== Subscription aggiornata (rinnovo, cambio piano, ecc.) =====
+    // La creazione è gestita in checkout.session.completed.
     case 'customer.subscription.updated': {
       const subscription = event.data.object as Stripe.Subscription
-      const customerId = subscription.customer as string
 
-      // Trova l'utente tramite stripe_customer_id (da metadata)
       const { data: subRecord } = await supabase
         .from('subscriptions')
         .select('user_id')
@@ -138,7 +182,6 @@ export async function POST(request: NextRequest) {
       const periodEnd = subscription.items.data[0]?.current_period_end
       const currentPeriodEnd = periodEnd ? new Date(periodEnd * 1000).toISOString() : null
 
-      // Aggiorna o crea il record sottoscrizione
       await supabase.from('subscriptions').upsert({
         stripe_subscription_id: subscription.id,
         user_id: subRecord.user_id,
@@ -147,11 +190,25 @@ export async function POST(request: NextRequest) {
         current_period_end: currentPeriodEnd,
       })
 
-      // Aggiorna il piano utente
-      await supabase
-        .from('users')
-        .update({ plan: isActive ? 'premium' : 'free' })
-        .eq('id', subRecord.user_id)
+      // Aggiorna piano e, se il customer ha modificato i dati fiscali, risalva
+      const customerId = subscription.customer as string
+      const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+      const taxId = customer.tax_ids?.data?.[0]?.value ?? null
+      const billingAddress = customer.address ? {
+        line1: customer.address.line1 ?? null,
+        line2: customer.address.line2 ?? null,
+        city: customer.address.city ?? null,
+        postal_code: customer.address.postal_code ?? null,
+        state: customer.address.state ?? null,
+        country: customer.address.country ?? null,
+      } : null
+
+      await supabase.from('users').update({
+        plan: isActive ? 'premium' : 'free',
+        billing_name: customer.name ?? null,
+        billing_address: billingAddress,
+        tax_id: taxId,
+      }).eq('id', subRecord.user_id)
 
       console.log(`Subscription ${subscription.id} aggiornata per utente ${subRecord.user_id}`)
       break

@@ -27,6 +27,11 @@ export async function POST() {
           transfers: { requested: true },
         },
         business_type: 'individual',
+        settings: {
+          payouts: {
+            schedule: { interval: 'manual' },
+          },
+        },
       })
       accountId = account.id
 

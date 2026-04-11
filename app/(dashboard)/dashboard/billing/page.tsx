@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
-import type { User, Subscription } from '@/lib/types'
+import type { User, Subscription, BillingAddress } from '@/lib/types'
 
 export default function BillingPage() {
   const [profile, setProfile] = useState<User | null>(null)
@@ -15,6 +17,12 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
+  const [billingName, setBillingName] = useState('')
+  const [taxId, setTaxId] = useState('')
+  const [billingLine1, setBillingLine1] = useState('')
+  const [billingCity, setBillingCity] = useState('')
+  const [billingPostalCode, setBillingPostalCode] = useState('')
+  const [savingBilling, setSavingBilling] = useState(false)
 
   const supabase = createClient()
 
@@ -29,7 +37,41 @@ export default function BillingPage() {
     ])
     setProfile(profileData)
     setSubscription(subData)
+    if (profileData) {
+      setBillingName(profileData.billing_name ?? '')
+      setTaxId(profileData.tax_id ?? '')
+      const addr = profileData.billing_address as BillingAddress | null
+      setBillingLine1(addr?.line1 ?? '')
+      setBillingCity(addr?.city ?? '')
+      setBillingPostalCode(addr?.postal_code ?? '')
+    }
     setLoading(false)
+  }
+
+  async function handleSaveBilling() {
+    setSavingBilling(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { error } = await supabase.from('users').update({
+        billing_name: billingName || null,
+        tax_id: taxId || null,
+        billing_address: (billingLine1 || billingCity || billingPostalCode) ? {
+          line1: billingLine1 || null,
+          line2: null,
+          city: billingCity || null,
+          postal_code: billingPostalCode || null,
+          state: null,
+          country: 'IT',
+        } : null,
+      }).eq('id', user.id)
+      if (error) throw error
+      toast.success('Dati di fatturazione salvati!')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Errore salvataggio')
+    } finally {
+      setSavingBilling(false)
+    }
   }
 
   async function handleCheckout(interval: 'monthly' | 'yearly') {
@@ -99,6 +141,67 @@ export default function BillingPage() {
               Stai usando il piano Free. Passa a Premium per sbloccare tutte le funzionalità.
             </p>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Dati di fatturazione */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Dati di fatturazione</CardTitle>
+          <CardDescription>
+            Usati per il calcolo IVA e per le fatture. Salvali prima di abbonarti.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 space-y-2">
+              <Label>Nome / Ragione sociale</Label>
+              <Input
+                placeholder="Mario Rossi"
+                value={billingName}
+                onChange={(e) => setBillingName(e.target.value)}
+              />
+            </div>
+            <div className="col-span-2 space-y-2">
+              <Label>Codice fiscale / P.IVA</Label>
+              <Input
+                placeholder="RSSMRA80A01H501U oppure IT12345678901"
+                value={taxId}
+                onChange={(e) => setTaxId(e.target.value.toUpperCase())}
+              />
+            </div>
+            <div className="col-span-2 space-y-2">
+              <Label>Indirizzo</Label>
+              <Input
+                placeholder="Via Roma 1"
+                value={billingLine1}
+                onChange={(e) => setBillingLine1(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Città</Label>
+              <Input
+                placeholder="Milano"
+                value={billingCity}
+                onChange={(e) => setBillingCity(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>CAP</Label>
+              <Input
+                placeholder="20100"
+                value={billingPostalCode}
+                onChange={(e) => setBillingPostalCode(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button
+            onClick={handleSaveBilling}
+            disabled={savingBilling}
+            className="bg-tiffany-700 hover:bg-tiffany-800 text-white"
+          >
+            {savingBilling ? 'Salvataggio...' : 'Salva dati di fatturazione'}
+          </Button>
         </CardContent>
       </Card>
 
