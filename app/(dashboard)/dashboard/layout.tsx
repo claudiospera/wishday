@@ -30,10 +30,15 @@ export default async function DashboardLayout({
       {/* Header dashboard */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Wishday" width={32} height={32} className="rounded" />
-            <span className="font-bold text-lg text-tiffany-700">Wishday</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.png" alt="Wishday" width={32} height={32} className="rounded" />
+              <span className="font-bold text-lg text-tiffany-700">Wishday</span>
+            </Link>
+            <Link href="/dashboard" className="text-sm text-gray-500 hover:text-tiffany-700 transition-colors font-medium">
+              Home
+            </Link>
+          </div>
           <DashboardNav user={user} profile={profile} />
         </div>
       </header>
