@@ -1,14 +1,34 @@
-// Servizio email tramite Resend
-import { Resend } from 'resend'
+// Servizio email tramite Brevo (API REST)
 
-let _resend: Resend | undefined
-function getResend() {
-  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
-  return _resend
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email'
+
+function getSenderName() {
+  return process.env.BREVO_FROM_NAME ?? 'Wishday'
 }
 
-function FROM() {
-  return `${process.env.RESEND_FROM_NAME ?? 'Wishday'} <${process.env.RESEND_FROM_EMAIL ?? 'noreply@wishday.it'}>`
+function getSenderEmail() {
+  return process.env.BREVO_FROM_EMAIL ?? 'info@wishday.it'
+}
+
+async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  const res = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      'api-key': process.env.BREVO_API_KEY!,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: getSenderName(), email: getSenderEmail() },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Brevo error ${res.status}: ${err}`)
+  }
+  return res.json()
 }
 
 // Email di conferma contributo all'invitato
@@ -25,8 +45,7 @@ export async function sendContributionConfirmation({
   wishItemTitle: string
   amount: number
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: `Grazie per il tuo contributo a "${eventTitle}"!`,
     html: `
@@ -34,7 +53,7 @@ export async function sendContributionConfirmation({
         <h1 style="color: #9de7d7;">🎉 Grazie, ${contributorName}!</h1>
         <p>Il tuo contributo di <strong>€${amount.toFixed(2)}</strong> per <strong>"${wishItemTitle}"</strong>
         nell'evento <strong>"${eventTitle}"</strong> è stato ricevuto con successo.</p>
-        <p style="color: #6B7280; font-size: 14px;">CelebApp — La piattaforma per i tuoi regali</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
       </div>
     `,
   })
@@ -56,8 +75,7 @@ export async function sendNewContributionNotification({
   amount: number
   message?: string | null
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: `Nuovo contributo per "${wishItemTitle}"!`,
     html: `
@@ -67,7 +85,7 @@ export async function sendNewContributionNotification({
         <p><strong>${contributorName}</strong> ha contribuito <strong>€${amount.toFixed(2)}</strong>
         al regalo <strong>"${wishItemTitle}"</strong>.</p>
         ${message ? `<p>Messaggio: <em>"${message}"</em></p>` : ''}
-        <p style="color: #6B7280; font-size: 14px;">CelebApp — La piattaforma per i tuoi regali</p>
+        <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
       </div>
     `,
   })
@@ -85,8 +103,7 @@ export async function sendGoalReachedNotification({
   wishItemTitle: string
   totalCollected: number
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: `🎉 Obiettivo raggiunto per "${wishItemTitle}"!`,
     html: `
@@ -124,8 +141,7 @@ export async function sendPayoutRequestToAdmin({
   iban: string
   bankOwner: string
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to: adminEmail,
     subject: `💰 Richiesta payout: ${hostName} — €${netAmount.toFixed(2)}`,
     html: `
@@ -160,8 +176,7 @@ export async function sendPayoutConfirmationToUser({
   wishItemTitle: string
   netAmount: number
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: `Richiesta payout ricevuta — €${netAmount.toFixed(2)}`,
     html: `
@@ -192,8 +207,7 @@ export async function sendSubscriptionWelcomeEmail({
   const renewDate = new Date(currentPeriodEnd).toLocaleDateString('it-IT', {
     day: 'numeric', month: 'long', year: 'numeric',
   })
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: '⭐ Benvenuto in Wishday Premium!',
     html: `
@@ -208,7 +222,7 @@ export async function sendSubscriptionWelcomeEmail({
           <li>Nessun branding Wishday sulle pagine</li>
           <li>Temi premium e supporto prioritario</li>
         </ul>
-        <p>Il prossimo rinnovo è previsto per il <strong>${renewDate}</strong>. Puoi gestire il tuo abbonamento dalla <a href="https://wishday.it/dashboard/billing">dashboard</a>.</p>
+        <p>Il prossimo rinnovo è previsto per il <strong>${renewDate}</strong>. Puoi gestire il tuo abbonamento dalla <a href="https://www.wishday.it/dashboard/billing">dashboard</a>.</p>
         <p style="color: #6B7280; font-size: 14px;">Wishday — La piattaforma per i tuoi regali</p>
       </div>
     `,
@@ -229,8 +243,7 @@ export async function sendReservationNotification({
   wishItemTitle: string
   eventTitle: string
 }) {
-  return getResend().emails.send({
-    from: FROM(),
+  return sendEmail({
     to,
     subject: `🎁 "${wishItemTitle}" è stato prenotato!`,
     html: `
