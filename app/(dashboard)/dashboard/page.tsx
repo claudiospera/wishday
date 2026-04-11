@@ -53,14 +53,10 @@ export default async function DashboardPage() {
           </h1>
           <p className="text-gray-500 mt-1">Gestisci i tuoi eventi e le wish list</p>
         </div>
-        {canCreateEvent ? (
+        {canCreateEvent && (
           <Link href="/dashboard/events/new" className={cn(buttonVariants(), 'bg-tiffany-700 hover:bg-tiffany-800 text-white')}>
             <Plus className="w-4 h-4 mr-2" />
             Nuovo evento
-          </Link>
-        ) : (
-          <Link href="/dashboard/billing" className={cn(buttonVariants({ variant: 'outline' }), 'border-amber-400 text-amber-700')}>
-            ⭐ Abbonati — €79/anno
           </Link>
         )}
       </div>
