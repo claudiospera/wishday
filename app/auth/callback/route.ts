@@ -16,6 +16,9 @@ export async function GET(request: Request) {
   if (token_hash && type) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type })
     if (!error) {
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}/reset-password`)
+      }
       return NextResponse.redirect(`${origin}/dashboard`)
     }
     return NextResponse.redirect(`${origin}/login?error=link_expired`)
