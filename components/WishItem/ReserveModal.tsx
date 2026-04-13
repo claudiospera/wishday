@@ -222,7 +222,7 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
             >
               <span className="text-base">✅</span>
               <span className="text-xs font-semibold">Acquistato</span>
-              <span className="text-[10px] text-tiffany-200 leading-tight">L&apos;ho già comprato</span>
+              <span className="text-[10px] text-tiffany-200 leading-tight">Compro subito</span>
             </Button>
           </div>
           <Button variant="ghost" size="sm" className="w-full text-gray-400" onClick={onClose}>Annulla</Button>
