@@ -91,11 +91,11 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
   return (
     <div className="min-h-screen" style={{ backgroundColor: tc.light }}>
       {/* Barra navigazione pubblica */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors rounded-full px-3 py-1.5">
-          <span className="text-white text-sm font-semibold tracking-wide">Wishday</span>
+      <div className="px-4 py-3 flex items-center justify-between bg-white/80 backdrop-blur border-b" style={{ borderColor: tc.border }}>
+        <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+          <span className="text-sm font-semibold tracking-wide" style={{ color: tc.text }}>Wishday</span>
         </Link>
-        <Link href="/login" className="text-white/80 hover:text-white text-xs transition-colors">
+        <Link href="/login" className="text-xs font-medium transition-colors" style={{ color: tc.text }}>
           Accedi
         </Link>
       </div>
@@ -107,7 +107,6 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
           style={getCoverStyle(event.cover_image_url)}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="max-w-3xl mx-auto">
