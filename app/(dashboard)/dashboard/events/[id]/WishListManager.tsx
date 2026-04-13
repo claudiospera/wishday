@@ -326,7 +326,8 @@ export default function WishListManager({ event, userId }: Props) {
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Modifica prodotto' : 'Nuovo prodotto'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            <div className="flex flex-col" style={{ maxHeight: '80vh' }}>
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1">
               <div className="space-y-2">
                 <Label>Nome prodotto *</Label>
                 <Input placeholder="Es. AirPods Pro" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -413,12 +414,13 @@ export default function WishListManager({ event, userId }: Props) {
                   <Input placeholder="Via Roma 1, Milano" value={shopAddress} onChange={(e) => setShopAddress(e.target.value)} />
                 </div>
               </div>
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>Annulla</Button>
-                <Button className="flex-1 bg-tiffany-700 hover:bg-tiffany-800 text-white" onClick={handleSave} disabled={saving}>
-                  {saving ? 'Salvataggio...' : 'Salva'}
-                </Button>
-              </div>
+            </div>
+            <div className="flex gap-2 pt-3 border-t mt-3">
+              <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>Annulla</Button>
+              <Button className="flex-1 bg-tiffany-700 hover:bg-tiffany-800 text-white" onClick={handleSave} disabled={saving}>
+                {saving ? 'Salvataggio...' : 'Salva'}
+              </Button>
+            </div>
             </div>
           </DialogContent>
         </Dialog>
