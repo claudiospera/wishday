@@ -204,6 +204,7 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
                   eventType={event.type}
                   eventTitle={event.title}
                   themeKey={themeKey}
+                  shippingAddress={event.shipping_address ?? undefined}
                 />
               ))}
             </div>

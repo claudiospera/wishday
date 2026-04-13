@@ -18,15 +18,17 @@ interface Props {
   onSuccess: (updated: WishItem) => void
   eventType?: string
   eventTitle?: string
+  shippingAddress?: string
 }
 
-export default function ReserveModal({ item, onClose, onSuccess, eventType = 'other', eventTitle = '' }: Props) {
+export default function ReserveModal({ item, onClose, onSuccess, eventType = 'other', eventTitle = '', shippingAddress }: Props) {
   const [step, setStep] = useState<'reserve' | 'card'>('reserve')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [cardMessage, setCardMessage] = useState('')
   const [showGift, setShowGift] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [purchased, setPurchased] = useState(false)
   const supabase = createClient()
 
   const config = greetingCardConfig[eventType] ?? greetingCardConfig.other
@@ -67,7 +69,11 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
       if (fetchError) throw fetchError
       toast.success('Segnato come acquistato! 🎉')
       onSuccess(data)
+      setPurchased(true)
       setStep('card')
+      if (item.shop_url) {
+        window.open(item.shop_url, '_blank', 'noopener,noreferrer')
+      }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Errore aggiornamento')
     } finally {
@@ -165,6 +171,20 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
                 Mostra cosa hai regalato
               </Label>
             </div>
+
+            {/* Indirizzo spedizione — solo se acquistato e disponibile */}
+            {purchased && shippingAddress && (
+              <div className="rounded-xl border border-tiffany-200 bg-tiffany-50 px-4 py-3">
+                <p className="text-xs font-semibold text-tiffany-700 mb-1">📦 Spedisci a questo indirizzo</p>
+                <p className="text-sm text-gray-700 whitespace-pre-line">{shippingAddress}</p>
+                <button
+                  className="mt-2 text-xs text-tiffany-600 underline"
+                  onClick={() => navigator.clipboard.writeText(shippingAddress).then(() => toast.success('Indirizzo copiato!'))}
+                >
+                  Copia indirizzo
+                </button>
+              </div>
+            )}
 
             <div className="flex gap-2 pt-1">
               <Button variant="outline" className="flex-1" onClick={onClose}>Chiudi</Button>

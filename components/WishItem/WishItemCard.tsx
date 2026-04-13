@@ -17,10 +17,11 @@ interface Props {
   eventType?: string
   eventTitle?: string
   themeKey?: string
+  shippingAddress?: string
 }
 
 export default function WishItemCard({
-  item, hostPlan, isExpired = false, eventType = 'other', eventTitle = '', themeKey = 'purple',
+  item, hostPlan, isExpired = false, eventType = 'other', eventTitle = '', themeKey = 'purple', shippingAddress,
 }: Props) {
   const [showContribute, setShowContribute] = useState(false)
   const [showReserve, setShowReserve] = useState(false)
@@ -172,6 +173,7 @@ export default function WishItemCard({
           item={currentItem}
           eventType={eventType}
           eventTitle={eventTitle}
+          shippingAddress={shippingAddress}
           onClose={() => setShowReserve(false)}
           onSuccess={(updatedItem) => {
             setCurrentItem(updatedItem)
