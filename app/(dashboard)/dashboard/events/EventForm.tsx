@@ -36,6 +36,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
   const [inviteImageUrl, setInviteImageUrl] = useState(event?.invite_image_url ?? '')
   const [theme, setTheme] = useState<EventTheme | null>(event?.theme ?? null)
+  const [shippingAddress, setShippingAddress] = useState(event?.shipping_address ?? '')
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadingInvite, setUploadingInvite] = useState(false)
@@ -130,6 +131,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             cover_image_url: coverImageUrl || null,
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
+            shipping_address: shippingAddress || null,
           })
           .eq('id', event.id)
         if (error) throw error
@@ -146,6 +148,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             cover_image_url: coverImageUrl || null,
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
+            shipping_address: shippingAddress || null,
           })
           .select()
           .single()
@@ -514,6 +517,28 @@ export default function EventForm({ userId, userPlan, event }: Props) {
               value={bankOwnerName}
               onChange={(e) => setBankOwnerName(e.target.value)}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <div>
+            <h2 className="font-semibold text-gray-700">Indirizzo di spedizione (opzionale)</h2>
+            <p className="text-sm text-gray-400 mt-0.5">
+              Se compilato, verrà mostrato sulla pagina pubblica con un tasto "Copia indirizzo" — utile per gli invitati che vogliono far recapitare il regalo direttamente a casa tua.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shippingAddress">Indirizzo completo</Label>
+            <Textarea
+              id="shippingAddress"
+              placeholder={"Mario Rossi\nVia Roma 1, 20121 Milano MI\nItalia"}
+              value={shippingAddress}
+              onChange={(e) => setShippingAddress(e.target.value)}
+              rows={3}
+            />
+            <p className="text-xs text-gray-400">Includi nome, via, CAP, città e nazione</p>
           </div>
         </CardContent>
       </Card>

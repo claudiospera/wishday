@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { formatEuro, calculateProgress, wishItemStatusLabels } from '@/lib/utils'
 import { toast } from 'sonner'
-import { Plus, Trash2, ExternalLink, GripVertical } from 'lucide-react'
+import { Plus, Trash2, ExternalLink, GripVertical, Upload } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -158,8 +158,12 @@ export default function WishListManager({ event, userId }: Props) {
   const [imageUrl, setImageUrl] = useState('')
   const [shopName, setShopName] = useState('')
   const [shopUrl, setShopUrl] = useState('')
+  const [shopPhone, setShopPhone] = useState('')
+  const [shopAddress, setShopAddress] = useState('')
   const [itemType, setItemType] = useState<WishItemType>('single')
   const [suggestedContribution, setSuggestedContribution] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const imageInputRef = useRef<HTMLInputElement>(null)
 
   const supabase = createClient()
 
@@ -217,6 +221,8 @@ export default function WishListManager({ event, userId }: Props) {
     setImageUrl(item.image_url ?? '')
     setShopName(item.shop_name ?? '')
     setShopUrl(item.shop_url ?? '')
+    setShopPhone(item.shop_phone ?? '')
+    setShopAddress(item.shop_address ?? '')
     setItemType(item.type)
     setSuggestedContribution(item.suggested_contribution?.toString() ?? '')
     setDialogOpen(true)
@@ -229,8 +235,30 @@ export default function WishListManager({ event, userId }: Props) {
     setImageUrl('')
     setShopName('')
     setShopUrl('')
+    setShopPhone('')
+    setShopAddress('')
     setItemType('single')
     setSuggestedContribution('')
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Immagine troppo grande (max 5MB)'); return }
+    setUploadingImage(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `wish-items/${userId}/${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from('wishday').upload(path, file, { upsert: true })
+      if (error) throw error
+      const { data: { publicUrl } } = supabase.storage.from('wishday').getPublicUrl(path)
+      setImageUrl(publicUrl)
+      toast.success('Immagine caricata!')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Errore upload immagine')
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   async function handleSave() {
@@ -245,6 +273,8 @@ export default function WishListManager({ event, userId }: Props) {
         image_url: imageUrl || null,
         shop_name: shopName || null,
         shop_url: shopUrl || null,
+        shop_phone: shopPhone || null,
+        shop_address: shopAddress || null,
         type: itemType,
         suggested_contribution: suggestedContribution ? parseFloat(suggestedContribution) : null,
         sort_order: editingItem ? editingItem.sort_order : items.length,
@@ -329,8 +359,39 @@ export default function WishListManager({ event, userId }: Props) {
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Immagine (URL)</Label>
-                <Input type="url" placeholder="https://..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+                <Label>Immagine prodotto</Label>
+                {imageUrl && (
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border border-gray-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imageUrl} alt="Anteprima" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl('')}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >×</button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => imageInputRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
+                    <Upload className="w-3 h-3 mr-1" />
+                    {uploadingImage ? 'Caricamento...' : 'Carica foto'}
+                  </Button>
+                </div>
+                <Input type="url" placeholder="Oppure incolla URL https://..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
@@ -340,6 +401,16 @@ export default function WishListManager({ event, userId }: Props) {
                 <div className="space-y-2">
                   <Label>Link negozio</Label>
                   <Input type="url" placeholder="https://..." value={shopUrl} onChange={(e) => setShopUrl(e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Telefono negozio</Label>
+                  <Input type="tel" placeholder="+39 02 1234567" value={shopPhone} onChange={(e) => setShopPhone(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Indirizzo negozio</Label>
+                  <Input placeholder="Via Roma 1, Milano" value={shopAddress} onChange={(e) => setShopAddress(e.target.value)} />
                 </div>
               </div>
               <div className="flex gap-2 pt-2">

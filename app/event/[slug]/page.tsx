@@ -12,6 +12,7 @@ import IbanSection from './IbanSection'
 import WishForm from './WishForm'
 import MessagesDisplay from './MessagesDisplay'
 import GreetingCardTrigger from './GreetingCardTrigger'
+import ShippingAddressBox from './ShippingAddressBox'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -140,6 +141,11 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
               <p className="text-sm text-amber-700">L&apos;evento si è già svolto. La lista è visibile ma non sono accettati nuovi contributi o prenotazioni.</p>
             </div>
           </div>
+        )}
+
+        {/* Indirizzo spedizione */}
+        {event.shipping_address && (
+          <ShippingAddressBox address={event.shipping_address} tc={tc} />
         )}
 
         {/* Invito caricato dall'organizzatore */}

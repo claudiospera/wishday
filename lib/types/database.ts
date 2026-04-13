@@ -54,6 +54,7 @@ export interface Event {
   bank_owner_name: string | null
   is_public: boolean
   theme: EventTheme | null
+  shipping_address: string | null
   created_at: string
 }
 
@@ -66,6 +67,8 @@ export interface WishItem {
   image_url: string | null
   shop_name: string | null
   shop_url: string | null
+  shop_phone: string | null
+  shop_address: string | null
   type: WishItemType
   status: WishItemStatus
   reserved_by_name: string | null
