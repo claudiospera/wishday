@@ -50,7 +50,7 @@ export default function PricingPage() {
                   { label: 'Branding Wishday nella pagina', ok: false },
                   { label: 'Wish list illimitata', ok: false },
                   { label: 'Commissione ridotta al 3%', ok: false },
-                  { label: 'Temi premium', ok: false },
+                  { label: 'Temi grafici', ok: true },
                 ].map((f) => (
                   <li key={f.label} className="flex items-start gap-2 text-sm">
                     <span className={f.ok ? 'text-green-500' : 'text-gray-300'}>
@@ -102,7 +102,7 @@ export default function PricingPage() {
                   { label: 'Nessun branding Wishday', ok: true },
                   { label: 'Pagina pubblica condivisibile', ok: true },
                   { label: 'Bonifico diretto con QR code', ok: true },
-                  { label: 'Temi grafici premium', ok: true },
+                  { label: 'Temi grafici', ok: true },
                   { label: 'Supporto prioritario', ok: true },
                   { label: 'Statistiche avanzate', ok: true },
                 ].map((f) => (
