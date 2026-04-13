@@ -162,6 +162,10 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
                     date={event.date}
                     eventType={event.type}
                     hostName={(event.users as { full_name: string })?.full_name}
+                    celebrantName={event.celebrant_name ?? null}
+                    location={event.event_location ?? null}
+                    rsvpPhone={event.rsvp_phone ?? null}
+                    customEventType={event.custom_event_type ?? null}
                     mode="full"
                   />
                 </div>

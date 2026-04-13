@@ -36,6 +36,10 @@ export default function EventForm({ userId, userPlan, event }: Props) {
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
   const [inviteImageUrl, setInviteImageUrl] = useState(event?.invite_image_url ?? '')
   const [theme, setTheme] = useState<EventTheme | null>(event?.theme ?? null)
+  const [celebrantName, setCelebrantName] = useState(event?.celebrant_name ?? '')
+  const [eventLocation, setEventLocation] = useState(event?.event_location ?? '')
+  const [rsvpPhone, setRsvpPhone] = useState(event?.rsvp_phone ?? '')
+  const [customEventType, setCustomEventType] = useState(event?.custom_event_type ?? '')
   const [shipName, setShipName] = useState('')
   const [shipStreet, setShipStreet] = useState('')
   const [shipCap, setShipCap] = useState('')
@@ -144,6 +148,10 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
             shipping_address: buildShippingAddress(),
+            celebrant_name: celebrantName || null,
+            event_location: eventLocation || null,
+            rsvp_phone: rsvpPhone || null,
+            custom_event_type: customEventType || null,
           })
           .eq('id', event.id)
         if (error) throw error
@@ -161,6 +169,10 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
             shipping_address: buildShippingAddress(),
+            celebrant_name: celebrantName || null,
+            event_location: eventLocation || null,
+            rsvp_phone: rsvpPhone || null,
+            custom_event_type: customEventType || null,
           })
           .select()
           .single()
@@ -224,6 +236,49 @@ export default function EventForm({ userId, userPlan, event }: Props) {
                 required
               />
             </div>
+          </div>
+
+          {type === 'other' && (
+            <div className="space-y-2">
+              <Label htmlFor="customEventType">Tipo di evento personalizzato</Label>
+              <Input
+                id="customEventType"
+                placeholder="Es. Festa di pensionamento, Anniversario, ..."
+                value={customEventType}
+                onChange={(e) => setCustomEventType(e.target.value)}
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="celebrantName">Nome festeggiato/a</Label>
+            <Input
+              id="celebrantName"
+              placeholder="Es. Claudia"
+              value={celebrantName}
+              onChange={(e) => setCelebrantName(e.target.value)}
+            />
+            <p className="text-xs text-gray-400">Appare in grande nell&apos;invito</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="eventLocation">Luogo dell&apos;evento</Label>
+            <Input
+              id="eventLocation"
+              placeholder="Es. Via Roma 1, Milano"
+              value={eventLocation}
+              onChange={(e) => setEventLocation(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="rsvpPhone">Recapito telefonico per conferma (RSVP)</Label>
+            <Input
+              id="rsvpPhone"
+              placeholder="Es. +39 333 1234567"
+              value={rsvpPhone}
+              onChange={(e) => setRsvpPhone(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
@@ -379,6 +434,10 @@ export default function EventForm({ userId, userPlan, event }: Props) {
                     title={title}
                     date={date || new Date().toISOString()}
                     eventType={type}
+                    celebrantName={celebrantName || null}
+                    location={eventLocation || null}
+                    rsvpPhone={rsvpPhone || null}
+                    customEventType={customEventType || null}
                     mode="full"
                   />
                 </div>
@@ -417,6 +476,8 @@ export default function EventForm({ userId, userPlan, event }: Props) {
                       title={title || 'Il tuo evento'}
                       date={date || new Date().toISOString()}
                       eventType={type}
+                      celebrantName={celebrantName || null}
+                      customEventType={customEventType || null}
                       mode="thumb"
                     />
                     <div className="absolute bottom-0 left-0 right-0 bg-black/30 py-0.5 px-1">

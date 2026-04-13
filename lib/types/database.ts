@@ -55,6 +55,10 @@ export interface Event {
   is_public: boolean
   theme: EventTheme | null
   shipping_address: string | null
+  celebrant_name: string | null
+  event_location: string | null
+  rsvp_phone: string | null
+  custom_event_type: string | null
   created_at: string
 }
 

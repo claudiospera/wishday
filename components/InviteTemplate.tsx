@@ -262,7 +262,19 @@ interface InviteTemplateCardProps {
   date: string
   eventType: string
   hostName?: string | null
+  celebrantName?: string | null
+  location?: string | null
+  rsvpPhone?: string | null
+  customEventType?: string | null
   mode?: 'full' | 'thumb'
+}
+
+function eventTypeLabel(eventType: string, customEventType?: string | null): string {
+  if (eventType === 'birthday') return 'Festa di Compleanno'
+  if (eventType === 'wedding') return 'Matrimonio'
+  if (eventType === 'graduation') return 'Cerimonia di Laurea'
+  if (eventType === 'baptism') return 'Battesimo'
+  return customEventType || 'Evento Speciale'
 }
 
 export function InviteTemplateCard({
@@ -270,7 +282,10 @@ export function InviteTemplateCard({
   title,
   date,
   eventType,
-  hostName,
+  celebrantName,
+  location,
+  rsvpPhone,
+  customEventType,
   mode = 'full',
 }: InviteTemplateCardProps) {
   const cfg = templateConfig[templateKey]
@@ -279,6 +294,7 @@ export function InviteTemplateCard({
   const { SVGDecoration } = cfg
   const emoji = eventTypeEmoji[eventType] ?? '🎉'
   const formattedDate = formatDate(date)
+  const typeLabel = eventTypeLabel(eventType, customEventType)
 
   if (mode === 'thumb') {
     return (
@@ -286,7 +302,7 @@ export function InviteTemplateCard({
         <SVGDecoration />
         <span style={{ fontSize: 22, position: 'relative', zIndex: 1 }}>{emoji}</span>
         <span style={{ fontSize: 10, fontWeight: 700, color: cfg.titleColor, textAlign: 'center', padding: '0 8px', lineHeight: 1.2, position: 'relative', zIndex: 1, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {title || 'Il tuo evento'}
+          {celebrantName || title || 'Il tuo evento'}
         </span>
       </div>
     )
@@ -312,34 +328,43 @@ export function InviteTemplateCard({
     }}>
       <SVGDecoration />
 
-      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-        {/* Tag tipo evento */}
+      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+        {/* Tipo di evento - tag */}
         <div style={{ background: cfg.tagBg, color: cfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: 'system-ui, sans-serif' }}>
-          {emoji} {eventType === 'birthday' ? 'Compleanno' : eventType === 'wedding' ? 'Matrimonio' : eventType === 'graduation' ? 'Laurea' : eventType === 'baptism' ? 'Battesimo' : 'Evento'}
+          {emoji} {title || 'Il tuo evento'}
         </div>
 
-        {/* Sei invitato */}
-        <p style={{ margin: 0, fontSize: 13, letterSpacing: '0.2em', textTransform: 'uppercase', color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', fontWeight: 400 }}>
-          Sei invitato/a a
-        </p>
+        {/* Nome festeggiato */}
+        {celebrantName && (
+          <h1 style={{ margin: 0, fontSize: 38, fontWeight: 700, color: cfg.titleColor, lineHeight: 1.15, textAlign: 'center', fontStyle: 'italic' }}>
+            {celebrantName}
+          </h1>
+        )}
 
-        {/* Titolo */}
-        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700, color: cfg.titleColor, lineHeight: 1.2, textAlign: 'center' }}>
-          {title || 'Il tuo evento'}
-        </h1>
+        {/* Tipologia festa */}
+        <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: cfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
+          {typeLabel}
+        </p>
 
         {/* Linea decorativa */}
         <div style={{ width: 48, height: 2, background: cfg.subtitleColor, borderRadius: 2, opacity: 0.5 }} />
 
         {/* Data */}
-        <p style={{ margin: 0, fontSize: 15, color: cfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
-          📅 {formattedDate}
+        <p style={{ margin: 0, fontSize: 16, color: cfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
+          {formattedDate}
         </p>
 
-        {/* Host */}
-        {hostName && (
-          <p style={{ margin: 0, fontSize: 12, color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', opacity: 0.85 }}>
-            con {hostName}
+        {/* Luogo */}
+        {location && (
+          <p style={{ margin: 0, fontSize: 13, color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', lineHeight: 1.4, whiteSpace: 'pre-line' }}>
+            {location}
+          </p>
+        )}
+
+        {/* RSVP */}
+        {rsvpPhone && (
+          <p style={{ margin: 0, fontSize: 13, color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
+            RSVP al {rsvpPhone}
           </p>
         )}
       </div>
