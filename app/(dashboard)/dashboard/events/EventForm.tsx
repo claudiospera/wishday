@@ -36,8 +36,20 @@ export default function EventForm({ userId, userPlan, event }: Props) {
   const [coverImageUrl, setCoverImageUrl] = useState(event?.cover_image_url ?? '')
   const [inviteImageUrl, setInviteImageUrl] = useState(event?.invite_image_url ?? '')
   const [theme, setTheme] = useState<EventTheme | null>(event?.theme ?? null)
-  const [shippingAddress, setShippingAddress] = useState(event?.shipping_address ?? '')
+  const [shipName, setShipName] = useState('')
+  const [shipStreet, setShipStreet] = useState('')
+  const [shipCap, setShipCap] = useState('')
+  const [shipCity, setShipCity] = useState('')
+  const [shipProvince, setShipProvince] = useState('')
+  const [shipCountry, setShipCountry] = useState('Italia')
   const [loading, setLoading] = useState(false)
+
+  // Componi stringa indirizzo per il DB
+  function buildShippingAddress(): string | null {
+    const parts = [shipName, shipStreet, [shipCap, shipCity, shipProvince ? `(${shipProvince})` : ''].filter(Boolean).join(' '), shipCountry]
+      .map((s) => s.trim()).filter(Boolean)
+    return parts.length > 0 ? parts.join('\n') : null
+  }
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadingInvite, setUploadingInvite] = useState(false)
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
@@ -131,7 +143,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             cover_image_url: coverImageUrl || null,
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
-            shipping_address: shippingAddress || null,
+            shipping_address: buildShippingAddress(),
           })
           .eq('id', event.id)
         if (error) throw error
@@ -148,7 +160,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             cover_image_url: coverImageUrl || null,
             invite_image_url: inviteImageUrl || null,
             theme: theme || null,
-            shipping_address: shippingAddress || null,
+            shipping_address: buildShippingAddress(),
           })
           .select()
           .single()
@@ -530,15 +542,30 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shippingAddress">Indirizzo completo</Label>
-            <Textarea
-              id="shippingAddress"
-              placeholder={"Mario Rossi\nVia Roma 1, 20121 Milano MI\nItalia"}
-              value={shippingAddress}
-              onChange={(e) => setShippingAddress(e.target.value)}
-              rows={3}
-            />
-            <p className="text-xs text-gray-400">Includi nome, via, CAP, città e nazione</p>
+            <Label htmlFor="shipName">Nome destinatario</Label>
+            <Input id="shipName" placeholder="Mario Rossi" value={shipName} onChange={(e) => setShipName(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shipStreet">Via e numero civico</Label>
+            <Input id="shipStreet" placeholder="Via Roma 1" value={shipStreet} onChange={(e) => setShipStreet(e.target.value)} />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="shipCap">CAP</Label>
+              <Input id="shipCap" placeholder="20121" maxLength={5} value={shipCap} onChange={(e) => setShipCap(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="shipCity">Città</Label>
+              <Input id="shipCity" placeholder="Milano" value={shipCity} onChange={(e) => setShipCity(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="shipProvince">Prov.</Label>
+              <Input id="shipProvince" placeholder="MI" maxLength={2} value={shipProvince} onChange={(e) => setShipProvince(e.target.value.toUpperCase())} />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shipCountry">Nazione</Label>
+            <Input id="shipCountry" placeholder="Italia" value={shipCountry} onChange={(e) => setShipCountry(e.target.value)} />
           </div>
         </CardContent>
       </Card>
