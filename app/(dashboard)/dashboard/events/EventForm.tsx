@@ -396,48 +396,38 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             </div>
           )}
 
-          {/* Template predefiniti — solo premium */}
-          {userPlan === 'premium' ? (
-            <div className="space-y-2">
-              <Label>Template predefiniti</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {Object.entries(inviteTemplates).map(([key, t]) => {
-                  const selected = inviteImageUrl === `template:${key}`
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setInviteImageUrl(selected ? '' : `template:${key}`)}
-                      className={`relative rounded-lg overflow-hidden border-2 transition-all ${
-                        selected ? 'border-tiffany-600 ring-2 ring-tiffany-400' : 'border-transparent hover:border-gray-300'
-                      }`}
-                      title={t.label}
-                    >
-                      <InviteTemplateCard
-                        templateKey={key}
-                        title={title || 'Il tuo evento'}
-                        date={date || new Date().toISOString()}
-                        eventType={type}
-                        mode="thumb"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/30 py-0.5 px-1">
-                        <span className="text-white text-[9px] font-medium">{t.label}</span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-              <p className="text-xs text-gray-400">Oppure carica la tua immagine qui sotto</p>
+          {/* Template predefiniti */}
+          <div className="space-y-2">
+            <Label>Template predefiniti</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(inviteTemplates).map(([key, t]) => {
+                const selected = inviteImageUrl === `template:${key}`
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setInviteImageUrl(selected ? '' : `template:${key}`)}
+                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                      selected ? 'border-tiffany-600 ring-2 ring-tiffany-400' : 'border-transparent hover:border-gray-300'
+                    }`}
+                    title={t.label}
+                  >
+                    <InviteTemplateCard
+                      templateKey={key}
+                      title={title || 'Il tuo evento'}
+                      date={date || new Date().toISOString()}
+                      eventType={type}
+                      mode="thumb"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/30 py-0.5 px-1">
+                      <span className="text-white text-[9px] font-medium">{t.label}</span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
-          ) : (
-            <div className="rounded-lg border border-dashed border-amber-200 bg-amber-50/50 p-4 flex items-center gap-3">
-              <span className="text-2xl">🎨</span>
-              <div>
-                <p className="font-semibold text-amber-800 text-sm">Template invito — Piano Premium</p>
-                <p className="text-xs text-amber-600">Passa al Premium per usare i template grafici predefiniti.</p>
-              </div>
-            </div>
-          )}
+            <p className="text-xs text-gray-400">Oppure carica la tua immagine qui sotto</p>
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="inviteUpload">Carica invito (max 10MB)</Label>
