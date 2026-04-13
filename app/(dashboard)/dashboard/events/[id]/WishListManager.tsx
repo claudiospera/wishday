@@ -361,9 +361,9 @@ export default function WishListManager({ event, userId }: Props) {
               <div className="space-y-2">
                 <Label>Immagine prodotto</Label>
                 {imageUrl && (
-                  <div className="relative w-full h-32 rounded-lg overflow-hidden border border-gray-200">
+                  <div className="relative w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ minHeight: '8rem' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imageUrl} alt="Anteprima" className="w-full h-full object-cover" />
+                    <img src={imageUrl} alt="Anteprima" className="max-w-full max-h-48 object-contain" />
                     <button
                       type="button"
                       onClick={() => setImageUrl('')}

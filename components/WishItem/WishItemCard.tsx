@@ -47,7 +47,7 @@ export default function WishItemCard({
               <img
                 src={currentItem.image_url}
                 alt={currentItem.title}
-                className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                className="w-24 h-24 object-contain rounded-lg flex-shrink-0 bg-gray-50"
               />
             ) : (
               <div
