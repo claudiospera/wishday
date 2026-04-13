@@ -36,9 +36,20 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="bg-gradient-to-br from-tiffany-50 via-white to-amber-50 py-20 px-4">
+        <section className="bg-gradient-to-br from-tiffany-50 via-white to-amber-50 py-16 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-4 bg-tiffany-100 text-tiffany-700 border-tiffany-200">
+            {/* Logo centrato grande */}
+            <div className="flex justify-center mb-6">
+              <Image
+                src="/logo.png"
+                alt="Wishday — wish it. live it."
+                width={280}
+                height={280}
+                priority
+                className="object-contain"
+              />
+            </div>
+            <Badge className="mb-6 bg-tiffany-100 text-tiffany-700 border-tiffany-200 text-base px-6 py-2.5">
               ✨ Lista desideri per ogni occasione speciale
             </Badge>
             <h1
