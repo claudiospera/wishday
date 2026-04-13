@@ -57,6 +57,10 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
 
   async function handlePurchased() {
     if (!name) { toast.error('Inserisci il tuo nome'); return }
+    // Apri il negozio subito (gesto utente diretto, prima di await)
+    if (item.shop_url) {
+      window.open(item.shop_url, '_blank', 'noopener,noreferrer')
+    }
     setLoading(true)
     try {
       const { error } = await supabase.from('wish_items').update({
@@ -71,9 +75,6 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
       onSuccess(data)
       setPurchased(true)
       setStep('card')
-      if (item.shop_url) {
-        window.open(item.shop_url, '_blank', 'noopener,noreferrer')
-      }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Errore aggiornamento')
     } finally {
