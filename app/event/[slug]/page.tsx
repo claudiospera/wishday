@@ -106,6 +106,7 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
           style={getCoverStyle(event.cover_image_url)}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="max-w-3xl mx-auto">
