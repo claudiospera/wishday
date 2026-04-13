@@ -78,7 +78,7 @@ export default async function EventPublicPage({ params, searchParams }: Props) {
   const hostPlan = (event.users as { full_name: string; plan: string })?.plan ?? 'free'
   const showBranding = hostPlan === 'free'
   const isExpired = event.date ? new Date(event.date) < new Date() : false
-  const themeKey = (hostPlan === 'premium' && event.theme) ? event.theme as EventTheme : 'purple'
+  const themeKey = event.theme ? event.theme as EventTheme : 'purple'
   const heroGradient = eventThemes[themeKey]?.gradient ?? eventThemes.purple.gradient
   const tc = themeColorMap[themeKey] ?? themeColorMap.purple
 
