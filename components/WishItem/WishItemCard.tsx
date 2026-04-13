@@ -138,7 +138,7 @@ export default function WishItemCard({
                 )}
                 {currentItem.shop_url && (
                   <a href={currentItem.shop_url} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" variant="ghost" className="text-xs text-gray-500">
+                    <Button size="sm" variant="outline" className="text-xs font-semibold" style={{ borderColor: tc.border, color: tc.text }}>
                       <ExternalLink className="w-3 h-3 mr-1" />
                       Vai al negozio
                     </Button>
