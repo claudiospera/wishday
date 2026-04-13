@@ -149,7 +149,7 @@ export default function HomePage() {
               Pronto a creare la tua lista?
             </h2>
             <p className="text-tiffany-200 mb-8 text-lg">
-              Gratis, senza carta di credito. In 2 minuti sei operativo.
+              Registrati gratis. In 2 minuti sei operativo.
             </p>
             <Link href="/register" className={cn(buttonVariants({ size: 'lg' }), 'bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-lg px-10')}>
               Inizia gratis ora →
