@@ -53,6 +53,28 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
     }
   }
 
+  async function handlePurchased() {
+    if (!name) { toast.error('Inserisci il tuo nome'); return }
+    setLoading(true)
+    try {
+      const { error } = await supabase.from('wish_items').update({
+        status: 'purchased',
+        reserved_by_name: name,
+        reserved_by_email: email || null,
+      }).eq('id', item.id)
+      if (error) throw error
+      const { data, error: fetchError } = await supabase.from('wish_items').select('*').eq('id', item.id).single()
+      if (fetchError) throw fetchError
+      toast.success('Segnato come acquistato! 🎉')
+      onSuccess(data)
+      setStep('card')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Errore aggiornamento')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   function buildCardText(): string {
     let text = `${config.decoration}\n\n${config.title}\n\n`
     if (cardMessage) text += `"${cardMessage}"\n\n`
@@ -182,18 +204,30 @@ export default function ReserveModal({ item, onClose, onSuccess, eventType = 'ot
             <Label>Email (opzionale)</Label>
             <Input type="email" placeholder="mario@esempio.it" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={onClose}>Annulla</Button>
+          <div className="grid grid-cols-2 gap-2">
             <Button
-              className="flex-1 bg-tiffany-700 hover:bg-tiffany-800 text-white"
+              variant="outline"
               onClick={handleReserve}
               disabled={loading}
+              className="flex-col h-auto py-3 gap-0.5"
             >
-              {loading ? 'Prenotazione...' : '🎁 Prenota'}
+              <span className="text-base">🎁</span>
+              <span className="text-xs font-semibold">Prenota</span>
+              <span className="text-[10px] text-gray-400 leading-tight">Compro dopo</span>
+            </Button>
+            <Button
+              className="flex-col h-auto py-3 gap-0.5 bg-tiffany-700 hover:bg-tiffany-800 text-white"
+              onClick={handlePurchased}
+              disabled={loading}
+            >
+              <span className="text-base">✅</span>
+              <span className="text-xs font-semibold">Acquistato</span>
+              <span className="text-[10px] text-tiffany-200 leading-tight">L&apos;ho già comprato</span>
             </Button>
           </div>
+          <Button variant="ghost" size="sm" className="w-full text-gray-400" onClick={onClose}>Annulla</Button>
           <p className="text-xs text-gray-400 text-center">
-            Dopo la prenotazione potrai creare un biglietto augurale da inviare al festeggiato 💌
+            Dopo la conferma potrai creare un biglietto augurale 💌
           </p>
         </div>
       </DialogContent>
