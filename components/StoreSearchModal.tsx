@@ -131,7 +131,7 @@ export default function StoreSearchModal({
             </div>
             <div className="space-y-1">
               <Label>Categoria</Label>
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={(v) => setCategory(v ?? 'all')}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
