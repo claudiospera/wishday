@@ -272,13 +272,14 @@ export default function EventForm({ userId, userPlan, event }: Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="rsvpPhone">Recapito telefonico per conferma (RSVP)</Label>
+            <Label htmlFor="rsvpPhone">WhatsApp del festeggiato (opzionale)</Label>
             <Input
               id="rsvpPhone"
               placeholder="Es. +39 333 1234567"
               value={rsvpPhone}
               onChange={(e) => setRsvpPhone(e.target.value)}
             />
+            <p className="text-xs text-gray-400">Gli ospiti potranno chattare su WhatsApp direttamente dalla pagina</p>
           </div>
 
           <div className="space-y-2">

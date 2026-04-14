@@ -361,12 +361,6 @@ export function InviteTemplateCard({
           </p>
         )}
 
-        {/* RSVP */}
-        {rsvpPhone && (
-          <p style={{ margin: 0, fontSize: 13, color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
-            RSVP al {rsvpPhone}
-          </p>
-        )}
       </div>
     </div>
   )

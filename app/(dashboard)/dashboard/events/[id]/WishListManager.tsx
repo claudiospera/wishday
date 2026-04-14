@@ -12,7 +12,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { formatEuro, calculateProgress, wishItemStatusLabels } from '@/lib/utils'
 import { toast } from 'sonner'
-import { Plus, Trash2, ExternalLink, GripVertical, Upload } from 'lucide-react'
+import { Plus, Trash2, ExternalLink, GripVertical, Upload, Search } from 'lucide-react'
+import StoreSearchModal, { type StoreResult } from '@/components/StoreSearchModal'
 import {
   DndContext,
   closestCenter,
@@ -163,6 +164,7 @@ export default function WishListManager({ event, userId }: Props) {
   const [itemType, setItemType] = useState<WishItemType>('single')
   const [suggestedContribution, setSuggestedContribution] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [storeSearchOpen, setStoreSearchOpen] = useState(false)
   const imageInputRef = useRef<HTMLInputElement>(null)
 
   const supabase = createClient()
@@ -239,6 +241,14 @@ export default function WishListManager({ event, userId }: Props) {
     setShopAddress('')
     setItemType('single')
     setSuggestedContribution('')
+  }
+
+  function handleStoreSelect(store: StoreResult) {
+    setShopName(store.name)
+    setShopUrl(store.website ?? '')
+    setShopPhone(store.phone ?? '')
+    setShopAddress(store.address)
+    setStoreSearchOpen(false)
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -394,23 +404,26 @@ export default function WishListManager({ event, userId }: Props) {
                 </div>
                 <Input type="url" placeholder="Oppure incolla URL https://..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
                   <Label>Negozio</Label>
-                  <Input placeholder="Amazon" value={shopName} onChange={(e) => setShopName(e.target.value)} />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-xs border-tiffany-300 text-tiffany-700 hover:bg-tiffany-50"
+                    onClick={() => setStoreSearchOpen(true)}
+                  >
+                    <Search className="w-3 h-3 mr-1" />
+                    Cerca negozio
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label>Link negozio</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input placeholder="Amazon" value={shopName} onChange={(e) => setShopName(e.target.value)} />
                   <Input type="url" placeholder="https://..." value={shopUrl} onChange={(e) => setShopUrl(e.target.value)} />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Telefono negozio</Label>
+                <div className="grid grid-cols-2 gap-3">
                   <Input type="tel" placeholder="+39 02 1234567" value={shopPhone} onChange={(e) => setShopPhone(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Indirizzo negozio</Label>
                   <Input placeholder="Via Roma 1, Milano" value={shopAddress} onChange={(e) => setShopAddress(e.target.value)} />
                 </div>
               </div>
@@ -425,6 +438,15 @@ export default function WishListManager({ event, userId }: Props) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {storeSearchOpen && (
+        <StoreSearchModal
+          open={storeSearchOpen}
+          onClose={() => setStoreSearchOpen(false)}
+          onSelect={handleStoreSelect}
+          initialQuery={title}
+        />
+      )}
 
       {items.length === 0 ? (
         <Card className="border-dashed border-2 border-gray-200">

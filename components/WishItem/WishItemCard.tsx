@@ -5,9 +5,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatEuro, calculateProgress, themeColorMap } from '@/lib/utils'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Search } from 'lucide-react'
 import ContributeModal from '@/components/ContributeModal'
 import ReserveModal from './ReserveModal'
+import StoreSearchModal, { type StoreResult } from '@/components/StoreSearchModal'
 import type { WishItem } from '@/lib/types'
 
 interface Props {
@@ -25,6 +26,7 @@ export default function WishItemCard({
 }: Props) {
   const [showContribute, setShowContribute] = useState(false)
   const [showReserve, setShowReserve] = useState(false)
+  const [showStoreSearch, setShowStoreSearch] = useState(false)
   const [currentItem, setCurrentItem] = useState(item)
 
   const tc = themeColorMap[themeKey] ?? themeColorMap.purple
@@ -145,6 +147,18 @@ export default function WishItemCard({
                     </Button>
                   </a>
                 )}
+                {!currentItem.shop_name && !currentItem.shop_url && !isReserved && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                    style={{ borderColor: tc.border, color: tc.text }}
+                    onClick={() => setShowStoreSearch(true)}
+                  >
+                    <Search className="w-3 h-3 mr-1" />
+                    Cerca negozio
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -179,6 +193,28 @@ export default function WishItemCard({
             setCurrentItem(updatedItem)
             setShowReserve(false)
           }}
+        />
+      )}
+
+      {/* Modal ricerca negozio */}
+      {showStoreSearch && (
+        <StoreSearchModal
+          open={showStoreSearch}
+          onClose={() => setShowStoreSearch(false)}
+          onSelect={(store: StoreResult) => {
+            if (store.website) {
+              window.open(store.website, '_blank', 'noopener,noreferrer')
+            } else {
+              window.open(
+                `https://www.google.com/maps/search/${encodeURIComponent(store.name + ' ' + store.address)}`,
+                '_blank',
+                'noopener,noreferrer'
+              )
+            }
+            setShowStoreSearch(false)
+          }}
+          selectLabel="Apri"
+          initialQuery={currentItem.title}
         />
       )}
     </>
