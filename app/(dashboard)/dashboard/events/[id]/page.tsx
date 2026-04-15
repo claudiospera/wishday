@@ -9,6 +9,7 @@ import WishListManager from './WishListManager'
 import ContributionsView from './ContributionsView'
 import MessagesView from './MessagesView'
 import SharePanel from './SharePanel'
+import InviteEditor from './InviteEditor'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -71,6 +72,7 @@ export default async function EventDetailPage({ params }: Props) {
         <TabsContent value="settings" className="mt-6">
           <div className="space-y-6">
             <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
+            <InviteEditor event={event} userId={user.id} />
             <SharePanel event={event} />
           </div>
         </TabsContent>
