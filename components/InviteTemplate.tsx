@@ -3,6 +3,18 @@
 import React from 'react'
 import { formatDate, eventTypeEmoji } from '@/lib/utils'
 
+// ─── Font disponibili per l'invito ───────────────────────────────────────────
+
+export const INVITE_FONTS: { label: string; fontFamily: string; preview: string }[] = [
+  { label: 'Georgia',    fontFamily: 'Georgia, "Times New Roman", serif',              preview: 'Aa' },
+  { label: 'Playfair',   fontFamily: 'var(--font-playfair), Georgia, serif',           preview: 'Aa' },
+  { label: 'Cormorant',  fontFamily: 'var(--font-cormorant), Georgia, serif',          preview: 'Aa' },
+  { label: 'Nunito',     fontFamily: 'var(--font-nunito), system-ui, sans-serif',      preview: 'Aa' },
+  { label: 'Jakarta',    fontFamily: 'var(--font-plus-jakarta), system-ui, sans-serif',preview: 'Aa' },
+  { label: 'Dancing',    fontFamily: 'var(--font-dancing), cursive',                   preview: 'Aa' },
+  { label: 'Pacifico',   fontFamily: 'var(--font-pacifico), cursive',                  preview: 'Aa' },
+]
+
 // ─── Definizione template ────────────────────────────────────────────────────
 
 export const inviteTemplates: Record<string, {
@@ -482,6 +494,7 @@ interface InviteTemplateCardProps {
   customEventType?: string | null
   mode?: 'full' | 'thumb'
   palette?: number
+  font?: number
 }
 
 function eventTypeLabel(eventType: string, customEventType?: string | null): string {
@@ -503,12 +516,15 @@ export function InviteTemplateCard({
   customEventType,
   mode = 'full',
   palette,
+  font,
 }: InviteTemplateCardProps) {
   const cfg = templateConfig[templateKey]
   if (!cfg) return null
 
   const paletteOverride = palette != null && palette > 0 && cfg.palettes?.[palette - 1]
   const activeCfg = paletteOverride ? { ...cfg, ...paletteOverride } : cfg
+
+  const fontFamily = (font != null && INVITE_FONTS[font]) ? INVITE_FONTS[font].fontFamily : INVITE_FONTS[0].fontFamily
 
   const { SVGDecoration } = cfg
   const emoji = eventTypeEmoji[eventType] ?? '🎉'
@@ -542,26 +558,26 @@ export function InviteTemplateCard({
       justifyContent: 'center',
       padding: '48px 40px',
       boxSizing: 'border-box',
-      fontFamily: '"Georgia", "Times New Roman", serif',
+      fontFamily: fontFamily,
       margin: '0 auto',
     }}>
       <SVGDecoration />
 
       <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         {/* Tag evento */}
-        <div style={{ background: activeCfg.tagBg, color: activeCfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: 'system-ui, sans-serif' }}>
+        <div style={{ background: activeCfg.tagBg, color: activeCfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: fontFamily }}>
           {activeCfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
         </div>
 
         {/* Nome festeggiato */}
         {celebrantName && (
-          <h1 style={{ margin: 0, fontSize: 38, fontWeight: 700, color: activeCfg.titleColor, lineHeight: 1.15, textAlign: 'center', fontStyle: 'italic' }}>
+          <h1 style={{ margin: 0, fontSize: 38, fontWeight: 700, color: activeCfg.titleColor, lineHeight: 1.15, textAlign: 'center', fontStyle: 'italic', fontFamily: fontFamily }}>
             {celebrantName}
           </h1>
         )}
 
         {/* Tipologia festa o titolo evento */}
-        <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: activeCfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
+        <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: activeCfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: fontFamily }}>
           {activeCfg.useTitleAsSubtitle ? (title || typeLabel) : typeLabel}
         </p>
 
@@ -583,13 +599,13 @@ export function InviteTemplateCard({
         )}
 
         {/* Data */}
-        <p style={{ margin: 0, fontSize: 16, color: activeCfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
+        <p style={{ margin: 0, fontSize: 16, color: activeCfg.textColor, fontFamily: fontFamily, fontWeight: 500 }}>
           {formattedDate}
         </p>
 
         {/* Luogo */}
         {location && (
-          <p style={{ margin: 0, fontSize: 13, color: activeCfg.subtitleColor, fontFamily: 'system-ui, sans-serif', lineHeight: 1.4, whiteSpace: 'pre-line' }}>
+          <p style={{ margin: 0, fontSize: 13, color: activeCfg.subtitleColor, fontFamily: fontFamily, lineHeight: 1.4, whiteSpace: 'pre-line' }}>
             {location}
           </p>
         )}

@@ -5,6 +5,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ExternalLink } from 'lucide-react'
 import EventForm from '../EventForm'
+import EventDetailsCard from '../EventDetailsCard'
 import WishListManager from './WishListManager'
 import ContributionsView from './ContributionsView'
 import MessagesView from './MessagesView'
@@ -64,7 +65,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         <TabsContent value="invite" className="mt-6">
           <div className="space-y-6">
-            <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
+            <EventDetailsCard event={event} />
             <InviteEditor event={event} userId={user.id} />
           </div>
         </TabsContent>
@@ -79,7 +80,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         <TabsContent value="settings" className="mt-6">
           <div className="space-y-6">
-            <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
+            <EventForm userId={user.id} userPlan={profile?.plan} event={event} hideDetails />
             <SharePanel event={event} />
           </div>
         </TabsContent>

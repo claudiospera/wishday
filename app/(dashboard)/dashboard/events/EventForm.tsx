@@ -18,9 +18,10 @@ interface Props {
   userId: string
   userPlan?: string
   event?: Event // Se passato, siamo in modalità modifica
+  hideDetails?: boolean // Nasconde la sezione Dettagli evento (usata nel tab Config)
 }
 
-export default function EventForm({ userId, userPlan, event }: Props) {
+export default function EventForm({ userId, userPlan, event, hideDetails }: Props) {
   const router = useRouter()
   const isEdit = !!event
 
@@ -114,20 +115,29 @@ export default function EventForm({ userId, userPlan, event }: Props) {
     try {
       if (isEdit && event) {
         // Aggiorna evento esistente
+        const updatePayload = hideDetails
+          ? {
+              slug, is_public: isPublic, iban: iban || null,
+              bank_owner_name: bankOwnerName || null,
+              cover_image_url: coverImageUrl || null,
+              theme: theme || null,
+              shipping_address: buildShippingAddress(),
+            }
+          : {
+              title, type, date, description, slug,
+              is_public: isPublic, iban: iban || null,
+              bank_owner_name: bankOwnerName || null,
+              cover_image_url: coverImageUrl || null,
+              theme: theme || null,
+              shipping_address: buildShippingAddress(),
+              celebrant_name: celebrantName || null,
+              event_location: eventLocation || null,
+              rsvp_phone: rsvpPhone || null,
+              custom_event_type: customEventType || null,
+            }
         const { error } = await supabase
           .from('events')
-          .update({
-            title, type, date, description, slug,
-            is_public: isPublic, iban: iban || null,
-            bank_owner_name: bankOwnerName || null,
-            cover_image_url: coverImageUrl || null,
-            theme: theme || null,
-            shipping_address: buildShippingAddress(),
-            celebrant_name: celebrantName || null,
-            event_location: eventLocation || null,
-            rsvp_phone: rsvpPhone || null,
-            custom_event_type: customEventType || null,
-          })
+          .update(updatePayload)
           .eq('id', event.id)
         if (error) throw error
         toast.success('Evento aggiornato!')
@@ -168,7 +178,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
+      {!hideDetails && <Card>
         <CardContent className="pt-6 space-y-4">
           <h2 className="font-semibold text-gray-700">Dettagli evento</h2>
 
@@ -267,7 +277,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card>}
 
       <Card>
         <CardContent className="pt-6 space-y-4">
