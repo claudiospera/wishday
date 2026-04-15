@@ -63,7 +63,10 @@ export default async function EventDetailPage({ params }: Props) {
         </TabsContent>
 
         <TabsContent value="invite" className="mt-6">
-          <InviteEditor event={event} userId={user.id} />
+          <div className="space-y-6">
+            <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
+            <InviteEditor event={event} userId={user.id} />
+          </div>
         </TabsContent>
 
         <TabsContent value="contributions" className="mt-6">

@@ -292,7 +292,17 @@ const MatrimonioSVG = () => (
 
 // ─── Configurazione rendering ────────────────────────────────────────────────
 
-const templateConfig: Record<string, {
+type PaletteOverride = {
+  dot: string
+  bg: string
+  titleColor: string
+  textColor: string
+  subtitleColor: string
+  tagBg: string
+  tagColor: string
+}
+
+export const templateConfig: Record<string, {
   bg: string
   titleColor: string
   textColor: string
@@ -303,6 +313,7 @@ const templateConfig: Record<string, {
   separator?: 'line' | 'dots' | 'star' | 'dot'
   useTitleAsSubtitle?: boolean
   SVGDecoration: () => React.ReactElement
+  palettes?: PaletteOverride[]
 }> = {
   'floreale-rosa': {
     bg: 'linear-gradient(160deg,#fff0f7 0%,#fce7f3 45%,#ffe4e6 100%)',
@@ -312,6 +323,10 @@ const templateConfig: Record<string, {
     tagBg: '#fce7f3',
     tagColor: '#9d174d',
     SVGDecoration: FlorealeRosaSVG,
+    palettes: [
+      { dot: '#a78bfa', bg: 'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor: '#4c1d95', textColor: '#5b21b6', subtitleColor: '#7c3aed', tagBg: '#ede9fe', tagColor: '#6d28d9' },
+      { dot: '#fb923c', bg: 'linear-gradient(160deg,#fff8f0,#fed7aa,#fddbc4)', titleColor: '#7c2d12', textColor: '#9a3412', subtitleColor: '#c2410c', tagBg: '#fed7aa', tagColor: '#9a3412' },
+    ],
   },
   'elegante-oro': {
     bg: 'linear-gradient(160deg,#fefce8 0%,#fef9c3 55%,#fef3c7 100%)',
@@ -321,6 +336,10 @@ const templateConfig: Record<string, {
     tagBg: '#fef3c7',
     tagColor: '#78350f',
     SVGDecoration: EleganteOroSVG,
+    palettes: [
+      { dot: '#94a3b8', bg: 'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor: '#0f172a', textColor: '#334155', subtitleColor: '#475569', tagBg: '#e2e8f0', tagColor: '#334155' },
+      { dot: '#fb7185', bg: 'linear-gradient(160deg,#fff1f2,#fecdd3,#ffd6d9)', titleColor: '#881337', textColor: '#9f1239', subtitleColor: '#be185d', tagBg: '#fecdd3', tagColor: '#9d174d' },
+    ],
   },
   'notte-stellata': {
     bg: 'linear-gradient(160deg,#0f0c29 0%,#302b63 55%,#24243e 100%)',
@@ -330,6 +349,10 @@ const templateConfig: Record<string, {
     tagBg: 'rgba(253,230,138,0.15)',
     tagColor: '#fde68a',
     SVGDecoration: NotteStellataGVG,
+    palettes: [
+      { dot: '#a855f7', bg: 'linear-gradient(160deg,#1a0533,#3b0764,#2d0a50)', titleColor: '#e9d5ff', textColor: '#d8b4fe', subtitleColor: '#c084fc', tagBg: 'rgba(216,180,254,0.15)', tagColor: '#c084fc' },
+      { dot: '#10b981', bg: 'linear-gradient(160deg,#042f2e,#134e4a,#0f3f3c)', titleColor: '#ccfbf1', textColor: '#a7f3d0', subtitleColor: '#6ee7b7', tagBg: 'rgba(110,231,183,0.15)', tagColor: '#6ee7b7' },
+    ],
   },
   'botanico': {
     bg: 'linear-gradient(160deg,#0a3d1f 0%,#166534 60%,#14532d 100%)',
@@ -339,6 +362,10 @@ const templateConfig: Record<string, {
     tagBg: 'rgba(134,239,172,0.15)',
     tagColor: '#86efac',
     SVGDecoration: BotanicoSVG,
+    palettes: [
+      { dot: '#4ade80', bg: 'linear-gradient(160deg,#f0fdf4,#dcfce7,#d1fae5)', titleColor: '#14532d', textColor: '#166534', subtitleColor: '#15803d', tagBg: 'rgba(21,128,61,0.1)', tagColor: '#166534' },
+      { dot: '#84cc16', bg: 'linear-gradient(160deg,#1a1a00,#2d3300,#1e2500)', titleColor: '#d9e8a0', textColor: '#b5cc6a', subtitleColor: '#8aaa2a', tagBg: 'rgba(138,170,42,0.15)', tagColor: '#8aaa2a' },
+    ],
   },
   'festa': {
     bg: 'linear-gradient(160deg,#fdf4ff 0%,#fce7f3 50%,#fef9ee 100%)',
@@ -348,6 +375,10 @@ const templateConfig: Record<string, {
     tagBg: '#f3e8ff',
     tagColor: '#5b21b6',
     SVGDecoration: FestaColorataSVG,
+    palettes: [
+      { dot: '#fb923c', bg: 'linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)', titleColor: '#7c2d12', textColor: '#9a3412', subtitleColor: '#c2410c', tagBg: '#ffedd5', tagColor: '#9a3412' },
+      { dot: '#22d3ee', bg: 'linear-gradient(160deg,#ecfeff,#cffafe,#e0f7fa)', titleColor: '#164e63', textColor: '#155e75', subtitleColor: '#0891b2', tagBg: '#cffafe', tagColor: '#0e7490' },
+    ],
   },
   'acquarello-blu': {
     bg: 'linear-gradient(160deg,#eff6ff 0%,#dbeafe 50%,#e0f2fe 100%)',
@@ -357,6 +388,10 @@ const templateConfig: Record<string, {
     tagBg: '#dbeafe',
     tagColor: '#1d4ed8',
     SVGDecoration: AcquarelloBluSVG,
+    palettes: [
+      { dot: '#38bdf8', bg: 'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor: '#0c4a6e', textColor: '#075985', subtitleColor: '#0369a1', tagBg: '#bae6fd', tagColor: '#0369a1' },
+      { dot: '#6366f1', bg: 'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor: '#1e1b4b', textColor: '#312e81', subtitleColor: '#4338ca', tagBg: '#e0e7ff', tagColor: '#3730a3' },
+    ],
   },
   'battesimo': {
     bg: 'linear-gradient(160deg,#e8f6ff 0%,#c8e4ff 55%,#d8f0ff 100%)',
@@ -368,6 +403,9 @@ const templateConfig: Record<string, {
     overrideTag: 'il nostro piccolo miracolo',
     separator: 'dots',
     SVGDecoration: BattesimoSVG,
+    palettes: [
+      { dot: '#ec4899', bg: 'linear-gradient(160deg,#fff0f5,#fce7f0,#ffd6e8)', titleColor: '#5a0028', textColor: '#881349', subtitleColor: '#b1407a', tagBg: 'rgba(177,64,122,0.12)', tagColor: '#881349' },
+    ],
   },
   'laurea': {
     bg: 'linear-gradient(160deg,#d8e4f8 0%,#c0d0ee 55%,#ccd8f0 100%)',
@@ -380,6 +418,9 @@ const templateConfig: Record<string, {
     separator: 'star',
     useTitleAsSubtitle: true,
     SVGDecoration: LaureaSVG,
+    palettes: [
+      { dot: '#475569', bg: 'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor: '#0f172a', textColor: '#1e293b', subtitleColor: '#64748b', tagBg: 'rgba(15,23,42,0.1)', tagColor: '#0f172a' },
+    ],
   },
   'generico-notte': {
     bg: 'linear-gradient(160deg,#080818 0%,#12102a 55%,#1a1040 100%)',
@@ -392,6 +433,9 @@ const templateConfig: Record<string, {
     separator: 'dot',
     useTitleAsSubtitle: true,
     SVGDecoration: NotteFestvaSVG,
+    palettes: [
+      { dot: '#3b82f6', bg: 'linear-gradient(160deg,#050a18,#0a1428,#101c38)', titleColor: '#bfdbfe', textColor: '#93c5fd', subtitleColor: '#3b82f6', tagBg: 'rgba(147,197,253,0.15)', tagColor: '#93c5fd' },
+    ],
   },
   'generico-solare': {
     bg: 'linear-gradient(160deg,#fffbe0 0%,#fff0a0 50%,#ffd868 100%)',
@@ -404,6 +448,9 @@ const templateConfig: Record<string, {
     separator: 'line',
     useTitleAsSubtitle: true,
     SVGDecoration: SolareSVG,
+    palettes: [
+      { dot: '#f97316', bg: 'linear-gradient(160deg,#fff3e0,#ffe0b2,#ffcc80)', titleColor: '#4a1500', textColor: '#7c2d12', subtitleColor: '#c2410c', tagBg: 'rgba(194,65,12,0.08)', tagColor: '#7c2d12' },
+    ],
   },
   'matrimonio': {
     bg: 'linear-gradient(170deg,#fefdf8 0%,#f8f4e8 55%,#f5eedc 100%)',
@@ -415,6 +462,9 @@ const templateConfig: Record<string, {
     overrideTag: 'ci sposiamo!',
     separator: 'star',
     SVGDecoration: MatrimonioSVG,
+    palettes: [
+      { dot: '#f43f5e', bg: 'linear-gradient(170deg,#fdf2f4,#fce7eb,#fad4da)', titleColor: '#4a0010', textColor: '#6b1c2e', subtitleColor: '#9d4255', tagBg: 'rgba(157,66,85,0.12)', tagColor: '#6b1c2e' },
+    ],
   },
 }
 
@@ -431,6 +481,7 @@ interface InviteTemplateCardProps {
   rsvpPhone?: string | null
   customEventType?: string | null
   mode?: 'full' | 'thumb'
+  palette?: number
 }
 
 function eventTypeLabel(eventType: string, customEventType?: string | null): string {
@@ -451,9 +502,13 @@ export function InviteTemplateCard({
   rsvpPhone,
   customEventType,
   mode = 'full',
+  palette,
 }: InviteTemplateCardProps) {
   const cfg = templateConfig[templateKey]
   if (!cfg) return null
+
+  const paletteOverride = palette != null && palette > 0 && cfg.palettes?.[palette - 1]
+  const activeCfg = paletteOverride ? { ...cfg, ...paletteOverride } : cfg
 
   const { SVGDecoration } = cfg
   const emoji = eventTypeEmoji[eventType] ?? '🎉'
@@ -462,10 +517,10 @@ export function InviteTemplateCard({
 
   if (mode === 'thumb') {
     return (
-      <div style={{ width: 160, height: 100, background: cfg.bg, borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+      <div style={{ width: 160, height: 100, background: activeCfg.bg, borderRadius: 8, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
         <SVGDecoration />
         <span style={{ fontSize: 22, position: 'relative', zIndex: 1 }}>{emoji}</span>
-        <span style={{ fontSize: 10, fontWeight: 700, color: cfg.titleColor, textAlign: 'center', padding: '0 8px', lineHeight: 1.2, position: 'relative', zIndex: 1, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: activeCfg.titleColor, textAlign: 'center', padding: '0 8px', lineHeight: 1.2, position: 'relative', zIndex: 1, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {celebrantName || title || 'Il tuo evento'}
         </span>
       </div>
@@ -477,7 +532,7 @@ export function InviteTemplateCard({
       width: '100%',
       maxWidth: 400,
       aspectRatio: '400/560',
-      background: cfg.bg,
+      background: activeCfg.bg,
       borderRadius: 16,
       position: 'relative',
       overflow: 'hidden',
@@ -494,47 +549,47 @@ export function InviteTemplateCard({
 
       <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         {/* Tag evento */}
-        <div style={{ background: cfg.tagBg, color: cfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: 'system-ui, sans-serif' }}>
-          {cfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
+        <div style={{ background: activeCfg.tagBg, color: activeCfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: 'system-ui, sans-serif' }}>
+          {activeCfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
         </div>
 
         {/* Nome festeggiato */}
         {celebrantName && (
-          <h1 style={{ margin: 0, fontSize: 38, fontWeight: 700, color: cfg.titleColor, lineHeight: 1.15, textAlign: 'center', fontStyle: 'italic' }}>
+          <h1 style={{ margin: 0, fontSize: 38, fontWeight: 700, color: activeCfg.titleColor, lineHeight: 1.15, textAlign: 'center', fontStyle: 'italic' }}>
             {celebrantName}
           </h1>
         )}
 
         {/* Tipologia festa o titolo evento */}
-        <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: cfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-          {cfg.useTitleAsSubtitle ? (title || typeLabel) : typeLabel}
+        <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: activeCfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
+          {activeCfg.useTitleAsSubtitle ? (title || typeLabel) : typeLabel}
         </p>
 
         {/* Separatore */}
-        {cfg.separator === 'dots' ? (
+        {activeCfg.separator === 'dots' ? (
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            {[0,1,2].map(i => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: cfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />)}
+            {[0,1,2].map(i => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: activeCfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />)}
           </div>
-        ) : cfg.separator === 'star' ? (
+        ) : activeCfg.separator === 'star' ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 36, height: 1.5, background: cfg.subtitleColor, opacity: 0.5 }} />
-            <span style={{ color: cfg.subtitleColor, fontSize: 13, opacity: 0.8 }}>★</span>
-            <div style={{ width: 36, height: 1.5, background: cfg.subtitleColor, opacity: 0.5 }} />
+            <div style={{ width: 36, height: 1.5, background: activeCfg.subtitleColor, opacity: 0.5 }} />
+            <span style={{ color: activeCfg.subtitleColor, fontSize: 13, opacity: 0.8 }}>★</span>
+            <div style={{ width: 36, height: 1.5, background: activeCfg.subtitleColor, opacity: 0.5 }} />
           </div>
-        ) : cfg.separator === 'dot' ? (
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />
+        ) : activeCfg.separator === 'dot' ? (
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: activeCfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />
         ) : (
-          <div style={{ width: 48, height: 2, background: cfg.subtitleColor, borderRadius: 2, opacity: 0.5 }} />
+          <div style={{ width: 48, height: 2, background: activeCfg.subtitleColor, borderRadius: 2, opacity: 0.5 }} />
         )}
 
         {/* Data */}
-        <p style={{ margin: 0, fontSize: 16, color: cfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
+        <p style={{ margin: 0, fontSize: 16, color: activeCfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
           {formattedDate}
         </p>
 
         {/* Luogo */}
         {location && (
-          <p style={{ margin: 0, fontSize: 13, color: cfg.subtitleColor, fontFamily: 'system-ui, sans-serif', lineHeight: 1.4, whiteSpace: 'pre-line' }}>
+          <p style={{ margin: 0, fontSize: 13, color: activeCfg.subtitleColor, fontFamily: 'system-ui, sans-serif', lineHeight: 1.4, whiteSpace: 'pre-line' }}>
             {location}
           </p>
         )}

@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
-import { inviteTemplates, InviteTemplateCard } from '@/components/InviteTemplate'
+import { inviteTemplates, templateConfig, InviteTemplateCard } from '@/components/InviteTemplate'
 import type { Event } from '@/lib/types'
 
 interface Props {
@@ -21,15 +21,19 @@ const TEMPLATE_CATEGORIES: { label: string; templates: string[] }[] = [
   { label: 'Generici', templates: ['generico-notte', 'generico-solare'] },
 ]
 
+function parseInviteUrl(url: string | null | undefined): { key: string | null; palette: number } {
+  if (!url?.startsWith('template:')) return { key: null, palette: 0 }
+  const parts = url.replace('template:', '').split(':')
+  return { key: parts[0], palette: parts[1] ? parseInt(parts[1]) : 0 }
+}
+
 export default function InviteEditor({ event, userId }: Props) {
   const supabase = createClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [selectedKey, setSelectedKey] = useState<string | null>(() => {
-    const url = event.invite_image_url
-    if (url?.startsWith('template:')) return url.replace('template:', '')
-    return null
-  })
+  const parsed = parseInviteUrl(event.invite_image_url)
+  const [selectedKey, setSelectedKey] = useState<string | null>(parsed.key)
+  const [selectedPalette, setSelectedPalette] = useState<number>(parsed.palette)
   const [customUrl, setCustomUrl] = useState<string | null>(() => {
     const url = event.invite_image_url
     if (url && !url.startsWith('template:')) return url
@@ -38,15 +42,27 @@ export default function InviteEditor({ event, userId }: Props) {
   const [customUrlError, setCustomUrlError] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  async function handleTemplateSelect(key: string) {
-    setSelectedKey(key)
-    setCustomUrl(null)
-    setCustomUrlError(false)
+  async function saveTemplate(key: string, palette: number) {
+    const value = palette > 0 ? `template:${key}:${palette}` : `template:${key}`
     const { error } = await supabase
       .from('events')
-      .update({ invite_image_url: `template:${key}` })
+      .update({ invite_image_url: value })
       .eq('id', event.id)
     if (error) toast.error('Errore nel salvataggio')
+  }
+
+  async function handleTemplateSelect(key: string) {
+    setSelectedKey(key)
+    setSelectedPalette(0)
+    setCustomUrl(null)
+    setCustomUrlError(false)
+    await saveTemplate(key, 0)
+  }
+
+  async function handlePaletteSelect(palette: number) {
+    if (!selectedKey) return
+    setSelectedPalette(palette)
+    await saveTemplate(selectedKey, palette)
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -88,6 +104,9 @@ export default function InviteEditor({ event, userId }: Props) {
     await supabase.from('events').update({ invite_image_url: null }).eq('id', event.id)
   }
 
+  const activeCfg = selectedKey ? templateConfig[selectedKey] : null
+  const palettes = activeCfg?.palettes ?? []
+
   return (
     <Card>
       <CardContent className="pt-6 space-y-6">
@@ -99,7 +118,7 @@ export default function InviteEditor({ event, userId }: Props) {
         </div>
 
         <div className="flex flex-col xl:flex-row gap-8 items-start">
-          {/* Left: template grid + upload */}
+          {/* Left: template grid + palette + upload */}
           <div className="flex-1 min-w-0 space-y-5">
             <div className="space-y-4">
               <p className="text-sm font-medium text-gray-600">Stile</p>
@@ -140,6 +159,41 @@ export default function InviteEditor({ event, userId }: Props) {
                 </div>
               ))}
             </div>
+
+            {/* Palette picker */}
+            {selectedKey && palettes.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-600">Variante colore</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Dot 0 = colore default */}
+                  <button
+                    type="button"
+                    onClick={() => handlePaletteSelect(0)}
+                    title="Colori originali"
+                    style={{ background: inviteTemplates[selectedKey]?.previewBg }}
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${
+                      selectedPalette === 0
+                        ? 'border-gray-800 scale-110 shadow'
+                        : 'border-gray-200 hover:border-gray-400'
+                    }`}
+                  />
+                  {palettes.map((p, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handlePaletteSelect(i + 1)}
+                      title={`Variante ${i + 1}`}
+                      style={{ background: p.dot }}
+                      className={`w-8 h-8 rounded-full border-2 transition-all ${
+                        selectedPalette === i + 1
+                          ? 'border-gray-800 scale-110 shadow'
+                          : 'border-gray-200 hover:border-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Custom upload */}
             <div className="space-y-2">
@@ -186,38 +240,62 @@ export default function InviteEditor({ event, userId }: Props) {
             </div>
           </div>
 
-          {/* Right: preview */}
+          {/* Right: phone mockup preview */}
           <div className="flex-shrink-0 space-y-2">
             <p className="text-sm font-medium text-gray-600">Anteprima</p>
-            <div style={{ width: 220 }}>
-              {selectedKey ? (
-                <InviteTemplateCard
-                  templateKey={selectedKey}
-                  title={event.title}
-                  date={event.date}
-                  eventType={event.type}
-                  celebrantName={event.celebrant_name ?? null}
-                  location={event.event_location ?? null}
-                  rsvpPhone={event.rsvp_phone ?? null}
-                  customEventType={event.custom_event_type ?? null}
-                  mode="full"
-                />
-              ) : customUrl && !customUrlError ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={customUrl}
-                  alt="Anteprima invito"
-                  className="w-full rounded-xl shadow-lg"
-                  style={{ aspectRatio: '400/560', objectFit: 'cover' }}
-                />
-              ) : (
-                <div
-                  className="rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 text-xs text-center p-4"
-                  style={{ width: 220, aspectRatio: '400/560' }}
-                >
-                  Seleziona un template per vedere l&apos;anteprima
-                </div>
-              )}
+            {/* Phone shell */}
+            <div style={{
+              position: 'relative',
+              width: 260,
+              background: '#1c1c1e',
+              borderRadius: 44,
+              padding: '52px 10px 58px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.35), inset 0 0 0 1px #3a3a3c, inset 0 0 0 3px #2a2a2c',
+            }}>
+              {/* Side buttons */}
+              <div style={{ position: 'absolute', left: -3, top: 100, width: 3, height: 32, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', left: -3, top: 142, width: 3, height: 52, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', left: -3, top: 204, width: 3, height: 52, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+              <div style={{ position: 'absolute', right: -3, top: 140, width: 3, height: 70, background: '#3a3a3c', borderRadius: '0 2px 2px 0' }} />
+              {/* Notch / Dynamic Island */}
+              <div style={{ position: 'absolute', top: 18, left: '50%', transform: 'translateX(-50%)', width: 90, height: 24, background: '#1c1c1e', borderRadius: 12, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#0a0a0a' }} />
+                <div style={{ width: 28, height: 8, borderRadius: 4, background: '#0a0a0a' }} />
+              </div>
+              {/* Screen bezel */}
+              <div style={{ borderRadius: 32, overflow: 'hidden', background: '#000', position: 'relative' }}>
+                {selectedKey ? (
+                  <InviteTemplateCard
+                    templateKey={selectedKey}
+                    title={event.title}
+                    date={event.date}
+                    eventType={event.type}
+                    celebrantName={event.celebrant_name ?? null}
+                    location={event.event_location ?? null}
+                    rsvpPhone={event.rsvp_phone ?? null}
+                    customEventType={event.custom_event_type ?? null}
+                    mode="full"
+                    palette={selectedPalette}
+                  />
+                ) : customUrl && !customUrlError ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={customUrl}
+                    alt="Anteprima invito"
+                    className="w-full"
+                    style={{ aspectRatio: '400/560', objectFit: 'cover', display: 'block' }}
+                  />
+                ) : (
+                  <div
+                    className="flex items-center justify-center text-gray-400 text-xs text-center p-4"
+                    style={{ width: '100%', aspectRatio: '400/560', background: '#111' }}
+                  >
+                    Seleziona un template
+                  </div>
+                )}
+              </div>
+              {/* Home indicator */}
+              <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)', width: 100, height: 4, background: '#48484a', borderRadius: 4 }} />
             </div>
           </div>
         </div>
