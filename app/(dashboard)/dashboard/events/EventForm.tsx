@@ -488,7 +488,7 @@ export default function EventForm({ userId, userPlan, event }: Props) {
         <Button
           type="submit"
           className="bg-tiffany-700 hover:bg-tiffany-800 text-white"
-          disabled={loading || uploadingImage || uploadingInvite}
+          disabled={loading || uploadingImage}
         >
           {loading ? 'Salvataggio...' : isEdit ? 'Salva modifiche' : 'Crea evento'}
         </Button>
