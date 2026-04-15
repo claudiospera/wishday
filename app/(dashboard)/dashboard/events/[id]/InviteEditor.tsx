@@ -4,16 +4,7 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
-import { INVITE_TEMPLATES, type TemplateKey } from './invite-templates'
-
-const TEMPLATE_CATEGORIES: { label: string; templates: TemplateKey[] }[] = [
-  { label: 'Compleanni adulti', templates: ['botanico', 'sabbia', 'nero'] },
-  { label: 'Matrimonio', templates: ['matrimonio'] },
-  { label: 'Laurea', templates: ['laurea'] },
-  { label: 'Battesimo', templates: ['battesimo'] },
-  { label: 'Compleanni bambini', templates: ['bimbi', 'spazio'] },
-  { label: 'Generici', templates: ['generico'] },
-]
+import { inviteTemplates, InviteTemplateCard } from '@/components/InviteTemplate'
 import type { Event } from '@/lib/types'
 
 interface Props {
@@ -21,55 +12,41 @@ interface Props {
   userId: string
 }
 
-const EVENT_LABELS: Record<string, string> = {
-  birthday: 'Compleanno',
-  wedding: 'Matrimonio',
-  graduation: 'Laurea',
-  baptism: 'Battesimo',
-  other: 'Evento Speciale',
-}
+const TEMPLATE_CATEGORIES: { label: string; templates: string[] }[] = [
+  { label: 'Compleanni adulti', templates: ['floreale-rosa', 'elegante-oro', 'notte-stellata', 'botanico', 'acquarello-blu'] },
+  { label: 'Matrimonio', templates: ['matrimonio'] },
+  { label: 'Laurea', templates: ['laurea'] },
+  { label: 'Battesimo', templates: ['battesimo'] },
+  { label: 'Compleanni bambini', templates: ['festa'] },
+  { label: 'Generici', templates: ['generico-notte', 'generico-solare'] },
+]
 
 export default function InviteEditor({ event, userId }: Props) {
   const supabase = createClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [templateKey, setTemplateKey] = useState<TemplateKey>(
-    (event.invite_template as TemplateKey | undefined) ?? 'botanico'
-  )
-  const [paletteIdx, setPaletteIdx] = useState<number>(event.invite_palette ?? 0)
-  const [customBg, setCustomBg] = useState<string | null>(event.invite_image_url ?? null)
-  const [customBgError, setCustomBgError] = useState(false)
+  const [selectedKey, setSelectedKey] = useState<string | null>(() => {
+    const url = event.invite_image_url
+    if (url?.startsWith('template:')) return url.replace('template:', '')
+    return null
+  })
+  const [customUrl, setCustomUrl] = useState<string | null>(() => {
+    const url = event.invite_image_url
+    if (url && !url.startsWith('template:')) return url
+    return null
+  })
+  const [customUrlError, setCustomUrlError] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const template = INVITE_TEMPLATES[templateKey]
-  const palette = template.palettes[paletteIdx]
-
-  const dateFormatted = event.date
-    ? new Date(event.date).toLocaleDateString('it-IT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : ''
-  const eventLabel = EVENT_LABELS[event.type] ?? 'Evento Speciale'
-
-  async function save(newTemplate: TemplateKey, newPalette: number) {
+  async function handleTemplateSelect(key: string) {
+    setSelectedKey(key)
+    setCustomUrl(null)
+    setCustomUrlError(false)
     const { error } = await supabase
       .from('events')
-      .update({ invite_template: newTemplate, invite_palette: newPalette })
+      .update({ invite_image_url: `template:${key}` })
       .eq('id', event.id)
     if (error) toast.error('Errore nel salvataggio')
-  }
-
-  function handleTemplateChange(key: TemplateKey) {
-    setTemplateKey(key)
-    setPaletteIdx(0)
-    save(key, 0)
-  }
-
-  function handlePaletteChange(idx: number) {
-    setPaletteIdx(idx)
-    save(templateKey, idx)
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -93,8 +70,9 @@ export default function InviteEditor({ event, userId }: Props) {
         .update({ invite_image_url: publicUrl })
         .eq('id', event.id)
       if (updateError) throw updateError
-      setCustomBg(publicUrl)
-      setCustomBgError(false)
+      setCustomUrl(publicUrl)
+      setCustomUrlError(false)
+      setSelectedKey(null)
       toast.success('Immagine caricata!')
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Errore nel caricamento')
@@ -103,15 +81,12 @@ export default function InviteEditor({ event, userId }: Props) {
     }
   }
 
-  async function removeCustomBg() {
-    setCustomBg(null)
-    setCustomBgError(false)
+  async function removeCustom() {
+    setCustomUrl(null)
+    setCustomUrlError(false)
+    setSelectedKey(null)
     await supabase.from('events').update({ invite_image_url: null }).eq('id', event.id)
   }
-
-  const previewBg = (customBg && !customBgError)
-    ? `url(${customBg}) center / cover no-repeat`
-    : palette.bg
 
   return (
     <Card>
@@ -119,66 +94,58 @@ export default function InviteEditor({ event, userId }: Props) {
         <div>
           <h2 className="font-semibold text-gray-700">Invito digitale</h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Scegli stile e palette per l&apos;invito digitale da condividere con gli ospiti
+            Scegli il template per l&apos;invito digitale da condividere con gli ospiti
           </p>
         </div>
 
-        {/* Template selector */}
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-gray-600">Stile</p>
-          {TEMPLATE_CATEGORIES.map(({ label, templates }) => (
-            <div key={label} className="space-y-1.5">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
-              <div className="flex flex-wrap gap-2">
-                {templates.map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleTemplateChange(key)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      templateKey === key
-                        ? 'bg-tiffany-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {INVITE_TEMPLATES[key].name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Left col: palette + upload */}
-          <div className="space-y-5 flex-1 min-w-0">
-            {/* Palette swatches */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-600">Palette colori</p>
-              <div className="flex gap-3 flex-wrap">
-                {template.palettes.map((p, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handlePaletteChange(idx)}
-                    title={p.name}
-                    className={`w-8 h-8 rounded-full transition-all ${
-                      paletteIdx === idx
-                        ? 'ring-2 ring-offset-2 ring-tiffany-500 scale-110'
-                        : 'hover:scale-105'
-                    }`}
-                    style={{ background: p.bg }}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-gray-400">{palette.name}</p>
+        <div className="flex flex-col xl:flex-row gap-8 items-start">
+          {/* Left: template grid + upload */}
+          <div className="flex-1 min-w-0 space-y-5">
+            <div className="space-y-4">
+              <p className="text-sm font-medium text-gray-600">Stile</p>
+              {TEMPLATE_CATEGORIES.map(({ label, templates }) => (
+                <div key={label} className="space-y-2">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {templates.map((key) => {
+                      const tpl = inviteTemplates[key]
+                      if (!tpl) return null
+                      const isSelected = selectedKey === key
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => handleTemplateSelect(key)}
+                          className={`relative rounded-xl overflow-hidden border-2 transition-all ${
+                            isSelected
+                              ? 'border-tiffany-600 ring-2 ring-tiffany-400 scale-[1.03]'
+                              : 'border-transparent hover:border-gray-300'
+                          }`}
+                          title={tpl.label}
+                          style={{ aspectRatio: '4/3' }}
+                        >
+                          <div
+                            className="w-full h-full flex flex-col items-center justify-center gap-1"
+                            style={{ background: tpl.previewBg }}
+                          >
+                            <span className="text-2xl leading-none">{tpl.emoji}</span>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/35 py-0.5 px-1 text-center">
+                            <span className="text-white text-[9px] font-medium leading-tight">{tpl.label}</span>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Custom image upload */}
+            {/* Custom upload */}
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-600">Sfondo personalizzato</p>
+              <p className="text-sm font-medium text-gray-600">Oppure carica la tua immagine</p>
               <p className="text-xs text-gray-400">
-                Carica un&apos;immagine per sostituire lo sfondo del template (max 10MB)
+                Invito da Canva, Instagram o altro — PNG, JPG, WebP (max 10MB)
               </p>
               <input
                 ref={fileInputRef}
@@ -194,21 +161,21 @@ export default function InviteEditor({ event, userId }: Props) {
                   disabled={uploading}
                   className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {uploading ? '⏳ Caricamento...' : '📎 Carica immagine custom'}
+                  {uploading ? '⏳ Caricamento...' : '📎 Carica immagine'}
                 </button>
-                {customBg && (
+                {customUrl && (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={customBg}
-                      alt="Sfondo personalizzato"
+                      src={customUrl}
+                      alt="Anteprima upload"
                       className="w-10 h-10 rounded-lg object-cover border border-gray-200"
-                      onError={() => setCustomBgError(true)}
-                      onLoad={() => setCustomBgError(false)}
+                      onError={() => setCustomUrlError(true)}
+                      onLoad={() => setCustomUrlError(false)}
                     />
                     <button
                       type="button"
-                      onClick={removeCustomBg}
+                      onClick={removeCustom}
                       className="text-xs text-red-500 hover:text-red-700"
                     >
                       Rimuovi
@@ -219,82 +186,38 @@ export default function InviteEditor({ event, userId }: Props) {
             </div>
           </div>
 
-          {/* Right col: phone frame preview */}
+          {/* Right: preview */}
           <div className="flex-shrink-0 space-y-2">
             <p className="text-sm font-medium text-gray-600">Anteprima</p>
-
-            <div className="relative mx-auto" style={{ width: 196, height: 392 }}>
-              {/* Phone shell */}
-              <div className="absolute inset-0 rounded-[2rem] border-[7px] border-gray-800 shadow-2xl overflow-hidden bg-black">
-                {/* Notch */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-3 bg-gray-900 rounded-full z-20" />
-
-                {/* Screen */}
-                <div className="absolute inset-0" style={{ background: previewBg }}>
-                  <div
-                    className="flex flex-col items-center justify-center h-full px-4 text-center pt-5"
-                    style={{ fontFamily: `'${template.font}', serif` }}
-                  >
-                    {/* Tag evento */}
-                    <div
-                      className="text-[8px] tracking-widest uppercase mb-3 px-2.5 py-0.5 rounded-full border"
-                      style={{ color: palette.tag, borderColor: `${palette.tag}55` }}
-                    >
-                      {eventLabel}
-                    </div>
-
-                    {/* Separatore top */}
-                    <div className="flex items-center gap-1.5 mb-2 w-full justify-center">
-                      <div className="h-px flex-1 max-w-[36px]" style={{ background: palette.sep }} />
-                      <span style={{ color: palette.sep, fontSize: 6 }}>✦</span>
-                      <div className="h-px flex-1 max-w-[36px]" style={{ background: palette.sep }} />
-                    </div>
-
-                    {/* Nome festeggiato */}
-                    <div
-                      className="text-[18px] font-bold leading-tight mb-1 px-2"
-                      style={{
-                        color: palette.nameColor,
-                        fontStyle: template.italic ? 'italic' : 'normal',
-                      }}
-                    >
-                      {event.celebrant_name || event.title}
-                    </div>
-
-                    {/* Separatore bottom */}
-                    <div className="flex items-center gap-1.5 my-2 w-full justify-center">
-                      <div className="h-px flex-1 max-w-[36px]" style={{ background: palette.sep }} />
-                      <span style={{ color: palette.sep, fontSize: 6 }}>✦</span>
-                      <div className="h-px flex-1 max-w-[36px]" style={{ background: palette.sep }} />
-                    </div>
-
-                    {/* Tipo evento */}
-                    <div
-                      className="text-[9px] tracking-wide uppercase mb-2.5"
-                      style={{ color: palette.event }}
-                    >
-                      ti invita al suo {eventLabel.toLowerCase()}
-                    </div>
-
-                    {/* Data */}
-                    {dateFormatted && (
-                      <div className="text-[8px] mb-1" style={{ color: palette.date }}>
-                        {dateFormatted}
-                      </div>
-                    )}
-
-                    {/* Luogo */}
-                    {event.event_location && (
-                      <div className="text-[7px] opacity-90 mt-0.5 px-2 leading-relaxed" style={{ color: palette.venue }}>
-                        {event.event_location}
-                      </div>
-                    )}
-                  </div>
+            <div style={{ width: 220 }}>
+              {selectedKey ? (
+                <InviteTemplateCard
+                  templateKey={selectedKey}
+                  title={event.title}
+                  date={event.date}
+                  eventType={event.type}
+                  celebrantName={event.celebrant_name ?? null}
+                  location={event.event_location ?? null}
+                  rsvpPhone={event.rsvp_phone ?? null}
+                  customEventType={event.custom_event_type ?? null}
+                  mode="full"
+                />
+              ) : customUrl && !customUrlError ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={customUrl}
+                  alt="Anteprima invito"
+                  className="w-full rounded-xl shadow-lg"
+                  style={{ aspectRatio: '400/560', objectFit: 'cover' }}
+                />
+              ) : (
+                <div
+                  className="rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 text-xs text-center p-4"
+                  style={{ width: 220, aspectRatio: '400/560' }}
+                >
+                  Seleziona un template per vedere l&apos;anteprima
                 </div>
-              </div>
-
-              {/* Home indicator */}
-              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-gray-700 rounded-full" />
+              )}
             </div>
           </div>
         </div>

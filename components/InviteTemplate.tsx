@@ -20,6 +20,7 @@ export const inviteTemplates: Record<string, {
   'laurea':          { label: 'Laurea',             emoji: '🎓', previewBg: 'linear-gradient(135deg,#d8e4f8,#c0d0ee)' },
   'generico-notte':  { label: 'Notte Festiva',      emoji: '✨', previewBg: 'linear-gradient(135deg,#080818,#1a1040)' },
   'generico-solare': { label: 'Solare',             emoji: '☀️', previewBg: 'linear-gradient(135deg,#fffbe0,#ffd868)' },
+  'matrimonio':      { label: 'Matrimonio',          emoji: '💍', previewBg: 'linear-gradient(135deg,#fefdf8,#f5eedc)' },
 }
 
 // ─── Decorazioni SVG per ogni template ──────────────────────────────────────
@@ -271,6 +272,24 @@ const SolareSVG = () => (
   </svg>
 )
 
+const MatrimonioSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    {/* Corner organic curves */}
+    <path d="M0,130 Q0,0 130,0" fill="none" stroke="#c9a96e" strokeWidth="1.3" opacity="0.35" />
+    <path d="M0,175 Q0,0 175,0" fill="none" stroke="#c9a96e" strokeWidth="0.7" opacity="0.2" />
+    <path d="M400,130 Q400,0 270,0" fill="none" stroke="#c9a96e" strokeWidth="1.3" opacity="0.35" />
+    <path d="M400,175 Q400,0 225,0" fill="none" stroke="#c9a96e" strokeWidth="0.7" opacity="0.2" />
+    <path d="M0,430 Q0,560 130,560" fill="none" stroke="#c9a96e" strokeWidth="1.3" opacity="0.35" />
+    <path d="M0,385 Q0,560 175,560" fill="none" stroke="#c9a96e" strokeWidth="0.7" opacity="0.2" />
+    <path d="M400,430 Q400,560 270,560" fill="none" stroke="#c9a96e" strokeWidth="1.3" opacity="0.35" />
+    <path d="M400,385 Q400,560 225,560" fill="none" stroke="#c9a96e" strokeWidth="0.7" opacity="0.2" />
+    {/* Center subtle diamond */}
+    <polygon points="200,268 208,276 200,284 192,276" fill="none" stroke="#c9a96e" strokeWidth="1" opacity="0.3" />
+    {/* Thin border */}
+    <rect x="24" y="24" width="352" height="512" rx="2" fill="none" stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" />
+  </svg>
+)
+
 // ─── Configurazione rendering ────────────────────────────────────────────────
 
 const templateConfig: Record<string, {
@@ -385,6 +404,17 @@ const templateConfig: Record<string, {
     separator: 'line',
     useTitleAsSubtitle: true,
     SVGDecoration: SolareSVG,
+  },
+  'matrimonio': {
+    bg: 'linear-gradient(170deg,#fefdf8 0%,#f8f4e8 55%,#f5eedc 100%)',
+    titleColor: '#3e2723',
+    textColor: '#5d4037',
+    subtitleColor: '#8d6e47',
+    tagBg: 'rgba(201,169,110,0.12)',
+    tagColor: '#8d6e47',
+    overrideTag: 'ci sposiamo!',
+    separator: 'star',
+    SVGDecoration: MatrimonioSVG,
   },
 }
 

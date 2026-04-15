@@ -50,15 +50,20 @@ export default async function EventDetailPage({ params }: Props) {
 
       {/* Tab navigazione */}
       <Tabs defaultValue="wishlist">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="wishlist">🎁 Wish List</TabsTrigger>
-          <TabsTrigger value="contributions">💰 Contributi</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="wishlist">🎁 Lista</TabsTrigger>
+          <TabsTrigger value="invite">🎨 Invito</TabsTrigger>
+          <TabsTrigger value="contributions">💰 Fondi</TabsTrigger>
           <TabsTrigger value="messages">💬 Auguri</TabsTrigger>
-          <TabsTrigger value="settings">⚙️ Impostazioni</TabsTrigger>
+          <TabsTrigger value="settings">⚙️ Config</TabsTrigger>
         </TabsList>
 
         <TabsContent value="wishlist" className="mt-6">
           <WishListManager event={event} userId={user.id} />
+        </TabsContent>
+
+        <TabsContent value="invite" className="mt-6">
+          <InviteEditor event={event} userId={user.id} />
         </TabsContent>
 
         <TabsContent value="contributions" className="mt-6">
@@ -72,7 +77,6 @@ export default async function EventDetailPage({ params }: Props) {
         <TabsContent value="settings" className="mt-6">
           <div className="space-y-6">
             <EventForm userId={user.id} userPlan={profile?.plan} event={event} />
-            <InviteEditor event={event} userId={user.id} />
             <SharePanel event={event} />
           </div>
         </TabsContent>
