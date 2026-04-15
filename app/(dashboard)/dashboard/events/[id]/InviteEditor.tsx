@@ -5,6 +5,15 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
 import { INVITE_TEMPLATES, type TemplateKey } from './invite-templates'
+
+const TEMPLATE_CATEGORIES: { label: string; templates: TemplateKey[] }[] = [
+  { label: 'Compleanni adulti', templates: ['botanico', 'sabbia', 'nero'] },
+  { label: 'Matrimonio', templates: ['matrimonio'] },
+  { label: 'Laurea', templates: ['laurea'] },
+  { label: 'Battesimo', templates: ['battesimo'] },
+  { label: 'Compleanni bambini', templates: ['bimbi', 'spazio'] },
+  { label: 'Generici', templates: ['generico'] },
+]
 import type { Event } from '@/lib/types'
 
 interface Props {
@@ -112,24 +121,29 @@ export default function InviteEditor({ event, userId }: Props) {
         </div>
 
         {/* Template selector */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p className="text-sm font-medium text-gray-600">Stile</p>
-          <div className="flex flex-wrap gap-2">
-            {(Object.keys(INVITE_TEMPLATES) as TemplateKey[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleTemplateChange(key)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  templateKey === key
-                    ? 'bg-tiffany-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {INVITE_TEMPLATES[key].name}
-              </button>
-            ))}
-          </div>
+          {TEMPLATE_CATEGORIES.map(({ label, templates }) => (
+            <div key={label} className="space-y-1.5">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
+              <div className="flex flex-wrap gap-2">
+                {templates.map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleTemplateChange(key)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      templateKey === key
+                        ? 'bg-tiffany-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {INVITE_TEMPLATES[key].name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">

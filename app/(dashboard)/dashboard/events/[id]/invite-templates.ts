@@ -77,6 +77,45 @@ export const INVITE_TEMPLATES = {
       { name: 'Saturno Oro', bg: 'linear-gradient(180deg,#0e0800,#1e1400)', tag: '#ffd54f', nameColor: '#fff8e1', event: '#ffb300', sep: '#ffc107', date: '#ffecb3', venue: '#ffa000' },
     ]
   },
+  laurea: {
+    name: 'Laurea',
+    font: 'Cormorant Garamond',
+    italic: true,
+    palettes: [
+      { name: 'Azzurro Accademico', bg: 'linear-gradient(160deg,#1a2e4a,#0d1e3a)', tag: '#88aadd', nameColor: '#f0f4ff', event: '#aaccee', sep: '#6688cc', date: '#c8d8f0', venue: '#7799cc' },
+      { name: 'Oro', bg: 'linear-gradient(160deg,#1e1600,#2e2200)', tag: '#d4aa44', nameColor: '#fff8e0', event: '#c49a30', sep: '#b8920a', date: '#f0d888', venue: '#b08820' },
+      { name: 'Bordeaux', bg: 'linear-gradient(160deg,#2e0a0a,#480e0e)', tag: '#e8a0a0', nameColor: '#fff0f0', event: '#d08080', sep: '#c06060', date: '#f0c0c0', venue: '#c07070' },
+      { name: 'Navy', bg: 'linear-gradient(160deg,#0a0e2e,#0e1848)', tag: '#9ab0ee', nameColor: '#e8eeff', event: '#7890dd', sep: '#5068bb', date: '#c0ccf0', venue: '#7088cc' },
+      { name: 'Verde', bg: 'linear-gradient(160deg,#0a2010,#102a18)', tag: '#80c898', nameColor: '#e8f5ec', event: '#60a878', sep: '#409858', date: '#b0dcc0', venue: '#508860' },
+      { name: 'Grigio', bg: 'linear-gradient(160deg,#1a1a1a,#2a2a2a)', tag: '#aaaaaa', nameColor: '#f0f0f0', event: '#888888', sep: '#777777', date: '#cccccc', venue: '#999999' },
+    ]
+  },
+  battesimo: {
+    name: 'Battesimo',
+    font: 'Dancing Script',
+    italic: false,
+    palettes: [
+      { name: 'Celeste', bg: 'linear-gradient(170deg,#e8f6ff,#d0ecff)', tag: '#4488bb', nameColor: '#0a2a44', event: '#3378aa', sep: '#66aad4', date: '#1a5080', venue: '#5590bb' },
+      { name: 'Lavanda', bg: 'linear-gradient(170deg,#f0eaff,#e4d8ff)', tag: '#8866cc', nameColor: '#2a0a4a', event: '#7755bb', sep: '#aa88e8', date: '#441880', venue: '#9977cc' },
+      { name: 'Rosa', bg: 'linear-gradient(170deg,#fff0f5,#ffe0ee)', tag: '#cc6688', nameColor: '#3a0820', event: '#bb5577', sep: '#ee88aa', date: '#660030', venue: '#dd7799' },
+      { name: 'Azzurro Cielo', bg: 'linear-gradient(170deg,#dff0ff,#c8e4ff)', tag: '#3366aa', nameColor: '#081830', event: '#2255aa', sep: '#5588cc', date: '#0a3060', venue: '#4477bb' },
+      { name: 'Bianco', bg: 'linear-gradient(170deg,#ffffff,#f5f5f5)', tag: '#888888', nameColor: '#222222', event: '#555555', sep: '#aaaaaa', date: '#333333', venue: '#777777' },
+      { name: 'Champagne', bg: 'linear-gradient(170deg,#fdf8f0,#f5eedc)', tag: '#9a7848', nameColor: '#302008', event: '#907848', sep: '#c8a860', date: '#604828', venue: '#b09060' },
+    ]
+  },
+  generico: {
+    name: 'Generico',
+    font: 'Plus Jakarta Sans',
+    italic: false,
+    palettes: [
+      { name: 'Notte Festiva', bg: 'linear-gradient(160deg,#0a0a1a,#1a1030)', tag: '#cc99ff', nameColor: '#ffffff', event: '#aa77ee', sep: '#8844cc', date: '#ddbbff', venue: '#9966dd' },
+      { name: 'Solare', bg: 'linear-gradient(160deg,#fff8c0,#ffe878)', tag: '#aa6600', nameColor: '#1a0a00', event: '#bb7700', sep: '#dd9900', date: '#4a2800', venue: '#cc8800' },
+      { name: 'Teal', bg: 'linear-gradient(160deg,#003838,#005050)', tag: '#66cccc', nameColor: '#e0ffff', event: '#44aaaa', sep: '#33bbbb', date: '#aaeeff', venue: '#55bbbb' },
+      { name: 'Corallo', bg: 'linear-gradient(160deg,#fff0ec,#ffe0d8)', tag: '#cc4422', nameColor: '#2a0a00', event: '#bb3311', sep: '#ee7755', date: '#660000', venue: '#dd6644' },
+      { name: 'Verde', bg: 'linear-gradient(160deg,#e8fff0,#d0ffdc)', tag: '#226622', nameColor: '#001a00', event: '#114411', sep: '#44aa44', date: '#003300', venue: '#338833' },
+      { name: 'Viola', bg: 'linear-gradient(160deg,#f5eeff,#eedcff)', tag: '#7722cc', nameColor: '#1a0030', event: '#6611bb', sep: '#9944ee', date: '#3a0060', venue: '#8833dd' },
+    ]
+  },
 } as const
 
 export type TemplateKey = keyof typeof INVITE_TEMPLATES
