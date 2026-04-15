@@ -16,6 +16,10 @@ export const inviteTemplates: Record<string, {
   'botanico':        { label: 'Botanico',          emoji: '🌿', previewBg: 'linear-gradient(135deg,#052e16,#166534)' },
   'festa':           { label: 'Festa Colorata',    emoji: '🎉', previewBg: 'linear-gradient(135deg,#fdf4ff,#fce7f3)' },
   'acquarello-blu':  { label: 'Acquarello Blu',    emoji: '💙', previewBg: 'linear-gradient(135deg,#eff6ff,#bfdbfe)' },
+  'battesimo':       { label: 'Battesimo',         emoji: '👼', previewBg: 'linear-gradient(135deg,#e8f6ff,#c8e4ff)' },
+  'laurea':          { label: 'Laurea',             emoji: '🎓', previewBg: 'linear-gradient(135deg,#d8e4f8,#c0d0ee)' },
+  'generico-notte':  { label: 'Notte Festiva',      emoji: '✨', previewBg: 'linear-gradient(135deg,#080818,#1a1040)' },
+  'generico-solare': { label: 'Solare',             emoji: '☀️', previewBg: 'linear-gradient(135deg,#fffbe0,#ffd868)' },
 }
 
 // ─── Decorazioni SVG per ogni template ──────────────────────────────────────
@@ -187,6 +191,86 @@ const AcquarelloBluSVG = () => (
   </svg>
 )
 
+const BattesimoSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <circle cx="70" cy="90" r="55" fill="#88c4f0" opacity="0.18" />
+    <circle cx="330" cy="110" r="44" fill="#66aaee" opacity="0.15" />
+    <circle cx="60" cy="460" r="48" fill="#88c4f0" opacity="0.18" />
+    <circle cx="340" cy="450" r="40" fill="#66aaee" opacity="0.15" />
+    {/* Dove top-left */}
+    <path d="M52,58 C58,47 76,46 80,56 C84,67 70,76 58,72 C48,69 47,62 52,58Z" fill="white" opacity="0.55" />
+    <path d="M80,56 C89,49 98,53 91,62Z" fill="white" opacity="0.5" />
+    {/* Dove top-right */}
+    <path d="M320,68 C326,57 344,56 348,66 C352,77 338,86 326,82 C316,79 315,72 320,68Z" fill="white" opacity="0.55" />
+    <path d="M348,66 C357,59 366,63 359,72Z" fill="white" opacity="0.5" />
+    {/* Cross top-center */}
+    <line x1="200" y1="28" x2="200" y2="52" stroke="#5590bb" strokeWidth="1.6" opacity="0.35" />
+    <line x1="189" y1="37" x2="211" y2="37" stroke="#5590bb" strokeWidth="1.6" opacity="0.35" />
+    {/* Dashed border */}
+    <rect x="18" y="18" width="364" height="524" rx="10" fill="none" stroke="#88aad4" strokeWidth="1.2" strokeDasharray="7 5" opacity="0.45" />
+  </svg>
+)
+
+const LaureaSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <rect x="14" y="14" width="372" height="532" rx="4" fill="none" stroke="#3a5a9e" strokeWidth="1.3" opacity="0.35" />
+    <rect x="22" y="22" width="356" height="516" rx="3" fill="none" stroke="#5070bb" strokeWidth="0.8" opacity="0.22" />
+    {[[22,22,0],[378,22,90],[378,538,180],[22,538,270]].map(([x,y,rot],i) => (
+      <g key={i} transform={`translate(${x},${y}) rotate(${rot})`}>
+        <line x1="0" y1="0" x2="24" y2="0" stroke="#3a5a9e" strokeWidth="1.6" opacity="0.5" />
+        <line x1="0" y1="0" x2="0" y2="24" stroke="#3a5a9e" strokeWidth="1.6" opacity="0.5" />
+        <circle cx="0" cy="0" r="3" fill="#5070bb" opacity="0.6" />
+      </g>
+    ))}
+    {[[80,50],[200,34],[320,50],[80,510],[200,526],[320,510]].map(([cx,cy],i) => (
+      <polygon key={i} transform={`translate(${cx},${cy})`}
+        points="0,-8 2.2,-3 8,-3 3.5,1.2 5.5,7.5 0,3.5 -5.5,7.5 -3.5,1.2 -8,-3 -2.2,-3"
+        fill="#d4aa44" opacity={i===1||i===4 ? 0.6 : 0.35} />
+    ))}
+    <circle cx="200" cy="280" r="145" fill="none" stroke="#5070bb" strokeWidth="0.5" opacity="0.1" />
+  </svg>
+)
+
+const NotteFestvaSVG = () => {
+  const pts = [
+    [40,40],[80,20],[155,45],[240,22],[310,40],[372,28],[25,130],[100,90],[200,108],[295,78],[382,100],
+    [48,220],[170,198],[312,178],[382,225],[28,330],[132,352],[260,318],[372,340],[62,440],[182,458],
+    [302,438],[376,420],[38,522],[118,542],[228,518],[342,530],[388,508],
+  ]
+  return (
+    <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+      {pts.map(([cx,cy],i) => (
+        <circle key={i} cx={cx} cy={cy} r={i%4===0?2.5:i%3===0?1.5:1} fill={['#cc99ff','#ffffff','#aa77ee','#ddbbff'][i%4]} opacity={0.25+((i%3)*0.15)} />
+      ))}
+      {[[60,80],[340,58],[200,28],[105,198],[298,178],[60,420],[340,400]].map(([cx,cy],i) => (
+        <g key={i} transform={`translate(${cx},${cy})`} opacity="0.45">
+          <line x1="0" y1="-7" x2="0" y2="7" stroke="#cc99ff" strokeWidth="0.9" />
+          <line x1="-7" y1="0" x2="7" y2="0" stroke="#cc99ff" strokeWidth="0.9" />
+          <line x1="-5" y1="-5" x2="5" y2="5" stroke="#cc99ff" strokeWidth="0.5" />
+          <line x1="5" y1="-5" x2="-5" y2="5" stroke="#cc99ff" strokeWidth="0.5" />
+        </g>
+      ))}
+      <rect x="16" y="16" width="368" height="528" rx="4" fill="none" stroke="#8844cc" strokeWidth="1" opacity="0.4" />
+    </svg>
+  )
+}
+
+const SolareSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <circle cx="200" cy="58" r="24" fill="#ffd060" opacity="0.3" />
+    <circle cx="200" cy="58" r="16" fill="#ffb800" opacity="0.28" />
+    {[0,30,60,90,120,150,180,210,240,270,300,330].map((angle,i) => {
+      const rad = (angle * Math.PI) / 180
+      return <line key={i} x1={200+Math.cos(rad)*28} y1={58+Math.sin(rad)*28} x2={200+Math.cos(rad)*40} y2={58+Math.sin(rad)*40} stroke="#dd9900" strokeWidth="1.3" opacity="0.38" />
+    })}
+    <circle cx="42" cy="105" r="38" fill="#ffcc44" opacity="0.1" />
+    <circle cx="358" cy="118" r="30" fill="#ffaa22" opacity="0.1" />
+    <circle cx="48" cy="455" r="32" fill="#ffcc44" opacity="0.1" />
+    <circle cx="355" cy="448" r="38" fill="#ffaa22" opacity="0.1" />
+    <rect x="16" y="16" width="368" height="528" rx="4" fill="none" stroke="#dd9900" strokeWidth="1" opacity="0.22" />
+  </svg>
+)
+
 // ─── Configurazione rendering ────────────────────────────────────────────────
 
 const templateConfig: Record<string, {
@@ -196,6 +280,9 @@ const templateConfig: Record<string, {
   subtitleColor: string
   tagBg: string
   tagColor: string
+  overrideTag?: string
+  separator?: 'line' | 'dots' | 'star' | 'dot'
+  useTitleAsSubtitle?: boolean
   SVGDecoration: () => React.ReactElement
 }> = {
   'floreale-rosa': {
@@ -251,6 +338,53 @@ const templateConfig: Record<string, {
     tagBg: '#dbeafe',
     tagColor: '#1d4ed8',
     SVGDecoration: AcquarelloBluSVG,
+  },
+  'battesimo': {
+    bg: 'linear-gradient(160deg,#e8f6ff 0%,#c8e4ff 55%,#d8f0ff 100%)',
+    titleColor: '#0a2040',
+    textColor: '#1a5080',
+    subtitleColor: '#5590bb',
+    tagBg: 'rgba(68,136,187,0.13)',
+    tagColor: '#336699',
+    overrideTag: 'il nostro piccolo miracolo',
+    separator: 'dots',
+    SVGDecoration: BattesimoSVG,
+  },
+  'laurea': {
+    bg: 'linear-gradient(160deg,#d8e4f8 0%,#c0d0ee 55%,#ccd8f0 100%)',
+    titleColor: '#1a2a6e',
+    textColor: '#2a3a8e',
+    subtitleColor: '#d4aa44',
+    tagBg: 'rgba(26,42,110,0.1)',
+    tagColor: '#1a2a6e',
+    overrideTag: 'ci laureiamo!',
+    separator: 'star',
+    useTitleAsSubtitle: true,
+    SVGDecoration: LaureaSVG,
+  },
+  'generico-notte': {
+    bg: 'linear-gradient(160deg,#080818 0%,#12102a 55%,#1a1040 100%)',
+    titleColor: '#ffffff',
+    textColor: '#ddbbff',
+    subtitleColor: '#8844cc',
+    tagBg: 'rgba(200,150,255,0.15)',
+    tagColor: '#cc99ff',
+    overrideTag: 'sei invitato',
+    separator: 'dot',
+    useTitleAsSubtitle: true,
+    SVGDecoration: NotteFestvaSVG,
+  },
+  'generico-solare': {
+    bg: 'linear-gradient(160deg,#fffbe0 0%,#fff0a0 50%,#ffd868 100%)',
+    titleColor: '#1a0800',
+    textColor: '#884400',
+    subtitleColor: '#bb7700',
+    tagBg: 'rgba(180,100,0,0.08)',
+    tagColor: '#884400',
+    overrideTag: 'sei invitato!',
+    separator: 'line',
+    useTitleAsSubtitle: true,
+    SVGDecoration: SolareSVG,
   },
 }
 
@@ -329,9 +463,9 @@ export function InviteTemplateCard({
       <SVGDecoration />
 
       <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-        {/* Tipo di evento - tag */}
+        {/* Tag evento */}
         <div style={{ background: cfg.tagBg, color: cfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: 'system-ui, sans-serif' }}>
-          {emoji} {title || 'Il tuo evento'}
+          {cfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
         </div>
 
         {/* Nome festeggiato */}
@@ -341,13 +475,27 @@ export function InviteTemplateCard({
           </h1>
         )}
 
-        {/* Tipologia festa */}
+        {/* Tipologia festa o titolo evento */}
         <p style={{ margin: 0, fontSize: 20, fontWeight: 600, color: cfg.textColor, lineHeight: 1.3, textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-          {typeLabel}
+          {cfg.useTitleAsSubtitle ? (title || typeLabel) : typeLabel}
         </p>
 
-        {/* Linea decorativa */}
-        <div style={{ width: 48, height: 2, background: cfg.subtitleColor, borderRadius: 2, opacity: 0.5 }} />
+        {/* Separatore */}
+        {cfg.separator === 'dots' ? (
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            {[0,1,2].map(i => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: cfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />)}
+          </div>
+        ) : cfg.separator === 'star' ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 36, height: 1.5, background: cfg.subtitleColor, opacity: 0.5 }} />
+            <span style={{ color: cfg.subtitleColor, fontSize: 13, opacity: 0.8 }}>★</span>
+            <div style={{ width: 36, height: 1.5, background: cfg.subtitleColor, opacity: 0.5 }} />
+          </div>
+        ) : cfg.separator === 'dot' ? (
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />
+        ) : (
+          <div style={{ width: 48, height: 2, background: cfg.subtitleColor, borderRadius: 2, opacity: 0.5 }} />
+        )}
 
         {/* Data */}
         <p style={{ margin: 0, fontSize: 16, color: cfg.textColor, fontFamily: 'system-ui, sans-serif', fontWeight: 500 }}>
