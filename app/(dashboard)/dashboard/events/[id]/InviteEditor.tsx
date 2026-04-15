@@ -127,9 +127,9 @@ export default function InviteEditor({ event, userId }: Props) {
           </p>
         </div>
 
-        <div className="flex flex-col xl:flex-row gap-8 items-start">
-          {/* Left: template grid + palette + font + upload */}
-          <div className="flex-1 min-w-0 space-y-4">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          {/* Left: pannello scrollabile */}
+          <div className="flex-1 min-w-0 overflow-y-auto max-h-[540px] pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-200">
 
             {/* Template grid — thumbnails piccoli */}
             <div className="space-y-3">
@@ -266,8 +266,8 @@ export default function InviteEditor({ event, userId }: Props) {
             </div>
           </div>
 
-          {/* Right: phone mockup */}
-          <div className="flex-shrink-0 space-y-2">
+          {/* Right: phone mockup sticky */}
+          <div className="flex-shrink-0 sticky top-4 space-y-2">
             <p className="text-sm font-medium text-gray-600">Anteprima</p>
             {/* Phone shell — 300px wide */}
             <div style={{
