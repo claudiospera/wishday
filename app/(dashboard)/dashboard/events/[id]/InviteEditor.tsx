@@ -38,6 +38,7 @@ export default function InviteEditor({ event, userId }: Props) {
   )
   const [paletteIdx, setPaletteIdx] = useState<number>(event.invite_palette ?? 0)
   const [customBg, setCustomBg] = useState<string | null>(event.invite_image_url ?? null)
+  const [customBgError, setCustomBgError] = useState(false)
   const [uploading, setUploading] = useState(false)
 
   const template = INVITE_TEMPLATES[templateKey]
@@ -93,6 +94,7 @@ export default function InviteEditor({ event, userId }: Props) {
         .eq('id', event.id)
       if (updateError) throw updateError
       setCustomBg(publicUrl)
+      setCustomBgError(false)
       toast.success('Immagine caricata!')
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Errore nel caricamento')
@@ -103,10 +105,11 @@ export default function InviteEditor({ event, userId }: Props) {
 
   async function removeCustomBg() {
     setCustomBg(null)
+    setCustomBgError(false)
     await supabase.from('events').update({ invite_image_url: null }).eq('id', event.id)
   }
 
-  const previewBg = customBg
+  const previewBg = (customBg && !customBgError)
     ? `url(${customBg}) center / cover no-repeat`
     : palette.bg
 
@@ -200,6 +203,8 @@ export default function InviteEditor({ event, userId }: Props) {
                       src={customBg}
                       alt="Sfondo personalizzato"
                       className="w-10 h-10 rounded-lg object-cover border border-gray-200"
+                      onError={() => setCustomBgError(true)}
+                      onLoad={() => setCustomBgError(false)}
                     />
                     <button
                       type="button"
