@@ -40,10 +40,5 @@ export default function GoogleTranslate() {
     }
   }, [])
 
-  return (
-    <div
-      id="google_translate_element"
-      className="fixed bottom-20 right-4 z-50"
-    />
-  )
+  return null
 }

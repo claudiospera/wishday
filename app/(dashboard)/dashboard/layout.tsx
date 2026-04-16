@@ -39,7 +39,10 @@ export default async function DashboardLayout({
               Home
             </Link>
           </div>
-          <DashboardNav user={user} profile={profile} />
+          <div className="flex items-center gap-3">
+            <div id="google_translate_element" />
+            <DashboardNav user={user} profile={profile} />
+          </div>
         </div>
       </header>
 
