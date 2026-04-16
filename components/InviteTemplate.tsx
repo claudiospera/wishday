@@ -628,7 +628,6 @@ export const templateConfig: Record<string, {
     titleColor: '#ffffff', textColor: '#ffd600', subtitleColor: '#8080ff',
     tagBg: 'rgba(255,255,255,0.1)', tagColor: '#e8f0ff',
     emojiHeader: '🚀',
-    overrideTag: 'MISSIONE COMPLEANNO',
     separator: 'star',
     useTitleAsSubtitle: true,
     SVGDecoration: SpazioCosmicoSVG,

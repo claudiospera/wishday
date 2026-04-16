@@ -2,15 +2,8 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { buttonVariants } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ExternalLink } from 'lucide-react'
-import EventForm from '../EventForm'
-import EventDetailsCard from '../EventDetailsCard'
-import WishListManager from './WishListManager'
-import ContributionsView from './ContributionsView'
-import MessagesView from './MessagesView'
-import SharePanel from './SharePanel'
-import InviteEditor from './InviteEditor'
+import EventTabs from './EventTabs'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -49,42 +42,7 @@ export default async function EventDetailPage({ params }: Props) {
         )}
       </div>
 
-      {/* Tab navigazione */}
-      <Tabs defaultValue="wishlist">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="wishlist">🎁 Lista</TabsTrigger>
-          <TabsTrigger value="invite">🎨 Invito</TabsTrigger>
-          <TabsTrigger value="contributions">💰 Fondi</TabsTrigger>
-          <TabsTrigger value="messages">💬 Auguri</TabsTrigger>
-          <TabsTrigger value="settings">⚙️ Config</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="wishlist" className="mt-6">
-          <WishListManager event={event} userId={user.id} />
-        </TabsContent>
-
-        <TabsContent value="invite" className="mt-6">
-          <div className="space-y-6">
-            <EventDetailsCard event={event} />
-            <InviteEditor event={event} userId={user.id} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="contributions" className="mt-6">
-          <ContributionsView eventId={event.id} userId={user.id} />
-        </TabsContent>
-
-        <TabsContent value="messages" className="mt-6">
-          <MessagesView eventId={event.id} />
-        </TabsContent>
-
-        <TabsContent value="settings" className="mt-6">
-          <div className="space-y-6">
-            <EventForm userId={user.id} userPlan={profile?.plan} event={event} hideDetails />
-            <SharePanel event={event} />
-          </div>
-        </TabsContent>
-      </Tabs>
+      <EventTabs event={event} userId={user.id} userPlan={profile?.plan} />
     </div>
   )
 }
