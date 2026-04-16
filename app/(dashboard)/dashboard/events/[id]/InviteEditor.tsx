@@ -228,94 +228,89 @@ export default function InviteEditor({ event, userId }: Props) {
           </div>
 
           {/* Right: phone mockup sticky */}
-          <div className="flex-shrink-0 sticky top-4 space-y-3">
-            <p className="text-sm font-medium text-gray-600">Anteprima</p>
+          <div className="flex-shrink-0 sticky top-4">
+            <p className="text-sm font-medium text-gray-600 mb-3">Anteprima</p>
 
             {/* Dark showcase panel */}
-            <div style={{ background: 'linear-gradient(180deg,#0e0e0e,#1a1a1a)', borderRadius: 20, padding: '28px 20px 20px', display: 'inline-block' }}>
+            <div style={{ background:'#141414', borderRadius:28, padding:'32px 28px 24px', display:'inline-flex', flexDirection:'column', alignItems:'center', gap:20 }}>
 
-            {/* Phone */}
-            <div style={{
-              position: 'relative',
-              width: 260,
-              background: 'linear-gradient(145deg,#3d3d3d,#2a2a2a)',
-              borderRadius: 44,
-              padding: '38px 9px 38px',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08)',
-            }}>
-              {/* Tasto power */}
-              <div style={{ position:'absolute', right:-3.5, top:130, width:3.5, height:68, background:'#3a3a3a', borderRadius:'0 2px 2px 0' }} />
-              {/* Tasti volume */}
-              <div style={{ position:'absolute', left:-3.5, top:118, width:3.5, height:34, background:'#3a3a3a', borderRadius:'2px 0 0 2px' }} />
-              <div style={{ position:'absolute', left:-3.5, top:162, width:3.5, height:58, background:'#3a3a3a', borderRadius:'2px 0 0 2px' }} />
-
-              {/* Notch */}
+              {/* Phone frame */}
               <div style={{
-                position:'absolute', top:0, left:'50%', transform:'translateX(-50%)',
-                width:130, height:30, background:'#2a2a2a', borderRadius:'0 0 20px 20px',
-                zIndex:10, display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                position:'relative',
+                width:270,
+                background:'linear-gradient(160deg,#2e2e2e,#1c1c1c)',
+                borderRadius:52,
+                padding:'14px 10px 18px',
+                boxShadow:'0 0 0 1px rgba(255,255,255,0.06), 0 28px 60px rgba(0,0,0,0.85)',
               }}>
-                <div style={{ width:10, height:10, borderRadius:'50%', background:'#1a1a1a', border:'1.5px solid #444' }} />
-                <div style={{ width:40, height:8, borderRadius:4, background:'#1a1a1a', border:'1.5px solid #444' }} />
-              </div>
-
-              {/* Screen */}
-              <div style={{ borderRadius:36, overflow:'hidden', lineHeight:0, position:'relative' }}>
-                {/* Status bar */}
+                {/* Notch */}
                 <div style={{
-                  position:'absolute', top:0, left:0, right:0, height:32, zIndex:5,
-                  display:'flex', alignItems:'center', justifyContent:'space-between',
-                  padding:'0 18px',
-                  background:'linear-gradient(to bottom,rgba(0,0,0,0.35),transparent)',
+                  position:'absolute', top:0, left:'50%', transform:'translateX(-50%)',
+                  width:110, height:26, background:'#1c1c1c',
+                  borderRadius:'0 0 18px 18px', zIndex:10,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:7,
                 }}>
-                  <span style={{ color:'#fff', fontSize:12, fontWeight:700, fontFamily:'system-ui' }}>9:41</span>
-                  <span style={{ color:'#fff', fontSize:10, fontFamily:'system-ui', letterSpacing:1 }}>••• ▐</span>
+                  <div style={{ width:9, height:9, borderRadius:'50%', background:'#111', border:'1.5px solid #3a3a3a' }} />
+                  <div style={{ width:36, height:7, borderRadius:4, background:'#111', border:'1.5px solid #3a3a3a' }} />
                 </div>
 
-                {selectedKey ? (
-                  <InviteTemplateCard
-                    templateKey={selectedKey}
-                    title={event.title}
-                    date={event.date}
-                    eventType={event.type}
-                    celebrantName={event.celebrant_name ?? null}
-                    location={event.event_location ?? null}
-                    rsvpPhone={event.rsvp_phone ?? null}
-                    customEventType={event.custom_event_type ?? null}
-                    mode="full"
-                    palette={selectedPalette}
-                    font={selectedFont}
-                  />
-                ) : customUrl && !customUrlError ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={customUrl} alt="Anteprima" style={{ width:'100%', aspectRatio:'400/560', objectFit:'cover', display:'block' }} />
-                ) : (
-                  <div style={{ width:'100%', aspectRatio:'400/560', background:'#111', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ color:'#555', fontSize:12, textAlign:'center', padding:'0 16px', lineHeight:1.4, fontFamily:'system-ui' }}>
-                      Seleziona un template
-                    </span>
+                {/* Screen */}
+                <div style={{ borderRadius:40, overflow:'hidden', lineHeight:0, position:'relative' }}>
+                  {/* Status bar */}
+                  <div style={{
+                    position:'absolute', top:0, left:0, right:0, height:30, zIndex:5,
+                    display:'flex', alignItems:'center', justifyContent:'space-between',
+                    padding:'0 16px',
+                    background:'linear-gradient(to bottom,rgba(0,0,0,0.3),transparent)',
+                  }}>
+                    <span style={{ color:'#fff', fontSize:11, fontWeight:700, fontFamily:'system-ui' }}>9:41</span>
+                    <span style={{ color:'#fff', fontSize:10, fontFamily:'system-ui', opacity:0.8 }}>● ● ●  ▐</span>
                   </div>
-                )}
-              </div>
-            </div>
 
-            {/* Bottoni azione */}
-            <div style={{ display:'flex', gap:8, marginTop:16, width:260 }}>
-              <button
-                type="button"
-                onClick={handleShare}
-                style={{ flex:1, background:'#222', border:'1px solid #333', color:'#fff', fontWeight:600, fontSize:13, padding:'10px 0', borderRadius:14, cursor:'pointer' }}
-              >
-                Condividi
-              </button>
-              <button
-                type="button"
-                onClick={() => toast.info('Funzionalità disponibile a breve')}
-                style={{ flex:1, background:'#222', border:'1px solid #333', color:'#fff', fontWeight:600, fontSize:13, padding:'10px 0', borderRadius:14, cursor:'pointer' }}
-              >
-                Salva invito
-              </button>
-            </div>
+                  {selectedKey ? (
+                    <InviteTemplateCard
+                      templateKey={selectedKey}
+                      title={event.title}
+                      date={event.date}
+                      eventType={event.type}
+                      celebrantName={event.celebrant_name ?? null}
+                      location={event.event_location ?? null}
+                      rsvpPhone={event.rsvp_phone ?? null}
+                      customEventType={event.custom_event_type ?? null}
+                      mode="full"
+                      palette={selectedPalette}
+                      font={selectedFont}
+                    />
+                  ) : customUrl && !customUrlError ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={customUrl} alt="Anteprima" style={{ width:'100%', aspectRatio:'400/560', objectFit:'cover', display:'block' }} />
+                  ) : (
+                    <div style={{ width:'100%', aspectRatio:'400/560', background:'#181818', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <span style={{ color:'#444', fontSize:12, textAlign:'center', padding:'0 16px', lineHeight:1.4, fontFamily:'system-ui' }}>
+                        Seleziona un template
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottoni azione */}
+              <div style={{ display:'flex', gap:10, width:'100%' }}>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  style={{ flex:1, background:'transparent', border:'1.5px solid #3a3a3a', color:'#fff', fontWeight:600, fontSize:14, padding:'12px 0', borderRadius:16, cursor:'pointer', fontFamily:'system-ui' }}
+                >
+                  Condividi
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toast.info('Funzionalità disponibile a breve')}
+                  style={{ flex:1, background:'transparent', border:'1.5px solid #3a3a3a', color:'#fff', fontWeight:600, fontSize:14, padding:'12px 0', borderRadius:16, cursor:'pointer', fontFamily:'system-ui' }}
+                >
+                  Salva invito
+                </button>
+              </div>
 
             </div>{/* end dark showcase panel */}
           </div>

@@ -786,7 +786,7 @@ export function InviteTemplateCard({
         )}
         {/* Tag evento */}
         <div style={{ background: activeCfg.tagBg, color: activeCfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: fontFamily }}>
-          {activeCfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
+          {activeCfg.overrideTag ?? (title || 'Il tuo evento')}
         </div>
 
         {/* Nome festeggiato */}
