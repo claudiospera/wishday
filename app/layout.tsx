@@ -11,6 +11,7 @@ import {
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
 import CookieBanner from '@/components/CookieBanner'
+import GoogleTranslate from '@/components/GoogleTranslate'
 import './globals.css'
 
 const inter = Inter({
@@ -90,6 +91,7 @@ export default function RootLayout({
         <Toaster position="top-right" richColors />
         <Analytics />
         <CookieBanner />
+        <GoogleTranslate />
       </body>
     </html>
   )
