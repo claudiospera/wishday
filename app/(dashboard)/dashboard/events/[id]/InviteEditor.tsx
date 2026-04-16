@@ -231,8 +231,8 @@ export default function InviteEditor({ event, userId }: Props) {
           <div className="flex-shrink-0 sticky top-4">
             <p className="text-sm font-medium text-gray-600 mb-3">Anteprima</p>
 
-            {/* Dark showcase panel */}
-            <div style={{ background:'#141414', borderRadius:28, padding:'32px 28px 24px', display:'inline-flex', flexDirection:'column', alignItems:'center', gap:20 }}>
+            {/* Phone mockup — no background */}
+            <div style={{ display:'inline-flex', flexDirection:'column', alignItems:'center', gap:16 }}>
 
               {/* Phone frame */}
               <div style={{
@@ -241,7 +241,7 @@ export default function InviteEditor({ event, userId }: Props) {
                 background:'linear-gradient(160deg,#2e2e2e,#1c1c1c)',
                 borderRadius:52,
                 padding:'14px 10px 18px',
-                boxShadow:'0 0 0 1px rgba(255,255,255,0.06), 0 28px 60px rgba(0,0,0,0.85)',
+                boxShadow:'0 0 0 1px rgba(0,0,0,0.12), 0 12px 40px rgba(0,0,0,0.18)',
               }}>
                 {/* Notch */}
                 <div style={{
@@ -295,20 +295,22 @@ export default function InviteEditor({ event, userId }: Props) {
               </div>
 
               {/* Bottoni azione */}
-              <div style={{ display:'flex', gap:10, width:'100%' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, width:'100%' }}>
                 <button
                   type="button"
                   onClick={handleShare}
-                  style={{ flex:1, background:'transparent', border:'1.5px solid #3a3a3a', color:'#fff', fontWeight:600, fontSize:14, padding:'12px 0', borderRadius:16, cursor:'pointer', fontFamily:'system-ui' }}
+                  className="transition-transform active:scale-95"
+                  style={{ background:'#c7f0d8', color:'#166534', fontWeight:700, fontSize:13, padding:'12px 0', borderRadius:16, cursor:'pointer', border:'none', boxShadow:'0 2px 8px rgba(22,101,52,0.15)' }}
                 >
-                  Condividi
+                  📤 Condividi
                 </button>
                 <button
                   type="button"
                   onClick={() => toast.info('Funzionalità disponibile a breve')}
-                  style={{ flex:1, background:'transparent', border:'1.5px solid #3a3a3a', color:'#fff', fontWeight:600, fontSize:14, padding:'12px 0', borderRadius:16, cursor:'pointer', fontFamily:'system-ui' }}
+                  className="transition-transform active:scale-95"
+                  style={{ background:'#bfdbfe', color:'#1e40af', fontWeight:700, fontSize:13, padding:'12px 0', borderRadius:16, cursor:'pointer', border:'none', boxShadow:'0 2px 8px rgba(30,64,175,0.15)' }}
                 >
-                  Salva invito
+                  💾 Salva invito
                 </button>
               </div>
 
