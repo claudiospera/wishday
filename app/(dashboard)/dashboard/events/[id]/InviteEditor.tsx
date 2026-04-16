@@ -20,7 +20,10 @@ const ALL_TEMPLATES = [
   { group: 'Battesimo', keys: ['battesimo'] },
   { group: 'Bambini', keys: ['festa', 'arcobaleno-kids', 'spazio-cosmico', 'unicorno-pastello'] },
   { group: 'Generici', keys: ['generico-notte', 'generico-solare'] },
+  { group: 'Semplici', keys: ['minimalista', 'couture-nero'] },
 ]
+
+const ALL_KEYS = ALL_TEMPLATES.flatMap(({ keys }) => keys)
 
 function parseInviteUrl(url: string | null | undefined): { key: string | null; palette: number; font: number } {
   if (!url?.startsWith('template:')) return { key: null, palette: 0, font: 0 }
@@ -122,40 +125,35 @@ export default function InviteEditor({ event, userId }: Props) {
           {/* Left: pannello scrollabile */}
           <div className="flex-1 min-w-0 overflow-y-auto max-h-[600px] pr-2 space-y-4">
 
-            {/* Template strip orizzontale per gruppo */}
-            <div className="space-y-3">
+            {/* Template grid — tutti i template in griglia continua */}
+            <div className="space-y-2">
               <p className="text-sm font-medium text-gray-600">Stile</p>
-              {ALL_TEMPLATES.map(({ group, keys }) => (
-                <div key={group} className="space-y-1">
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{group}</p>
-                  <div className="flex gap-1.5 overflow-x-auto pb-1">
-                    {keys.map((key) => {
-                      const tpl = inviteTemplates[key]
-                      if (!tpl) return null
-                      const isSelected = selectedKey === key
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => handleTemplateSelect(key)}
-                          title={tpl.label}
-                          className={`flex-shrink-0 relative rounded-lg overflow-hidden border-2 transition-all ${
-                            isSelected ? 'border-tiffany-600 ring-2 ring-tiffany-400 scale-[1.05]' : 'border-transparent hover:border-gray-300'
-                          }`}
-                          style={{ width: 64, height: 48 }}
-                        >
-                          <div className="w-full h-full flex flex-col items-center justify-center gap-0.5" style={{ background: tpl.previewBg }}>
-                            <span className="text-lg leading-none">{tpl.emoji}</span>
-                          </div>
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/40 py-0.5 px-0.5 text-center">
-                            <span className="text-white text-[8px] font-medium leading-tight truncate block">{tpl.label}</span>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
+              <div className="flex flex-wrap gap-1.5">
+                {ALL_KEYS.map((key) => {
+                  const tpl = inviteTemplates[key]
+                  if (!tpl) return null
+                  const isSelected = selectedKey === key
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleTemplateSelect(key)}
+                      title={tpl.label}
+                      className={`flex-shrink-0 relative rounded-lg overflow-hidden border-2 transition-all ${
+                        isSelected ? 'border-tiffany-600 ring-2 ring-tiffany-400 scale-[1.05]' : 'border-transparent hover:border-gray-300'
+                      }`}
+                      style={{ width: 64, height: 48 }}
+                    >
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-0.5" style={{ background: tpl.previewBg }}>
+                        {tpl.emoji && <span className="text-lg leading-none">{tpl.emoji}</span>}
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/40 py-0.5 px-0.5 text-center">
+                        <span className="text-white text-[8px] font-medium leading-tight truncate block">{tpl.label}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Palette picker — dots a scorrimento orizzontale */}
@@ -233,14 +231,17 @@ export default function InviteEditor({ event, userId }: Props) {
           <div className="flex-shrink-0 sticky top-4 space-y-3">
             <p className="text-sm font-medium text-gray-600">Anteprima</p>
 
-            {/* Phone — stile immagine #8 */}
+            {/* Dark showcase panel */}
+            <div style={{ background: 'linear-gradient(180deg,#0e0e0e,#1a1a1a)', borderRadius: 20, padding: '28px 20px 20px', display: 'inline-block' }}>
+
+            {/* Phone */}
             <div style={{
               position: 'relative',
-              width: 300,
+              width: 260,
               background: 'linear-gradient(145deg,#3d3d3d,#2a2a2a)',
-              borderRadius: 48,
-              padding: '42px 10px 42px',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+              borderRadius: 44,
+              padding: '38px 9px 38px',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}>
               {/* Tasto power */}
               <div style={{ position:'absolute', right:-3.5, top:130, width:3.5, height:68, background:'#3a3a3a', borderRadius:'0 2px 2px 0' }} />
@@ -299,22 +300,24 @@ export default function InviteEditor({ event, userId }: Props) {
             </div>
 
             {/* Bottoni azione */}
-            <div className="flex gap-2">
+            <div style={{ display:'flex', gap:8, marginTop:16, width:260 }}>
               <button
                 type="button"
                 onClick={handleShare}
-                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold text-sm py-3 rounded-2xl transition-colors"
+                style={{ flex:1, background:'#222', border:'1px solid #333', color:'#fff', fontWeight:600, fontSize:13, padding:'10px 0', borderRadius:14, cursor:'pointer' }}
               >
                 Condividi
               </button>
               <button
                 type="button"
                 onClick={() => toast.info('Funzionalità disponibile a breve')}
-                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold text-sm py-3 rounded-2xl transition-colors"
+                style={{ flex:1, background:'#222', border:'1px solid #333', color:'#fff', fontWeight:600, fontSize:13, padding:'10px 0', borderRadius:14, cursor:'pointer' }}
               >
                 Salva invito
               </button>
             </div>
+
+            </div>{/* end dark showcase panel */}
           </div>
         </div>
       </CardContent>

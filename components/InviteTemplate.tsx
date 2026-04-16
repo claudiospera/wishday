@@ -29,10 +29,12 @@ export const inviteTemplates: Record<string, {
   'festa':           { label: 'Festa Colorata',    emoji: '🎉', previewBg: 'linear-gradient(135deg,#fdf4ff,#fce7f3)' },
   'acquarello-blu':  { label: 'Acquarello Blu',    emoji: '💙', previewBg: 'linear-gradient(135deg,#eff6ff,#bfdbfe)' },
   'battesimo':       { label: 'Battesimo',         emoji: '👼', previewBg: 'linear-gradient(135deg,#e8f6ff,#c8e4ff)' },
-  'laurea':          { label: 'Laurea',             emoji: '🎓', previewBg: 'linear-gradient(135deg,#d8e4f8,#c0d0ee)' },
+  'laurea':          { label: 'Laurea',             emoji: '',   previewBg: 'linear-gradient(135deg,#d8e4f8,#c0d0ee)' },
+  'minimalista':     { label: 'Minimalista',        emoji: '',   previewBg: 'linear-gradient(135deg,#fafaf7,#f0ede6)' },
+  'couture-nero':    { label: 'Couture Nero',       emoji: '',   previewBg: 'linear-gradient(135deg,#0c0c0c,#1a1a1a)' },
   'generico-notte':  { label: 'Notte Festiva',      emoji: '✨', previewBg: 'linear-gradient(135deg,#080818,#1a1040)' },
   'generico-solare': { label: 'Solare',             emoji: '☀️', previewBg: 'linear-gradient(135deg,#fffbe0,#ffd868)' },
-  'matrimonio':       { label: 'Matrimonio',          emoji: '💍', previewBg: 'linear-gradient(135deg,#fefdf8,#f5eedc)' },
+  'matrimonio':       { label: 'Matrimonio',          emoji: '',   previewBg: 'linear-gradient(135deg,#fefdf8,#f5eedc)' },
   'arcobaleno-kids':  { label: 'Arcobaleno Kids',    emoji: '🎈', previewBg: 'linear-gradient(135deg,#fffde7,#fff9c4)' },
   'spazio-cosmico':   { label: 'Spazio Cosmico',     emoji: '🚀', previewBg: 'linear-gradient(135deg,#0a0e2a,#141b4d)' },
   'unicorno-pastello':{ label: 'Unicorno Pastello',  emoji: '🦄', previewBg: 'linear-gradient(135deg,#fce4ec,#e1bee7)' },
@@ -349,6 +351,31 @@ const UnicornoPastelloSVG = () => (
   </svg>
 )
 
+const MinimalistaSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <rect x="14" y="14" width="372" height="532" rx="1" fill="none" stroke="#c9a96e" strokeWidth="0.8" opacity="0.45"/>
+    <rect x="22" y="22" width="356" height="516" rx="1" fill="none" stroke="#c9a96e" strokeWidth="0.4" opacity="0.25"/>
+  </svg>
+)
+
+const CoutureNeroSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <rect x="14" y="14" width="372" height="532" rx="1" fill="none" stroke="#c9a96e" strokeWidth="0.8" opacity="0.6"/>
+    <rect x="22" y="22" width="356" height="516" rx="1" fill="none" stroke="#c9a96e" strokeWidth="0.4" opacity="0.35"/>
+    {[[22,22,0],[378,22,90],[378,538,180],[22,538,270]].map(([x,y,rot],i) => (
+      <g key={i} transform={`translate(${x},${y}) rotate(${rot})`}>
+        <line x1="0" y1="0" x2="16" y2="0" stroke="#c9a96e" strokeWidth="1" opacity="0.5"/>
+        <line x1="0" y1="0" x2="0" y2="16" stroke="#c9a96e" strokeWidth="1" opacity="0.5"/>
+      </g>
+    ))}
+    <g transform="translate(200,290)">
+      <line x1="-40" y1="0" x2="-6" y2="0" stroke="#c9a96e" strokeWidth="0.7" opacity="0.5"/>
+      <line x1="6" y1="0" x2="40" y2="0" stroke="#c9a96e" strokeWidth="0.7" opacity="0.5"/>
+      <polygon points="0,-4 4,0 0,4 -4,0" fill="#c9a96e" opacity="0.6"/>
+    </g>
+  </svg>
+)
+
 // ─── Configurazione rendering ────────────────────────────────────────────────
 
 type PaletteOverride = {
@@ -615,6 +642,36 @@ export const templateConfig: Record<string, {
       { dot:'#e2e8f0', bg:'linear-gradient(160deg,#020617,#0f172a,#020617)', titleColor:'#ffffff', textColor:'#e2e8f0', subtitleColor:'#94a3b8', tagBg:'rgba(226,232,240,0.1)', tagColor:'#e2e8f0' },
       { dot:'#f97316', bg:'linear-gradient(160deg,#1c0700,#431407,#7c2d12)', titleColor:'#fed7aa', textColor:'#fb923c', subtitleColor:'#f97316', tagBg:'rgba(249,115,22,0.15)', tagColor:'#fed7aa' },
       { dot:'#818cf8', bg:'linear-gradient(160deg,#1e1b4b,#312e81,#1e1b4b)', titleColor:'#e0e7ff', textColor:'#818cf8', subtitleColor:'#6366f1', tagBg:'rgba(99,102,241,0.15)', tagColor:'#e0e7ff' },
+    ],
+  },
+  'minimalista': {
+    bg: 'linear-gradient(160deg,#fafaf7 0%,#f5f2ec 55%,#f0ede6 100%)',
+    titleColor: '#2c2317', textColor: '#5a4a35', subtitleColor: '#9a8a72',
+    tagBg: 'rgba(156,140,114,0.1)', tagColor: '#7a6a55',
+    separator: 'line',
+    SVGDecoration: MinimalistaSVG,
+    palettes: [
+      { dot:'#c9a96e', bg:'linear-gradient(160deg,#fdfaf0,#f5eedc,#ede5cc)', titleColor:'#3e2810', textColor:'#6e5030', subtitleColor:'#9e7840', tagBg:'rgba(201,169,110,0.1)', tagColor:'#8e6820' },
+      { dot:'#94a3b8', bg:'linear-gradient(160deg,#f8fafc,#f1f5f9,#e8edf2)', titleColor:'#1e293b', textColor:'#334155', subtitleColor:'#64748b', tagBg:'rgba(30,41,59,0.08)', tagColor:'#334155' },
+      { dot:'#f9a8d4', bg:'linear-gradient(160deg,#fdf8fa,#fce7f0,#f9d8e6)', titleColor:'#4a1020', textColor:'#7a3048', subtitleColor:'#aa6070', tagBg:'rgba(200,80,100,0.1)', tagColor:'#7a3048' },
+      { dot:'#a7f3d0', bg:'linear-gradient(160deg,#f0fdf6,#e0f9ec,#cef5e0)', titleColor:'#0a3020', textColor:'#205040', subtitleColor:'#408060', tagBg:'rgba(40,120,80,0.08)', tagColor:'#205040' },
+      { dot:'#bae6fd', bg:'linear-gradient(160deg,#f0f9ff,#e0f0f8,#cce8f4)', titleColor:'#102030', textColor:'#204060', subtitleColor:'#406080', tagBg:'rgba(20,60,100,0.08)', tagColor:'#204060' },
+      { dot:'#fde68a', bg:'linear-gradient(160deg,#fffdf0,#fff8d0,#fff4b0)', titleColor:'#302800', textColor:'#504010', subtitleColor:'#806820', tagBg:'rgba(120,100,0,0.08)', tagColor:'#504010' },
+    ],
+  },
+  'couture-nero': {
+    bg: 'linear-gradient(160deg,#0c0c0c 0%,#141414 55%,#1a1a1a 100%)',
+    titleColor: '#f5f0e8', textColor: '#c0b090', subtitleColor: '#c9a96e',
+    tagBg: 'rgba(201,169,110,0.1)', tagColor: '#c9a96e',
+    separator: 'star',
+    SVGDecoration: CoutureNeroSVG,
+    palettes: [
+      { dot:'#e0d0b8', bg:'linear-gradient(160deg,#0c0c0c,#141414)', titleColor:'#f5f0e8', textColor:'#d0c0a0', subtitleColor:'#c9a96e', tagBg:'rgba(201,169,110,0.1)', tagColor:'#c9a96e' },
+      { dot:'#e0c0c0', bg:'linear-gradient(160deg,#0c0a0a,#181010)', titleColor:'#f5ece8', textColor:'#c89898', subtitleColor:'#c08888', tagBg:'rgba(192,128,128,0.1)', tagColor:'#c89898' },
+      { dot:'#c0d0e8', bg:'linear-gradient(160deg,#080c14,#101820)', titleColor:'#e8f0f8', textColor:'#9ab8d8', subtitleColor:'#7090c0', tagBg:'rgba(112,144,192,0.1)', tagColor:'#9ab8d8' },
+      { dot:'#c8e8c0', bg:'linear-gradient(160deg,#080e08,#101810)', titleColor:'#e8f5e8', textColor:'#98c898', subtitleColor:'#70a870', tagBg:'rgba(112,168,112,0.1)', tagColor:'#98c898' },
+      { dot:'#e0d0f8', bg:'linear-gradient(160deg,#0c0818,#181020)', titleColor:'#f0e8ff', textColor:'#c0a0e0', subtitleColor:'#9870c8', tagBg:'rgba(152,112,200,0.1)', tagColor:'#c0a0e0' },
+      { dot:'#d4d4d4', bg:'linear-gradient(160deg,#0a0a0a,#1c1c1c)', titleColor:'#f0f0f0', textColor:'#c8c8c8', subtitleColor:'#909090', tagBg:'rgba(200,200,200,0.1)', tagColor:'#c8c8c8' },
     ],
   },
   'unicorno-pastello': {
