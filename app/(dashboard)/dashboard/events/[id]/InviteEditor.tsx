@@ -12,23 +12,20 @@ interface Props {
   userId: string
 }
 
-const TEMPLATE_CATEGORIES: { label: string; templates: string[] }[] = [
-  { label: 'Compleanni adulti', templates: ['floreale-rosa', 'elegante-oro', 'notte-stellata', 'botanico', 'acquarello-blu'] },
-  { label: 'Matrimonio', templates: ['matrimonio'] },
-  { label: 'Laurea', templates: ['laurea'] },
-  { label: 'Battesimo', templates: ['battesimo'] },
-  { label: 'Compleanni bambini', templates: ['festa'] },
-  { label: 'Generici', templates: ['generico-notte', 'generico-solare'] },
+// Tutti i template in ordine piatto per la strip orizzontale
+const ALL_TEMPLATES = [
+  { group: 'Adulti', keys: ['floreale-rosa', 'elegante-oro', 'notte-stellata', 'botanico', 'acquarello-blu'] },
+  { group: 'Matrimonio', keys: ['matrimonio'] },
+  { group: 'Laurea', keys: ['laurea'] },
+  { group: 'Battesimo', keys: ['battesimo'] },
+  { group: 'Bambini', keys: ['festa', 'arcobaleno-kids', 'spazio-cosmico', 'unicorno-pastello'] },
+  { group: 'Generici', keys: ['generico-notte', 'generico-solare'] },
 ]
 
 function parseInviteUrl(url: string | null | undefined): { key: string | null; palette: number; font: number } {
   if (!url?.startsWith('template:')) return { key: null, palette: 0, font: 0 }
   const parts = url.replace('template:', '').split(':')
-  return {
-    key: parts[0] || null,
-    palette: parseInt(parts[1] ?? '0') || 0,
-    font: parseInt(parts[2] ?? '0') || 0,
-  }
+  return { key: parts[0] || null, palette: parseInt(parts[1] ?? '0') || 0, font: parseInt(parts[2] ?? '0') || 0 }
 }
 
 export default function InviteEditor({ event, userId }: Props) {
@@ -48,10 +45,9 @@ export default function InviteEditor({ event, userId }: Props) {
   const [uploading, setUploading] = useState(false)
 
   async function saveTemplate(key: string, palette: number, font: number) {
-    const value = `template:${key}:${palette}:${font}`
     const { error } = await supabase
       .from('events')
-      .update({ invite_image_url: value })
+      .update({ invite_image_url: `template:${key}:${palette}:${font}` })
       .eq('id', event.id)
     if (error) toast.error('Errore nel salvataggio')
   }
@@ -78,23 +74,15 @@ export default function InviteEditor({ event, userId }: Props) {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Immagine troppo grande (max 10MB)')
-      return
-    }
+    if (file.size > 10 * 1024 * 1024) { toast.error('Immagine troppo grande (max 10MB)'); return }
     setUploading(true)
     try {
       const ext = file.name.split('.').pop()
       const path = `${userId}/invite-bg-${event.id}.${ext}`
-      const { error: uploadError } = await supabase.storage
-        .from('invite-images')
-        .upload(path, file, { upsert: true })
+      const { error: uploadError } = await supabase.storage.from('invite-images').upload(path, file, { upsert: true })
       if (uploadError) throw uploadError
       const { data: { publicUrl } } = supabase.storage.from('invite-images').getPublicUrl(path)
-      const { error: updateError } = await supabase
-        .from('events')
-        .update({ invite_image_url: publicUrl })
-        .eq('id', event.id)
+      const { error: updateError } = await supabase.from('events').update({ invite_image_url: publicUrl }).eq('id', event.id)
       if (updateError) throw updateError
       setCustomUrl(publicUrl)
       setCustomUrlError(false)
@@ -114,6 +102,11 @@ export default function InviteEditor({ event, userId }: Props) {
     await supabase.from('events').update({ invite_image_url: null }).eq('id', event.id)
   }
 
+  function handleShare() {
+    const url = `${window.location.origin}/event/${event.slug}`
+    navigator.clipboard.writeText(url).then(() => toast.success('Link copiato!')).catch(() => toast.error('Impossibile copiare'))
+  }
+
   const activeCfg = selectedKey ? templateConfig[selectedKey] : null
   const palettes = activeCfg?.palettes ?? []
 
@@ -122,23 +115,21 @@ export default function InviteEditor({ event, userId }: Props) {
       <CardContent className="pt-6 space-y-6">
         <div>
           <h2 className="font-semibold text-gray-700">Invito digitale</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Scegli template, colore e font per il tuo invito
-          </p>
+          <p className="text-xs text-gray-400 mt-0.5">Scegli template, colore e font per il tuo invito</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left: pannello scrollabile */}
-          <div className="flex-1 min-w-0 overflow-y-auto max-h-[540px] pr-2 space-y-4 scrollbar-thin scrollbar-thumb-gray-200">
+          <div className="flex-1 min-w-0 overflow-y-auto max-h-[600px] pr-2 space-y-4">
 
-            {/* Template grid — thumbnails piccoli */}
+            {/* Template strip orizzontale per gruppo */}
             <div className="space-y-3">
               <p className="text-sm font-medium text-gray-600">Stile</p>
-              {TEMPLATE_CATEGORIES.map(({ label, templates }) => (
-                <div key={label} className="space-y-1.5">
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
-                  <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5">
-                    {templates.map((key) => {
+              {ALL_TEMPLATES.map(({ group, keys }) => (
+                <div key={group} className="space-y-1">
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{group}</p>
+                  <div className="flex gap-1.5 overflow-x-auto pb-1">
+                    {keys.map((key) => {
                       const tpl = inviteTemplates[key]
                       if (!tpl) return null
                       const isSelected = selectedKey === key
@@ -148,21 +139,16 @@ export default function InviteEditor({ event, userId }: Props) {
                           type="button"
                           onClick={() => handleTemplateSelect(key)}
                           title={tpl.label}
-                          className={`relative rounded-lg overflow-hidden border-2 transition-all ${
-                            isSelected
-                              ? 'border-tiffany-600 ring-2 ring-tiffany-400 scale-[1.04]'
-                              : 'border-transparent hover:border-gray-300'
+                          className={`flex-shrink-0 relative rounded-lg overflow-hidden border-2 transition-all ${
+                            isSelected ? 'border-tiffany-600 ring-2 ring-tiffany-400 scale-[1.05]' : 'border-transparent hover:border-gray-300'
                           }`}
-                          style={{ aspectRatio: '4/3' }}
+                          style={{ width: 64, height: 48 }}
                         >
-                          <div
-                            className="w-full h-full flex flex-col items-center justify-center gap-0.5"
-                            style={{ background: tpl.previewBg }}
-                          >
-                            <span className="text-base leading-none">{tpl.emoji}</span>
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-0.5" style={{ background: tpl.previewBg }}>
+                            <span className="text-lg leading-none">{tpl.emoji}</span>
                           </div>
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/35 py-0.5 px-0.5 text-center">
-                            <span className="text-white text-[7px] font-medium leading-tight">{tpl.label}</span>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/40 py-0.5 px-0.5 text-center">
+                            <span className="text-white text-[8px] font-medium leading-tight truncate block">{tpl.label}</span>
                           </div>
                         </button>
                       )
@@ -172,19 +158,17 @@ export default function InviteEditor({ event, userId }: Props) {
               ))}
             </div>
 
-            {/* Palette picker */}
+            {/* Palette picker — dots a scorrimento orizzontale */}
             {selectedKey && palettes.length > 0 && (
               <div className="space-y-1.5">
                 <p className="text-sm font-medium text-gray-600">Variante colore</p>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex gap-2 overflow-x-auto pb-1 flex-wrap">
                   <button
                     type="button"
                     onClick={() => handlePaletteSelect(0)}
-                    title="Colori originali"
-                    style={{ background: inviteTemplates[selectedKey]?.previewBg }}
-                    className={`w-7 h-7 rounded-full border-2 transition-all ${
-                      selectedPalette === 0 ? 'border-gray-800 scale-110 shadow' : 'border-gray-200 hover:border-gray-400'
-                    }`}
+                    title="Originale"
+                    style={{ background: inviteTemplates[selectedKey]?.previewBg, minWidth: 28, minHeight: 28 }}
+                    className={`w-7 h-7 rounded-full border-2 flex-shrink-0 transition-all ${selectedPalette === 0 ? 'border-gray-800 scale-110 shadow-md' : 'border-gray-200 hover:border-gray-400'}`}
                   />
                   {palettes.map((p, i) => (
                     <button
@@ -192,10 +176,8 @@ export default function InviteEditor({ event, userId }: Props) {
                       type="button"
                       onClick={() => handlePaletteSelect(i + 1)}
                       title={`Variante ${i + 1}`}
-                      style={{ background: p.dot }}
-                      className={`w-7 h-7 rounded-full border-2 transition-all ${
-                        selectedPalette === i + 1 ? 'border-gray-800 scale-110 shadow' : 'border-gray-200 hover:border-gray-400'
-                      }`}
+                      style={{ background: p.dot, minWidth: 28, minHeight: 28 }}
+                      className={`w-7 h-7 rounded-full border-2 flex-shrink-0 transition-all ${selectedPalette === i + 1 ? 'border-gray-800 scale-110 shadow-md' : 'border-gray-200 hover:border-gray-400'}`}
                     />
                   ))}
                 </div>
@@ -212,15 +194,9 @@ export default function InviteEditor({ event, userId }: Props) {
                     type="button"
                     onClick={() => handleFontSelect(i)}
                     title={f.label}
-                    className={`rounded-lg border-2 py-1.5 px-1 text-center transition-all ${
-                      selectedFont === i
-                        ? 'border-tiffany-600 bg-tiffany-50 scale-[1.04]'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`rounded-lg border-2 py-1.5 px-1 text-center transition-all ${selectedFont === i ? 'border-tiffany-600 bg-tiffany-50 scale-[1.04]' : 'border-gray-200 hover:border-gray-300'}`}
                   >
-                    <span style={{ fontFamily: f.fontFamily }} className="text-sm font-semibold text-gray-700 block">
-                      Aa
-                    </span>
+                    <span style={{ fontFamily: f.fontFamily }} className="text-sm font-semibold text-gray-700 block">Aa</span>
                     <span className="text-[9px] text-gray-400 block leading-tight mt-0.5">{f.label}</span>
                   </button>
                 ))}
@@ -231,13 +207,7 @@ export default function InviteEditor({ event, userId }: Props) {
             <div className="space-y-1.5">
               <p className="text-sm font-medium text-gray-600">Oppure carica la tua immagine</p>
               <p className="text-xs text-gray-400">PNG, JPG, WebP (max 10MB)</p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
               <div className="flex items-center gap-3 flex-wrap">
                 <button
                   type="button"
@@ -250,16 +220,9 @@ export default function InviteEditor({ event, userId }: Props) {
                 {customUrl && (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={customUrl}
-                      alt="Anteprima upload"
-                      className="w-10 h-10 rounded-lg object-cover border border-gray-200"
-                      onError={() => setCustomUrlError(true)}
-                      onLoad={() => setCustomUrlError(false)}
-                    />
-                    <button type="button" onClick={removeCustom} className="text-xs text-red-500 hover:text-red-700">
-                      Rimuovi
-                    </button>
+                    <img src={customUrl} alt="Anteprima" className="w-10 h-10 rounded-lg object-cover border border-gray-200"
+                      onError={() => setCustomUrlError(true)} onLoad={() => setCustomUrlError(false)} />
+                    <button type="button" onClick={removeCustom} className="text-xs text-red-500 hover:text-red-700">Rimuovi</button>
                   </>
                 )}
               </div>
@@ -267,30 +230,47 @@ export default function InviteEditor({ event, userId }: Props) {
           </div>
 
           {/* Right: phone mockup sticky */}
-          <div className="flex-shrink-0 sticky top-4 space-y-2">
+          <div className="flex-shrink-0 sticky top-4 space-y-3">
             <p className="text-sm font-medium text-gray-600">Anteprima</p>
-            {/* Phone shell — 300px wide */}
+
+            {/* Phone — stile immagine #8 */}
             <div style={{
               position: 'relative',
               width: 300,
-              background: '#1c1c1e',
-              borderRadius: 50,
-              padding: '56px 12px 64px',
-              boxShadow: '0 28px 70px rgba(0,0,0,0.4), inset 0 0 0 1.5px #3a3a3c, inset 0 0 0 4px #2a2a2c',
-              flexShrink: 0,
+              background: 'linear-gradient(145deg,#3d3d3d,#2a2a2a)',
+              borderRadius: 48,
+              padding: '42px 10px 42px',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
             }}>
-              {/* Side buttons */}
-              <div style={{ position: 'absolute', left: -3.5, top: 110, width: 3.5, height: 34, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
-              <div style={{ position: 'absolute', left: -3.5, top: 156, width: 3.5, height: 60, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
-              <div style={{ position: 'absolute', left: -3.5, top: 226, width: 3.5, height: 60, background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
-              <div style={{ position: 'absolute', right: -3.5, top: 160, width: 3.5, height: 80, background: '#3a3a3c', borderRadius: '0 2px 2px 0' }} />
-              {/* Dynamic Island */}
-              <div style={{ position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)', width: 100, height: 28, background: '#1c1c1e', borderRadius: 14, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#0a0a0a' }} />
-                <div style={{ width: 32, height: 9, borderRadius: 5, background: '#0a0a0a' }} />
+              {/* Tasto power */}
+              <div style={{ position:'absolute', right:-3.5, top:130, width:3.5, height:68, background:'#3a3a3a', borderRadius:'0 2px 2px 0' }} />
+              {/* Tasti volume */}
+              <div style={{ position:'absolute', left:-3.5, top:118, width:3.5, height:34, background:'#3a3a3a', borderRadius:'2px 0 0 2px' }} />
+              <div style={{ position:'absolute', left:-3.5, top:162, width:3.5, height:58, background:'#3a3a3a', borderRadius:'2px 0 0 2px' }} />
+
+              {/* Notch */}
+              <div style={{
+                position:'absolute', top:0, left:'50%', transform:'translateX(-50%)',
+                width:130, height:30, background:'#2a2a2a', borderRadius:'0 0 20px 20px',
+                zIndex:10, display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              }}>
+                <div style={{ width:10, height:10, borderRadius:'50%', background:'#1a1a1a', border:'1.5px solid #444' }} />
+                <div style={{ width:40, height:8, borderRadius:4, background:'#1a1a1a', border:'1.5px solid #444' }} />
               </div>
-              {/* Screen — fills completely */}
-              <div style={{ borderRadius: 36, overflow: 'hidden', lineHeight: 0 }}>
+
+              {/* Screen */}
+              <div style={{ borderRadius:36, overflow:'hidden', lineHeight:0, position:'relative' }}>
+                {/* Status bar */}
+                <div style={{
+                  position:'absolute', top:0, left:0, right:0, height:32, zIndex:5,
+                  display:'flex', alignItems:'center', justifyContent:'space-between',
+                  padding:'0 18px',
+                  background:'linear-gradient(to bottom,rgba(0,0,0,0.35),transparent)',
+                }}>
+                  <span style={{ color:'#fff', fontSize:12, fontWeight:700, fontFamily:'system-ui' }}>9:41</span>
+                  <span style={{ color:'#fff', fontSize:10, fontFamily:'system-ui', letterSpacing:1 }}>••• ▐</span>
+                </div>
+
                 {selectedKey ? (
                   <InviteTemplateCard
                     templateKey={selectedKey}
@@ -307,21 +287,33 @@ export default function InviteEditor({ event, userId }: Props) {
                   />
                 ) : customUrl && !customUrlError ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={customUrl}
-                    alt="Anteprima invito"
-                    style={{ width: '100%', aspectRatio: '400/560', objectFit: 'cover', display: 'block' }}
-                  />
+                  <img src={customUrl} alt="Anteprima" style={{ width:'100%', aspectRatio:'400/560', objectFit:'cover', display:'block' }} />
                 ) : (
-                  <div style={{ width: '100%', aspectRatio: '400/560', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: '#555', fontSize: 12, textAlign: 'center', padding: '0 16px', lineHeight: 1.4 }}>
+                  <div style={{ width:'100%', aspectRatio:'400/560', background:'#111', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <span style={{ color:'#555', fontSize:12, textAlign:'center', padding:'0 16px', lineHeight:1.4, fontFamily:'system-ui' }}>
                       Seleziona un template
                     </span>
                   </div>
                 )}
               </div>
-              {/* Home indicator */}
-              <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', width: 110, height: 4, background: '#48484a', borderRadius: 4 }} />
+            </div>
+
+            {/* Bottoni azione */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleShare}
+                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold text-sm py-3 rounded-2xl transition-colors"
+              >
+                Condividi
+              </button>
+              <button
+                type="button"
+                onClick={() => toast.info('Funzionalità disponibile a breve')}
+                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold text-sm py-3 rounded-2xl transition-colors"
+              >
+                Salva invito
+              </button>
             </div>
           </div>
         </div>

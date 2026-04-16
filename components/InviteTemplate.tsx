@@ -32,7 +32,10 @@ export const inviteTemplates: Record<string, {
   'laurea':          { label: 'Laurea',             emoji: '🎓', previewBg: 'linear-gradient(135deg,#d8e4f8,#c0d0ee)' },
   'generico-notte':  { label: 'Notte Festiva',      emoji: '✨', previewBg: 'linear-gradient(135deg,#080818,#1a1040)' },
   'generico-solare': { label: 'Solare',             emoji: '☀️', previewBg: 'linear-gradient(135deg,#fffbe0,#ffd868)' },
-  'matrimonio':      { label: 'Matrimonio',          emoji: '💍', previewBg: 'linear-gradient(135deg,#fefdf8,#f5eedc)' },
+  'matrimonio':       { label: 'Matrimonio',          emoji: '💍', previewBg: 'linear-gradient(135deg,#fefdf8,#f5eedc)' },
+  'arcobaleno-kids':  { label: 'Arcobaleno Kids',    emoji: '🎈', previewBg: 'linear-gradient(135deg,#fffde7,#fff9c4)' },
+  'spazio-cosmico':   { label: 'Spazio Cosmico',     emoji: '🚀', previewBg: 'linear-gradient(135deg,#0a0e2a,#141b4d)' },
+  'unicorno-pastello':{ label: 'Unicorno Pastello',  emoji: '🦄', previewBg: 'linear-gradient(135deg,#fce4ec,#e1bee7)' },
 }
 
 // ─── Decorazioni SVG per ogni template ──────────────────────────────────────
@@ -302,6 +305,50 @@ const MatrimonioSVG = () => (
   </svg>
 )
 
+const ArcobaleniKidsSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    {[[40,40,14],[360,50,10],[320,30,8],[70,85,12],[350,180,8],[30,220,10],[55,410,14],[370,430,10],[45,510,8],[355,500,12],[195,22,9],[215,545,11]].map(([x,y,s],i) => (
+      <g key={i} transform={`translate(${x},${y})`}>
+        <polygon points={`0,-${s} ${s*0.31},-${s*0.31} ${s},${s*0.38} ${s*0.31},${s*0.1} ${s*0.59},${s*0.81} 0,${s*0.5} -${s*0.59},${s*0.81} -${s*0.31},${s*0.1} -${s},${s*0.38} -${s*0.31},-${s*0.31}`} fill="#fbbf24" opacity={0.65+(i%3)*0.12} />
+      </g>
+    ))}
+    <rect x="16" y="16" width="368" height="528" rx="4" fill="none" stroke="#fb923c" strokeWidth="1" opacity="0.25" />
+  </svg>
+)
+
+const SpazioCosmicoSVG = () => {
+  const stars = [[50,60],[100,40],[200,30],[300,55],[350,40],[30,150],[380,130],[20,300],[390,280],[60,420],[330,400],[150,500],[280,520],[180,80],[250,200],[70,250],[340,340]]
+  return (
+    <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+      <defs>
+        <radialGradient id="sglow" cx="50%" cy="25%" r="45%">
+          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.2"/>
+          <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="400" height="560" fill="url(#sglow)"/>
+      {stars.map(([cx,cy],i) => <circle key={i} cx={cx} cy={cy} r={i%3===0?2.5:1.5} fill="white" opacity={0.3+0.5*(i%3)/2}/>)}
+      <rect x="0" y="485" width="400" height="75" fill="rgba(20,10,50,0.55)" rx="0"/>
+    </svg>
+  )
+}
+
+const UnicornoPastelloSVG = () => (
+  <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+    <circle cx="380" cy="80" r="110" fill="#c084fc" opacity="0.18"/>
+    <circle cx="20" cy="500" r="90" fill="#f9a8d4" opacity="0.22"/>
+    <circle cx="350" cy="480" r="70" fill="#818cf8" opacity="0.15"/>
+    {[[65,110],[330,150],[75,330],[355,310],[160,490],[290,430]].map(([x,y],i) => (
+      <g key={i} transform={`translate(${x},${y})`}>
+        <line x1="-7" y1="0" x2="7" y2="0" stroke="#c084fc" strokeWidth="1.5" opacity="0.45"/>
+        <line x1="0" y1="-7" x2="0" y2="7" stroke="#c084fc" strokeWidth="1.5" opacity="0.45"/>
+        <circle cx="0" cy="0" r="1.5" fill="#e879f9" opacity="0.6"/>
+      </g>
+    ))}
+    <rect x="14" y="14" width="372" height="532" rx="6" fill="none" stroke="#e879f9" strokeWidth="1" opacity="0.2"/>
+  </svg>
+)
+
 // ─── Configurazione rendering ────────────────────────────────────────────────
 
 type PaletteOverride = {
@@ -322,7 +369,9 @@ export const templateConfig: Record<string, {
   tagBg: string
   tagColor: string
   overrideTag?: string
-  separator?: 'line' | 'dots' | 'star' | 'dot'
+  emojiHeader?: string
+  footerLabel?: string
+  separator?: 'line' | 'dots' | 'star' | 'dot' | 'rainbow'
   useTitleAsSubtitle?: boolean
   SVGDecoration: () => React.ReactElement
   palettes?: PaletteOverride[]
@@ -336,146 +385,256 @@ export const templateConfig: Record<string, {
     tagColor: '#9d174d',
     SVGDecoration: FlorealeRosaSVG,
     palettes: [
-      { dot: '#a78bfa', bg: 'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor: '#4c1d95', textColor: '#5b21b6', subtitleColor: '#7c3aed', tagBg: '#ede9fe', tagColor: '#6d28d9' },
-      { dot: '#fb923c', bg: 'linear-gradient(160deg,#fff8f0,#fed7aa,#fddbc4)', titleColor: '#7c2d12', textColor: '#9a3412', subtitleColor: '#c2410c', tagBg: '#fed7aa', tagColor: '#9a3412' },
+      { dot:'#a78bfa', bg:'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'#ede9fe', tagColor:'#6d28d9' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff8f0,#fed7aa,#fddbc4)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'#fed7aa', tagColor:'#9a3412' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'rgba(14,165,233,0.1)', tagColor:'#0c4a6e' },
+      { dot:'#eab308', bg:'linear-gradient(160deg,#fefce8,#fef9c3,#fef08a)', titleColor:'#713f12', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(234,179,8,0.1)', tagColor:'#713f12' },
+      { dot:'#e879f9', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#ffd6d9)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#475569', bg:'linear-gradient(160deg,#f8fafc,#f1f5f9,#e2e8f0)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#475569', tagBg:'rgba(15,23,42,0.1)', tagColor:'#1e293b' },
+      { dot:'#d97706', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#78350f', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(217,119,6,0.1)', tagColor:'#78350f' },
     ],
   },
   'elegante-oro': {
     bg: 'linear-gradient(160deg,#fefce8 0%,#fef9c3 55%,#fef3c7 100%)',
-    titleColor: '#1c1917',
-    textColor: '#44403c',
-    subtitleColor: '#92400e',
-    tagBg: '#fef3c7',
-    tagColor: '#78350f',
+    titleColor: '#1c1917', textColor: '#44403c', subtitleColor: '#92400e',
+    tagBg: '#fef3c7', tagColor: '#78350f',
     SVGDecoration: EleganteOroSVG,
     palettes: [
-      { dot: '#94a3b8', bg: 'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor: '#0f172a', textColor: '#334155', subtitleColor: '#475569', tagBg: '#e2e8f0', tagColor: '#334155' },
-      { dot: '#fb7185', bg: 'linear-gradient(160deg,#fff1f2,#fecdd3,#ffd6d9)', titleColor: '#881337', textColor: '#9f1239', subtitleColor: '#be185d', tagBg: '#fecdd3', tagColor: '#9d174d' },
+      { dot:'#94a3b8', bg:'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor:'#0f172a', textColor:'#334155', subtitleColor:'#475569', tagBg:'#e2e8f0', tagColor:'#334155' },
+      { dot:'#fb7185', bg:'linear-gradient(160deg,#fff1f2,#fecdd3,#ffd6d9)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#fecdd3', tagColor:'#9d174d' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'#bae6fd', tagColor:'#0369a1' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#a78bfa', bg:'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'#ede9fe', tagColor:'#6d28d9' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#fed7aa,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#e879f9', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+      { dot:'#1a1a1a', bg:'linear-gradient(160deg,#1a0e00,#2d1800,#422200)', titleColor:'#fde68a', textColor:'#fcd34d', subtitleColor:'#fbbf24', tagBg:'rgba(251,191,36,0.12)', tagColor:'#fcd34d' },
+      { dot:'#2dd4bf', bg:'linear-gradient(160deg,#f0fdfa,#ccfbf1,#99f6e4)', titleColor:'#134e4a', textColor:'#115e59', subtitleColor:'#0d9488', tagBg:'rgba(13,148,136,0.1)', tagColor:'#134e4a' },
     ],
   },
   'notte-stellata': {
     bg: 'linear-gradient(160deg,#0f0c29 0%,#302b63 55%,#24243e 100%)',
-    titleColor: '#fef9c3',
-    textColor: '#e2e8f0',
-    subtitleColor: '#fde68a',
-    tagBg: 'rgba(253,230,138,0.15)',
-    tagColor: '#fde68a',
+    titleColor: '#fef9c3', textColor: '#e2e8f0', subtitleColor: '#fde68a',
+    tagBg: 'rgba(253,230,138,0.15)', tagColor: '#fde68a',
     SVGDecoration: NotteStellataGVG,
     palettes: [
-      { dot: '#a855f7', bg: 'linear-gradient(160deg,#1a0533,#3b0764,#2d0a50)', titleColor: '#e9d5ff', textColor: '#d8b4fe', subtitleColor: '#c084fc', tagBg: 'rgba(216,180,254,0.15)', tagColor: '#c084fc' },
-      { dot: '#10b981', bg: 'linear-gradient(160deg,#042f2e,#134e4a,#0f3f3c)', titleColor: '#ccfbf1', textColor: '#a7f3d0', subtitleColor: '#6ee7b7', tagBg: 'rgba(110,231,183,0.15)', tagColor: '#6ee7b7' },
+      { dot:'#a855f7', bg:'linear-gradient(160deg,#1a0533,#3b0764,#2d0a50)', titleColor:'#e9d5ff', textColor:'#d8b4fe', subtitleColor:'#c084fc', tagBg:'rgba(216,180,254,0.15)', tagColor:'#c084fc' },
+      { dot:'#10b981', bg:'linear-gradient(160deg,#042f2e,#134e4a,#0f3f3c)', titleColor:'#ccfbf1', textColor:'#a7f3d0', subtitleColor:'#6ee7b7', tagBg:'rgba(110,231,183,0.15)', tagColor:'#6ee7b7' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#050a18,#0a1428,#101c38)', titleColor:'#bfdbfe', textColor:'#93c5fd', subtitleColor:'#3b82f6', tagBg:'rgba(147,197,253,0.15)', tagColor:'#93c5fd' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#1a0010,#3b0a20,#2d0a18)', titleColor:'#fecdd3', textColor:'#fda4af', subtitleColor:'#fb7185', tagBg:'rgba(251,113,133,0.15)', tagColor:'#fda4af' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#1a1000,#2d2000,#3d2e00)', titleColor:'#fde68a', textColor:'#fcd34d', subtitleColor:'#fbbf24', tagBg:'rgba(251,191,36,0.15)', tagColor:'#fcd34d' },
+      { dot:'#e2e8f0', bg:'linear-gradient(160deg,#0f172a,#1e293b,#0f172a)', titleColor:'#f1f5f9', textColor:'#cbd5e1', subtitleColor:'#94a3b8', tagBg:'rgba(148,163,184,0.15)', tagColor:'#cbd5e1' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#052e16,#064e3b,#065f46)', titleColor:'#dcfce7', textColor:'#bbf7d0', subtitleColor:'#4ade80', tagBg:'rgba(74,222,128,0.15)', tagColor:'#bbf7d0' },
+      { dot:'#c084fc', bg:'linear-gradient(160deg,#2e1065,#4c1d95,#3b0764)', titleColor:'#f3e8ff', textColor:'#e9d5ff', subtitleColor:'#c084fc', tagBg:'rgba(192,132,252,0.15)', tagColor:'#e9d5ff' },
+      { dot:'#f97316', bg:'linear-gradient(160deg,#1c0700,#431407,#7c2d12)', titleColor:'#fed7aa', textColor:'#fdba74', subtitleColor:'#fb923c', tagBg:'rgba(249,115,22,0.15)', tagColor:'#fdba74' },
     ],
   },
   'botanico': {
     bg: 'linear-gradient(160deg,#0a3d1f 0%,#166534 60%,#14532d 100%)',
-    titleColor: '#f0fdf4',
-    textColor: '#dcfce7',
-    subtitleColor: '#86efac',
-    tagBg: 'rgba(134,239,172,0.15)',
-    tagColor: '#86efac',
+    titleColor: '#f0fdf4', textColor: '#dcfce7', subtitleColor: '#86efac',
+    tagBg: 'rgba(134,239,172,0.15)', tagColor: '#86efac',
     SVGDecoration: BotanicoSVG,
     palettes: [
-      { dot: '#4ade80', bg: 'linear-gradient(160deg,#f0fdf4,#dcfce7,#d1fae5)', titleColor: '#14532d', textColor: '#166534', subtitleColor: '#15803d', tagBg: 'rgba(21,128,61,0.1)', tagColor: '#166534' },
-      { dot: '#84cc16', bg: 'linear-gradient(160deg,#1a1a00,#2d3300,#1e2500)', titleColor: '#d9e8a0', textColor: '#b5cc6a', subtitleColor: '#8aaa2a', tagBg: 'rgba(138,170,42,0.15)', tagColor: '#8aaa2a' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#f0fdf4,#dcfce7,#d1fae5)', titleColor:'#14532d', textColor:'#166534', subtitleColor:'#15803d', tagBg:'rgba(21,128,61,0.1)', tagColor:'#166534' },
+      { dot:'#84cc16', bg:'linear-gradient(160deg,#1a1a00,#2d3300,#1e2500)', titleColor:'#d9e8a0', textColor:'#b5cc6a', subtitleColor:'#8aaa2a', tagBg:'rgba(138,170,42,0.15)', tagColor:'#8aaa2a' },
+      { dot:'#34d399', bg:'linear-gradient(160deg,#ecfdf5,#a7f3d0,#6ee7b7)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(4,120,87,0.1)', tagColor:'#064e3b' },
+      { dot:'#a3e635', bg:'linear-gradient(160deg,#f7fee7,#ecfccb,#d9f99d)', titleColor:'#365314', textColor:'#3f6212', subtitleColor:'#4d7c0f', tagBg:'rgba(77,124,15,0.1)', tagColor:'#365314' },
+      { dot:'#7dd3fc', bg:'linear-gradient(160deg,#f0fdfa,#ccfbf1,#99f6e4)', titleColor:'#134e4a', textColor:'#115e59', subtitleColor:'#0d9488', tagBg:'rgba(13,148,136,0.1)', tagColor:'#134e4a' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#fde8c8,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#f9a8d4', bg:'linear-gradient(160deg,#fdf2f8,#fce7f3,#fbd5e9)', titleColor:'#831843', textColor:'#9d174d', subtitleColor:'#be185d', tagBg:'rgba(190,24,93,0.1)', tagColor:'#831843' },
+      { dot:'#e5e7eb', bg:'linear-gradient(160deg,#f9fafb,#f3f4f6,#e5e7eb)', titleColor:'#111827', textColor:'#1f2937', subtitleColor:'#374151', tagBg:'rgba(55,65,81,0.1)', tagColor:'#111827' },
+      { dot:'#c4b5fd', bg:'linear-gradient(160deg,#faf5ff,#f3e8ff,#ede9fe)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'rgba(124,58,237,0.1)', tagColor:'#4c1d95' },
     ],
   },
   'festa': {
     bg: 'linear-gradient(160deg,#fdf4ff 0%,#fce7f3 50%,#fef9ee 100%)',
-    titleColor: '#1e1b4b',
-    textColor: '#312e81',
-    subtitleColor: '#6d28d9',
-    tagBg: '#f3e8ff',
-    tagColor: '#5b21b6',
+    titleColor: '#1e1b4b', textColor: '#312e81', subtitleColor: '#6d28d9',
+    tagBg: '#f3e8ff', tagColor: '#5b21b6',
     SVGDecoration: FestaColorataSVG,
     palettes: [
-      { dot: '#fb923c', bg: 'linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)', titleColor: '#7c2d12', textColor: '#9a3412', subtitleColor: '#c2410c', tagBg: '#ffedd5', tagColor: '#9a3412' },
-      { dot: '#22d3ee', bg: 'linear-gradient(160deg,#ecfeff,#cffafe,#e0f7fa)', titleColor: '#164e63', textColor: '#155e75', subtitleColor: '#0891b2', tagBg: '#cffafe', tagColor: '#0e7490' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'#ffedd5', tagColor:'#9a3412' },
+      { dot:'#22d3ee', bg:'linear-gradient(160deg,#ecfeff,#cffafe,#e0f7fa)', titleColor:'#164e63', textColor:'#155e75', subtitleColor:'#0891b2', tagBg:'#cffafe', tagColor:'#0e7490' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#fecdd3)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#a3e635', bg:'linear-gradient(160deg,#f7fee7,#ecfccb,#d9f99d)', titleColor:'#365314', textColor:'#3f6212', subtitleColor:'#4d7c0f', tagBg:'rgba(77,124,15,0.1)', tagColor:'#365314' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#713f12', textColor:'#78350f', subtitleColor:'#b45309', tagBg:'rgba(245,158,11,0.1)', tagColor:'#713f12' },
+      { dot:'#818cf8', bg:'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor:'#1e1b4b', textColor:'#312e81', subtitleColor:'#4338ca', tagBg:'#e0e7ff', tagColor:'#3730a3' },
+      { dot:'#34d399', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#f472b6', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f5d0fe)', titleColor:'#701a75', textColor:'#86198f', subtitleColor:'#a21caf', tagBg:'rgba(162,28,175,0.1)', tagColor:'#701a75' },
+      { dot:'#94a3b8', bg:'linear-gradient(160deg,#f8fafc,#f1f5f9,#e2e8f0)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#475569', tagBg:'rgba(15,23,42,0.08)', tagColor:'#0f172a' },
     ],
   },
   'acquarello-blu': {
     bg: 'linear-gradient(160deg,#eff6ff 0%,#dbeafe 50%,#e0f2fe 100%)',
-    titleColor: '#1e3a8a',
-    textColor: '#1e40af',
-    subtitleColor: '#2563eb',
-    tagBg: '#dbeafe',
-    tagColor: '#1d4ed8',
+    titleColor: '#1e3a8a', textColor: '#1e40af', subtitleColor: '#2563eb',
+    tagBg: '#dbeafe', tagColor: '#1d4ed8',
     SVGDecoration: AcquarelloBluSVG,
     palettes: [
-      { dot: '#38bdf8', bg: 'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor: '#0c4a6e', textColor: '#075985', subtitleColor: '#0369a1', tagBg: '#bae6fd', tagColor: '#0369a1' },
-      { dot: '#6366f1', bg: 'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor: '#1e1b4b', textColor: '#312e81', subtitleColor: '#4338ca', tagBg: '#e0e7ff', tagColor: '#3730a3' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'#bae6fd', tagColor:'#0369a1' },
+      { dot:'#6366f1', bg:'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor:'#1e1b4b', textColor:'#312e81', subtitleColor:'#4338ca', tagBg:'#e0e7ff', tagColor:'#3730a3' },
+      { dot:'#34d399', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#fed7aa,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#a78bfa', bg:'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'#ede9fe', tagColor:'#6d28d9' },
+      { dot:'#f9a8d4', bg:'linear-gradient(160deg,#fdf2f8,#fce7f3,#ffd6e8)', titleColor:'#831843', textColor:'#9d174d', subtitleColor:'#be185d', tagBg:'rgba(190,24,93,0.1)', tagColor:'#831843' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#713f12', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(217,119,6,0.1)', tagColor:'#78350f' },
+      { dot:'#1e293b', bg:'linear-gradient(160deg,#0f172a,#1e293b,#1e3a5f)', titleColor:'#e0f2fe', textColor:'#bae6fd', subtitleColor:'#7dd3fc', tagBg:'rgba(125,211,252,0.15)', tagColor:'#bae6fd' },
+      { dot:'#86efac', bg:'linear-gradient(160deg,#f0fdf4,#dcfce7,#d1fae5)', titleColor:'#14532d', textColor:'#166534', subtitleColor:'#15803d', tagBg:'rgba(21,128,61,0.1)', tagColor:'#14532d' },
     ],
   },
   'battesimo': {
     bg: 'linear-gradient(160deg,#e8f6ff 0%,#c8e4ff 55%,#d8f0ff 100%)',
-    titleColor: '#0a2040',
-    textColor: '#1a5080',
-    subtitleColor: '#5590bb',
-    tagBg: 'rgba(68,136,187,0.13)',
-    tagColor: '#336699',
-    overrideTag: 'il nostro piccolo miracolo',
+    titleColor: '#0a2040', textColor: '#1a5080', subtitleColor: '#5590bb',
+    tagBg: 'rgba(68,136,187,0.13)', tagColor: '#336699',
     separator: 'dots',
     SVGDecoration: BattesimoSVG,
     palettes: [
-      { dot: '#ec4899', bg: 'linear-gradient(160deg,#fff0f5,#fce7f0,#ffd6e8)', titleColor: '#5a0028', textColor: '#881349', subtitleColor: '#b1407a', tagBg: 'rgba(177,64,122,0.12)', tagColor: '#881349' },
+      { dot:'#ec4899', bg:'linear-gradient(160deg,#fff0f5,#fce7f0,#ffd6e8)', titleColor:'#5a0028', textColor:'#881349', subtitleColor:'#b1407a', tagBg:'rgba(177,64,122,0.12)', tagColor:'#881349' },
+      { dot:'#a78bfa', bg:'linear-gradient(160deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'#ede9fe', tagColor:'#6d28d9' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#713f12', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(217,119,6,0.1)', tagColor:'#78350f' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#fed7aa,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#818cf8', bg:'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor:'#1e1b4b', textColor:'#312e81', subtitleColor:'#4338ca', tagBg:'#e0e7ff', tagColor:'#3730a3' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#fecdd3)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#94a3b8', bg:'linear-gradient(160deg,#f8fafc,#f1f5f9,#e2e8f0)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#475569', tagBg:'rgba(15,23,42,0.08)', tagColor:'#0f172a' },
+      { dot:'#2dd4bf', bg:'linear-gradient(160deg,#f0fdfa,#ccfbf1,#99f6e4)', titleColor:'#134e4a', textColor:'#115e59', subtitleColor:'#0d9488', tagBg:'rgba(13,148,136,0.1)', tagColor:'#134e4a' },
     ],
   },
   'laurea': {
     bg: 'linear-gradient(160deg,#d8e4f8 0%,#c0d0ee 55%,#ccd8f0 100%)',
-    titleColor: '#1a2a6e',
-    textColor: '#2a3a8e',
-    subtitleColor: '#d4aa44',
-    tagBg: 'rgba(26,42,110,0.1)',
-    tagColor: '#1a2a6e',
-    overrideTag: 'ci laureiamo!',
+    titleColor: '#1a2a6e', textColor: '#2a3a8e', subtitleColor: '#d4aa44',
+    tagBg: 'rgba(26,42,110,0.1)', tagColor: '#1a2a6e',
     separator: 'star',
     useTitleAsSubtitle: true,
     SVGDecoration: LaureaSVG,
     palettes: [
-      { dot: '#475569', bg: 'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor: '#0f172a', textColor: '#1e293b', subtitleColor: '#64748b', tagBg: 'rgba(15,23,42,0.1)', tagColor: '#0f172a' },
+      { dot:'#475569', bg:'linear-gradient(160deg,#f8fafc,#e2e8f0,#f1f5f9)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#64748b', tagBg:'rgba(15,23,42,0.1)', tagColor:'#0f172a' },
+      { dot:'#d97706', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#78350f', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(217,119,6,0.1)', tagColor:'#78350f' },
+      { dot:'#10b981', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#c084fc', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#fecdd3)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'rgba(14,165,233,0.1)', tagColor:'#0c4a6e' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#fed7aa,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#1e3a8a', bg:'linear-gradient(160deg,#0f172a,#1e293b,#1e3a5f)', titleColor:'#e0f2fe', textColor:'#bae6fd', subtitleColor:'#7dd3fc', tagBg:'rgba(125,211,252,0.15)', tagColor:'#bae6fd' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#1a0e00,#2d1800,#422200)', titleColor:'#fde68a', textColor:'#fcd34d', subtitleColor:'#fbbf24', tagBg:'rgba(251,191,36,0.15)', tagColor:'#fcd34d' },
     ],
   },
   'generico-notte': {
     bg: 'linear-gradient(160deg,#080818 0%,#12102a 55%,#1a1040 100%)',
-    titleColor: '#ffffff',
-    textColor: '#ddbbff',
-    subtitleColor: '#8844cc',
-    tagBg: 'rgba(200,150,255,0.15)',
-    tagColor: '#cc99ff',
+    titleColor: '#ffffff', textColor: '#ddbbff', subtitleColor: '#8844cc',
+    tagBg: 'rgba(200,150,255,0.15)', tagColor: '#cc99ff',
     overrideTag: 'sei invitato',
     separator: 'dot',
     useTitleAsSubtitle: true,
     SVGDecoration: NotteFestvaSVG,
     palettes: [
-      { dot: '#3b82f6', bg: 'linear-gradient(160deg,#050a18,#0a1428,#101c38)', titleColor: '#bfdbfe', textColor: '#93c5fd', subtitleColor: '#3b82f6', tagBg: 'rgba(147,197,253,0.15)', tagColor: '#93c5fd' },
+      { dot:'#3b82f6', bg:'linear-gradient(160deg,#050a18,#0a1428,#101c38)', titleColor:'#bfdbfe', textColor:'#93c5fd', subtitleColor:'#3b82f6', tagBg:'rgba(147,197,253,0.15)', tagColor:'#93c5fd' },
+      { dot:'#10b981', bg:'linear-gradient(160deg,#052e16,#064e3b,#065f46)', titleColor:'#dcfce7', textColor:'#bbf7d0', subtitleColor:'#4ade80', tagBg:'rgba(74,222,128,0.15)', tagColor:'#bbf7d0' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#1a0010,#3b0020,#200010)', titleColor:'#fecdd3', textColor:'#fda4af', subtitleColor:'#fb7185', tagBg:'rgba(251,113,133,0.15)', tagColor:'#fda4af' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#1a0e00,#2d1800,#1a1200)', titleColor:'#fde68a', textColor:'#fcd34d', subtitleColor:'#fbbf24', tagBg:'rgba(251,191,36,0.15)', tagColor:'#fcd34d' },
+      { dot:'#2dd4bf', bg:'linear-gradient(160deg,#042f2e,#064e3b,#065f46)', titleColor:'#ccfbf1', textColor:'#a7f3d0', subtitleColor:'#2dd4bf', tagBg:'rgba(45,212,191,0.15)', tagColor:'#a7f3d0' },
+      { dot:'#e879f9', bg:'linear-gradient(160deg,#2e1065,#4c1d95,#1a0533)', titleColor:'#f3e8ff', textColor:'#e9d5ff', subtitleColor:'#c084fc', tagBg:'rgba(192,132,252,0.15)', tagColor:'#e9d5ff' },
+      { dot:'#94a3b8', bg:'linear-gradient(160deg,#0f172a,#1e293b,#0f172a)', titleColor:'#f1f5f9', textColor:'#cbd5e1', subtitleColor:'#94a3b8', tagBg:'rgba(148,163,184,0.15)', tagColor:'#cbd5e1' },
+      { dot:'#f97316', bg:'linear-gradient(160deg,#1c0700,#431407,#7c2d12)', titleColor:'#fed7aa', textColor:'#fdba74', subtitleColor:'#fb923c', tagBg:'rgba(249,115,22,0.15)', tagColor:'#fdba74' },
+      { dot:'#e2e8f0', bg:'linear-gradient(160deg,#020617,#0f172a,#020617)', titleColor:'#ffffff', textColor:'#e2e8f0', subtitleColor:'#94a3b8', tagBg:'rgba(226,232,240,0.1)', tagColor:'#e2e8f0' },
     ],
   },
   'generico-solare': {
     bg: 'linear-gradient(160deg,#fffbe0 0%,#fff0a0 50%,#ffd868 100%)',
-    titleColor: '#1a0800',
-    textColor: '#884400',
-    subtitleColor: '#bb7700',
-    tagBg: 'rgba(180,100,0,0.08)',
-    tagColor: '#884400',
+    titleColor: '#1a0800', textColor: '#884400', subtitleColor: '#bb7700',
+    tagBg: 'rgba(180,100,0,0.08)', tagColor: '#884400',
     overrideTag: 'sei invitato!',
     separator: 'line',
     useTitleAsSubtitle: true,
     SVGDecoration: SolareSVG,
     palettes: [
-      { dot: '#f97316', bg: 'linear-gradient(160deg,#fff3e0,#ffe0b2,#ffcc80)', titleColor: '#4a1500', textColor: '#7c2d12', subtitleColor: '#c2410c', tagBg: 'rgba(194,65,12,0.08)', tagColor: '#7c2d12' },
+      { dot:'#f97316', bg:'linear-gradient(160deg,#fff3e0,#ffe0b2,#ffcc80)', titleColor:'#4a1500', textColor:'#7c2d12', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.08)', tagColor:'#7c2d12' },
+      { dot:'#10b981', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#fecdd3)', titleColor:'#881337', textColor:'#9f1239', subtitleColor:'#be185d', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'rgba(14,165,233,0.1)', tagColor:'#0c4a6e' },
+      { dot:'#c084fc', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+      { dot:'#475569', bg:'linear-gradient(160deg,#f8fafc,#f1f5f9,#e2e8f0)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#475569', tagBg:'rgba(15,23,42,0.08)', tagColor:'#0f172a' },
+      { dot:'#1a1a1a', bg:'linear-gradient(160deg,#1a0e00,#2d1800,#422200)', titleColor:'#fde68a', textColor:'#fcd34d', subtitleColor:'#fbbf24', tagBg:'rgba(251,191,36,0.12)', tagColor:'#fcd34d' },
+      { dot:'#86efac', bg:'linear-gradient(160deg,#f0fdf4,#dcfce7,#d1fae5)', titleColor:'#14532d', textColor:'#166534', subtitleColor:'#15803d', tagBg:'rgba(21,128,61,0.1)', tagColor:'#14532d' },
+      { dot:'#e879f9', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f5d0fe)', titleColor:'#701a75', textColor:'#86198f', subtitleColor:'#a21caf', tagBg:'rgba(162,28,175,0.1)', tagColor:'#701a75' },
     ],
   },
   'matrimonio': {
     bg: 'linear-gradient(170deg,#fefdf8 0%,#f8f4e8 55%,#f5eedc 100%)',
-    titleColor: '#3e2723',
-    textColor: '#5d4037',
-    subtitleColor: '#8d6e47',
-    tagBg: 'rgba(201,169,110,0.12)',
-    tagColor: '#8d6e47',
-    overrideTag: 'ci sposiamo!',
+    titleColor: '#3e2723', textColor: '#5d4037', subtitleColor: '#8d6e47',
+    tagBg: 'rgba(201,169,110,0.12)', tagColor: '#8d6e47',
     separator: 'star',
     SVGDecoration: MatrimonioSVG,
     palettes: [
-      { dot: '#f43f5e', bg: 'linear-gradient(170deg,#fdf2f4,#fce7eb,#fad4da)', titleColor: '#4a0010', textColor: '#6b1c2e', subtitleColor: '#9d4255', tagBg: 'rgba(157,66,85,0.12)', tagColor: '#6b1c2e' },
+      { dot:'#f43f5e', bg:'linear-gradient(170deg,#fdf2f4,#fce7eb,#fad4da)', titleColor:'#4a0010', textColor:'#6b1c2e', subtitleColor:'#9d4255', tagBg:'rgba(157,66,85,0.12)', tagColor:'#6b1c2e' },
+      { dot:'#a78bfa', bg:'linear-gradient(170deg,#f5f3ff,#ede9fe,#e8e0ff)', titleColor:'#4c1d95', textColor:'#5b21b6', subtitleColor:'#7c3aed', tagBg:'#ede9fe', tagColor:'#6d28d9' },
+      { dot:'#38bdf8', bg:'linear-gradient(170deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'rgba(14,165,233,0.1)', tagColor:'#0c4a6e' },
+      { dot:'#10b981', bg:'linear-gradient(170deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#fbbf24', bg:'linear-gradient(170deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#713f12', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(245,158,11,0.1)', tagColor:'#713f12' },
+      { dot:'#475569', bg:'linear-gradient(170deg,#f8fafc,#f1f5f9,#e2e8f0)', titleColor:'#0f172a', textColor:'#1e293b', subtitleColor:'#475569', tagBg:'rgba(15,23,42,0.08)', tagColor:'#0f172a' },
+      { dot:'#1a1a1a', bg:'linear-gradient(170deg,#0f172a,#1e293b,#1e3a5f)', titleColor:'#e0f2fe', textColor:'#bae6fd', subtitleColor:'#7dd3fc', tagBg:'rgba(125,211,252,0.15)', tagColor:'#bae6fd' },
+      { dot:'#f97316', bg:'linear-gradient(170deg,#fff7ed,#fed7aa,#fcd3a2)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'rgba(194,65,12,0.1)', tagColor:'#7c2d12' },
+      { dot:'#e879f9', bg:'linear-gradient(170deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+    ],
+  },
+  'arcobaleno-kids': {
+    bg: 'linear-gradient(160deg,#fffde7 0%,#fff9c4 50%,#fff3e0 100%)',
+    titleColor: '#c2185b', textColor: '#e65100', subtitleColor: '#7b1fa2',
+    tagBg: 'rgba(123,31,162,0.08)', tagColor: '#7b1fa2',
+    emojiHeader: '🎈 🎂 🎈',
+    overrideTag: 'SUPER FESTA! 🎉',
+    separator: 'rainbow',
+    SVGDecoration: ArcobaleniKidsSVG,
+    palettes: [
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#fff1f2,#ffe4e6,#fecdd3)', titleColor:'#881337', textColor:'#be185d', subtitleColor:'#e11d48', tagBg:'#ffe4e6', tagColor:'#9d174d' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#f0f9ff,#e0f2fe,#bae6fd)', titleColor:'#0c4a6e', textColor:'#075985', subtitleColor:'#0369a1', tagBg:'#bae6fd', tagColor:'#0369a1' },
+      { dot:'#4ade80', bg:'linear-gradient(160deg,#ecfdf5,#d1fae5,#a7f3d0)', titleColor:'#064e3b', textColor:'#065f46', subtitleColor:'#047857', tagBg:'rgba(16,185,129,0.1)', tagColor:'#065f46' },
+      { dot:'#c084fc', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f3e8ff)', titleColor:'#581c87', textColor:'#6b21a8', subtitleColor:'#7e22ce', tagBg:'rgba(168,85,247,0.1)', tagColor:'#581c87' },
+      { dot:'#fb923c', bg:'linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)', titleColor:'#7c2d12', textColor:'#9a3412', subtitleColor:'#c2410c', tagBg:'#ffedd5', tagColor:'#9a3412' },
+      { dot:'#818cf8', bg:'linear-gradient(160deg,#eef2ff,#e0e7ff,#c7d2fe)', titleColor:'#1e1b4b', textColor:'#312e81', subtitleColor:'#4338ca', tagBg:'#e0e7ff', tagColor:'#3730a3' },
+      { dot:'#2dd4bf', bg:'linear-gradient(160deg,#f0fdfa,#ccfbf1,#99f6e4)', titleColor:'#134e4a', textColor:'#115e59', subtitleColor:'#0d9488', tagBg:'rgba(13,148,136,0.1)', tagColor:'#134e4a' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#fffbeb,#fef3c7,#fde68a)', titleColor:'#713f12', textColor:'#92400e', subtitleColor:'#b45309', tagBg:'rgba(217,119,6,0.1)', tagColor:'#78350f' },
+      { dot:'#f472b6', bg:'linear-gradient(160deg,#fdf4ff,#fae8ff,#f5d0fe)', titleColor:'#701a75', textColor:'#86198f', subtitleColor:'#a21caf', tagBg:'rgba(162,28,175,0.1)', tagColor:'#701a75' },
+    ],
+  },
+  'spazio-cosmico': {
+    bg: 'linear-gradient(160deg,#0a0e2a 0%,#141b4d 55%,#1a2060 100%)',
+    titleColor: '#ffffff', textColor: '#ffd600', subtitleColor: '#8080ff',
+    tagBg: 'rgba(255,255,255,0.1)', tagColor: '#e8f0ff',
+    emojiHeader: '🚀',
+    overrideTag: 'MISSIONE COMPLEANNO',
+    separator: 'star',
+    useTitleAsSubtitle: true,
+    SVGDecoration: SpazioCosmicoSVG,
+    palettes: [
+      { dot:'#a855f7', bg:'linear-gradient(160deg,#1a0533,#3b0764,#2d0a50)', titleColor:'#e9d5ff', textColor:'#c084fc', subtitleColor:'#a855f7', tagBg:'rgba(168,85,247,0.15)', tagColor:'#e9d5ff' },
+      { dot:'#10b981', bg:'linear-gradient(160deg,#042f2e,#064e3b,#052e16)', titleColor:'#ccfbf1', textColor:'#4ade80', subtitleColor:'#10b981', tagBg:'rgba(16,185,129,0.15)', tagColor:'#ccfbf1' },
+      { dot:'#38bdf8', bg:'linear-gradient(160deg,#050a18,#0a1428,#0c1a3a)', titleColor:'#e0f2fe', textColor:'#7dd3fc', subtitleColor:'#38bdf8', tagBg:'rgba(56,189,248,0.15)', tagColor:'#e0f2fe' },
+      { dot:'#f43f5e', bg:'linear-gradient(160deg,#1a0010,#3b0020,#200010)', titleColor:'#fecdd3', textColor:'#fb7185', subtitleColor:'#f43f5e', tagBg:'rgba(244,63,94,0.15)', tagColor:'#fecdd3' },
+      { dot:'#fbbf24', bg:'linear-gradient(160deg,#1a0e00,#2d1800,#1c1000)', titleColor:'#fde68a', textColor:'#fbbf24', subtitleColor:'#d97706', tagBg:'rgba(251,191,36,0.15)', tagColor:'#fde68a' },
+      { dot:'#2dd4bf', bg:'linear-gradient(160deg,#042f2e,#134e4a,#0f3f3c)', titleColor:'#ccfbf1', textColor:'#2dd4bf', subtitleColor:'#0d9488', tagBg:'rgba(45,212,191,0.15)', tagColor:'#ccfbf1' },
+      { dot:'#e2e8f0', bg:'linear-gradient(160deg,#020617,#0f172a,#020617)', titleColor:'#ffffff', textColor:'#e2e8f0', subtitleColor:'#94a3b8', tagBg:'rgba(226,232,240,0.1)', tagColor:'#e2e8f0' },
+      { dot:'#f97316', bg:'linear-gradient(160deg,#1c0700,#431407,#7c2d12)', titleColor:'#fed7aa', textColor:'#fb923c', subtitleColor:'#f97316', tagBg:'rgba(249,115,22,0.15)', tagColor:'#fed7aa' },
+      { dot:'#818cf8', bg:'linear-gradient(160deg,#1e1b4b,#312e81,#1e1b4b)', titleColor:'#e0e7ff', textColor:'#818cf8', subtitleColor:'#6366f1', tagBg:'rgba(99,102,241,0.15)', tagColor:'#e0e7ff' },
+    ],
+  },
+  'unicorno-pastello': {
+    bg: 'linear-gradient(135deg,#fce4ec 0%,#f8bbd0 30%,#e1bee7 65%,#d1c4e9 100%)',
+    titleColor: '#4a148c', textColor: '#880e4f', subtitleColor: '#9c27b0',
+    tagBg: 'rgba(156,39,176,0.1)', tagColor: '#4a148c',
+    emojiHeader: '🦄 🌈 🎀',
+    overrideTag: 'UNICORN PARTY ✨',
+    separator: 'rainbow',
+    SVGDecoration: UnicornoPastelloSVG,
+    palettes: [
+      { dot:'#38bdf8', bg:'linear-gradient(135deg,#e0f7fa,#b2ebf2,#e1f5fe,#b3e5fc)', titleColor:'#006064', textColor:'#00838f', subtitleColor:'#0097a7', tagBg:'rgba(0,151,167,0.1)', tagColor:'#006064' },
+      { dot:'#fb923c', bg:'linear-gradient(135deg,#fff8e1,#ffe0b2,#fce4ec,#ffd7cc)', titleColor:'#e65100', textColor:'#bf360c', subtitleColor:'#d84315', tagBg:'rgba(216,67,21,0.1)', tagColor:'#e65100' },
+      { dot:'#4ade80', bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9,#dcedc8,#f0f4c3)', titleColor:'#1b5e20', textColor:'#2e7d32', subtitleColor:'#388e3c', tagBg:'rgba(56,142,60,0.1)', tagColor:'#1b5e20' },
+      { dot:'#fbbf24', bg:'linear-gradient(135deg,#fffde7,#fff9c4,#fff8e1,#fff3e0)', titleColor:'#f57f17', textColor:'#f57c00', subtitleColor:'#ff8f00', tagBg:'rgba(255,143,0,0.1)', tagColor:'#f57f17' },
+      { dot:'#f43f5e', bg:'linear-gradient(135deg,#fce4ec,#f8bbd0,#ffcdd2,#ef9a9a)', titleColor:'#880e4f', textColor:'#ad1457', subtitleColor:'#c2185b', tagBg:'rgba(194,24,91,0.1)', tagColor:'#880e4f' },
+      { dot:'#818cf8', bg:'linear-gradient(135deg,#e8eaf6,#c5cae9,#e8eaf6,#d1c4e9)', titleColor:'#1a237e', textColor:'#283593', subtitleColor:'#3949ab', tagBg:'rgba(57,73,171,0.1)', tagColor:'#1a237e' },
+      { dot:'#2dd4bf', bg:'linear-gradient(135deg,#e0f2f1,#b2dfdb,#e8f5e9,#c8e6c9)', titleColor:'#004d40', textColor:'#00695c', subtitleColor:'#00796b', tagBg:'rgba(0,121,107,0.1)', tagColor:'#004d40' },
+      { dot:'#94a3b8', bg:'linear-gradient(135deg,#fafafa,#f5f5f5,#eeeeee,#e0e0e0)', titleColor:'#212121', textColor:'#424242', subtitleColor:'#616161', tagBg:'rgba(33,33,33,0.08)', tagColor:'#212121' },
+      { dot:'#e879f9', bg:'linear-gradient(135deg,#f3e5f5,#e1bee7,#fce4ec,#f8bbd0)', titleColor:'#4a148c', textColor:'#6a1b9a', subtitleColor:'#7b1fa2', tagBg:'rgba(123,31,162,0.1)', tagColor:'#4a148c' },
     ],
   },
 }
@@ -564,6 +723,10 @@ export function InviteTemplateCard({
       <SVGDecoration />
 
       <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+        {/* Emoji header (per template kids) */}
+        {activeCfg.emojiHeader && (
+          <div style={{ fontSize: 26, letterSpacing: 6, lineHeight: 1 }}>{activeCfg.emojiHeader}</div>
+        )}
         {/* Tag evento */}
         <div style={{ background: activeCfg.tagBg, color: activeCfg.tagColor, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 14px', borderRadius: 20, fontFamily: fontFamily }}>
           {activeCfg.overrideTag ?? `${emoji} ${title || 'Il tuo evento'}`}
@@ -582,7 +745,13 @@ export function InviteTemplateCard({
         </p>
 
         {/* Separatore */}
-        {activeCfg.separator === 'dots' ? (
+        {activeCfg.separator === 'rainbow' ? (
+          <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+            {['#f43f5e','#fb923c','#fbbf24','#4ade80','#38bdf8','#818cf8','#e879f9'].map((c,i) => (
+              <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: c, display: 'inline-block' }} />
+            ))}
+          </div>
+        ) : activeCfg.separator === 'dots' ? (
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             {[0,1,2].map(i => <span key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: activeCfg.subtitleColor, opacity: 0.55, display: 'inline-block' }} />)}
           </div>
@@ -610,6 +779,12 @@ export function InviteTemplateCard({
           </p>
         )}
 
+        {/* Footer label (per template speciali) */}
+        {activeCfg.footerLabel && (
+          <p style={{ margin: 0, fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: activeCfg.subtitleColor, fontFamily: fontFamily, opacity: 0.7 }}>
+            {activeCfg.footerLabel}
+          </p>
+        )}
       </div>
     </div>
   )
